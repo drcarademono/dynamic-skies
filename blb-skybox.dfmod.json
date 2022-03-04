@@ -1,0 +1,17 @@
+{
+    "ModTitle": "blb-skybox",
+    "ModVersion": "0.0000001",
+    "ModAuthor": "BadLuckBurt",
+    "ContactInfo": "x",
+    "DFUnity_Version": "0.13.4",
+    "ModDescription": "Procedural skybox shader for DFU",
+    "GUID": "53a9b8f5-6271-4f74-9b8b-9220dd105a04",
+    "Files": [
+        "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSkyboxMaterial.mat",
+        "Assets/Game/Mods/blb-skybox-shader/Shaders/Includes/MoonFunctions.cginc",
+        "Assets/Game/Mods/blb-skybox-shader/Shaders/Includes/Scattering.cginc",
+        "Assets/Game/Mods/blb-skybox-shader/Shaders/BLBProceduralSkybox.shader",
+        "Assets/Game/Mods/blb-skybox-shader/BLBSkybox.cs",
+        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json"
+    ]
+}

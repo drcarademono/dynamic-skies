@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BLBSkyboxMaterial
+  m_Shader: {fileID: 4800000, guid: 86de95ef4a2cc4048b91b202864c9f94, type: 3}
+  m_ShaderKeywords: _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
+    _SECUNDASPINOPTION_TIDAL_LOCK _SUNDISK_HIGH_QUALITY
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudDiffuse:
+        m_Texture: {fileID: 2800000, guid: 4c8587d1fe96af34780ffff57cae5beb, type: 3}
+        m_Scale: {x: 0.25, y: 0.25}
+        m_Offset: {x: 0, y: 0}
+    - _CloudNormal:
+        m_Texture: {fileID: 2800000, guid: bb60ab3066f1d1f438a5943e7954a2b1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudTopDiffuse:
+        m_Texture: {fileID: 2800000, guid: 4e7ddcbc0540e8744a42af2dd93d3c7c, type: 3}
+        m_Scale: {x: 0.25, y: 0.25}
+        m_Offset: {x: 0, y: 0}
+    - _CloudTopNormal:
+        m_Texture: {fileID: 2800000, guid: 95ff24cb1da0630479904f268738c425, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MoonTex:
+        m_Texture: {fileID: 2800000, guid: 6287781a04a87e14ba22da7c884bb0db, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecundaTex:
+        m_Texture: {fileID: 2800000, guid: 3912f89b056b0fc4f804ab4b6140b772, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarTex:
+        m_Texture: {fileID: 2800000, guid: 2024a157c9db3564385ca4b88c7c3598, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TwinkleTex:
+        m_Texture: {fileID: 2800000, guid: 4001f894680cc4245ba80515fbc1fbd4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AtmosphereThickness: 0.75
+    - _BumpScale: 1
+    - _CloudAlphaCutoff: 0
+    - _CloudAlphaMax: 0.32
+    - _CloudBending: 0.4
+    - _CloudBlendLB: 0
+    - _CloudBlendScale: 0.25
+    - _CloudBlendSpeed: 0
+    - _CloudBlendUB: 0
+    - _CloudColorBoost: 0
+    - _CloudDirection: 194.4
+    - _CloudNormalEffect: 0.5
+    - _CloudNormalSpeed: 0
+    - _CloudOpacity: 1
+    - _CloudSpeed: 0.01
+    - _CloudTopAlphaCutoff: 0
+    - _CloudTopAlphaMax: 0
+    - _CloudTopBending: 1
+    - _CloudTopColorBoost: 0
+    - _CloudTopNormalEffect: 0.5
+    - _CloudTopOpacity: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _Exposure: 1
+    - _FogDistance: 2048
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _MoonMaxSize: 0.032
+    - _MoonMinSize: 0.032
+    - _MoonOrbitOffset: 0
+    - _MoonOrbitSpeed: 0.001
+    - _MoonPhaseOption: 0
+    - _MoonSemiMajAxis: 1
+    - _MoonSemiMinAxis: 1
+    - _MoonSpinOption: 0
+    - _NightEndHeight: 0
+    - _NightStartHeight: 0.05
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SecundaMaxSize: 0.016
+    - _SecundaMinSize: 0.016
+    - _SecundaOrbitOffset: 10
+    - _SecundaOrbitSpeed: 0.001
+    - _SecundaPhaseOption: 0
+    - _SecundaSemiMajAxis: 0.6
+    - _SecundaSemiMinAxis: 0.9
+    - _SecundaSpinOption: 0
+    - _SkyFadeEnd: -0.075
+    - _SkyFadeStart: 0.05
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _StarBending: 1
+    - _StarBrightness: 100
+    - _SunDisk: 2
+    - _SunSize: 0.064
+    - _SunSizeConvergence: 6.4
+    - _TwinkleBoost: 0.35
+    - _TwinkleSpeed: 0.001
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _CloudColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    - _CloudNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _CloudTopColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+    - _CloudTopNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GroundColor: {r: 0.27058825, g: 0.27058825, b: 0.27058825, a: 1}
+    - _MoonColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MoonOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
+    - _MoonPhase: {r: 0, g: 0, b: 0, a: 0}
+    - _MoonSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _MoonTidalAngle: {r: 0, g: 0, b: 0, a: 0}
+    - _SecundaColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SecundaOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
+    - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
+    - _SecundaSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _SecundaTidalAngle: {r: 90, g: 0, b: 0, a: 0}
+    - _SkyTint: {r: 0.95, g: 1, b: 1, a: 1}
