@@ -408,15 +408,15 @@
 
     //Clouds             
                 //this is just a simple way to rotate the direction the clouds will travel in
-                float2 cloudDir = float2(1, 0);
+                float2 cloudDir = float2(1, 1);
                 cloudDir.x = cloudDir.x * cos(radians(_CloudDirection));
                 cloudDir.y = cloudDir.y * sin(radians(_CloudDirection));
 
-                int cloudSpeedDivider = 8;
+                float cloudSpeedMultiplier = 0.96;
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);                
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
-                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed / cloudSpeedDivider) * cloudDir).x * horizonValue;
+                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
                 float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
 
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
@@ -427,11 +427,11 @@
                 cloudsTop = smoothstep(_CloudTopAlphaCutoff, _CloudTopAlphaMax, cloudsTop);
 
                 //do the same thing except we slow the speed because it can look wierd if moving to fast
-                float3 cloudTopNormal1 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed / cloudSpeedDivider) * cloudDir));
+                float3 cloudTopNormal1 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir));
                 float3 cloudTopNormal2 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
 
                 //blend normals
-                float3 cloudTopNormal = BlendNormals(cloudTopNormal1 * 0.5, cloudTopNormal2);
+                float3 cloudTopNormal = BlendNormals(cloudTopNormal1, cloudTopNormal2);
 
                 //we blend the normal with the up vector. This dot product with up gives the final color the effect the clouds are fluffy
                 float NdotUpTop = dot(cloudTopNormal, float3(0, 1, 0));
@@ -474,7 +474,7 @@
                 float3 cloudNormal2 = UnpackNormal(tex2D(_CloudNormal, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
 
                 //blend normals
-                float3 cloudNormal = BlendNormals(cloudNormal1 * 0.5, cloudNormal2);
+                float3 cloudNormal = BlendNormals(cloudNormal1, cloudNormal2);
 
                 //we blend the normal with the up vector. This dot product with up gives the final color the effect the clouds are fluffy
                 float NdotUp = dot(cloudNormal, float3(0, 1, 0));
@@ -678,7 +678,7 @@
     
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
-                col.rgb = lerp(col.rgb, unity_FogColor.rgb, saturate(unityFogFactor));
+                col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
 
                 return col;
             }
