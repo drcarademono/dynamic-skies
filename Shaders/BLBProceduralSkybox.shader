@@ -412,12 +412,12 @@
                 cloudDir.x = cloudDir.x * cos(radians(_CloudDirection));
                 cloudDir.y = cloudDir.y * sin(radians(_CloudDirection));
 
-                float cloudSpeedMultiplier = 0.96;
+                float cloudSpeedMultiplier = 0.5;
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);                
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
                 float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
-                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
+                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
 
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
                 cloudTop2 = Remap(cloudTop2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
@@ -438,7 +438,6 @@
 
                 //adjust the color for night
                 float3 cloudTopColor = lerp(_CloudTopColor, _CloudTopNightColor, night);
-                //float3 cloudColor = _CloudColor;
 
                 //then remap the dot product to be between our desired value, this reduces the effect of the normal
                 cloudTopColor = cloudTopColor * Remap(NdotUpTop, float2(-1, 1), float2(1 -_CloudTopNormalEffect, 1));
@@ -462,9 +461,9 @@
                 cloud2 = Remap(cloud2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
 
                 //subtract cloud2 from cloud1, this is how we blend them. We could also mulitple them but I like the result of this better
-                //float clouds = cloud1 - cloud2;
-                //float clouds = mul(cloud2, cloud1);
                 float clouds = cloud1 - cloud2;
+                //float clouds = mul(cloud2, cloud1);
+                //float clouds = min(1.0, (cloud1 + cloud2) / 2);
 
                 //then we smoothstep the clouds at desired values, this allows us control the brightness and the edge of the clouds
                 clouds = smoothstep(_CloudAlphaCutoff, _CloudAlphaMax, clouds);

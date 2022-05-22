@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using UnityEditor;
+using System.IO;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility.ModSupport;   //required for modding features
@@ -45,19 +47,14 @@ public class BLBSkybox : MonoBehaviour
         Mod = initParams.Mod;  // Get mod     
         Instance = new GameObject("BLBSkybox").AddComponent<BLBSkybox>(); // Add script to the scene.
 
-        //Set up some default settings for the Unity renderer
-        UnityEngine.RenderSettings.fogColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-        UnityEngine.RenderSettings.fogEndDistance = 2048f;
+        Instance.SetFogDefaults();
 
-        //Subscribe to DFU events
-        WeatherManager.OnWeatherChange += Instance.OnWeatherChange; //Register event for weather changes
-        PlayerEnterExit.OnTransitionInterior += Instance.InteriorTransitionEvent; //interior transition
-        PlayerEnterExit.OnTransitionDungeonInterior += Instance.InteriorTransitionEvent; //dungeon interior transition
-        PlayerEnterExit.OnTransitionExterior += Instance.ExteriorTransitionEvent; //exterior transition
-        PlayerEnterExit.OnTransitionDungeonExterior += Instance.ExteriorTransitionEvent; //dungeon exterior transition
+        Instance.SubscribeToEvents();
 
         //Prepare the cloud types, lunar phases and fog settings
-        Instance.setCloudTypes();
+        Instance.loadAllSkyboxSettings();
+
+        //Instance.setCloudTypes();
         Instance.setLunarPhases();
         Instance.getVanillaFogSettings();
         //Instance.setFogSettings(); //Overwrites vanilla fog with linear fog settings
@@ -295,6 +292,9 @@ public class BLBSkybox : MonoBehaviour
     #region Weather
     private bool pendingWeather = false; //Indicates if a weather change is pending - need to figure out best way to handle this during a sun / cloud color lerp
     private float pendingWindDirection; //The new wind direction
+
+    private BLBSkyboxSetting pendingSkyboxSettings; //The new settings for the skybox
+
     private CloudTypeStruct pendingCloudTop; //The new settings for the cloud top layer
     private CloudTypeStruct pendingCloud; //The new settings for the cloud layer
     private CloudColorStruct pendingCloudColors; //The new settings for cloud colors (both layers)
@@ -306,17 +306,21 @@ public class BLBSkybox : MonoBehaviour
             currentWeather = weather;
 
             pendingWindDirection = getWindDirection(); //Get new random wind direction
+            pendingSkyboxSettings = SkyboxSettings[weather];
 
-            CloudTypeStruct cloudTop = CloudsTop[weather];   //Get cloud type for top layer
-            CloudTypeStruct cloud = Clouds[weather];
-            CloudColorStruct cloudColors = CloudColors[weather]; //Get cloud colors for both layers
+            Debug.Log("Pending weather = " + weather.ToString());
+            Debug.Log("Pending weather settings: " + JsonUtility.ToJson(pendingSkyboxSettings));
+
+            //CloudTypeStruct cloudTop = CloudsTop[weather];   //Get cloud type for top layer
+            //CloudTypeStruct cloud = Clouds[weather];
+            //CloudColorStruct cloudColors = CloudColors[weather]; //Get cloud colors for both layers
 
             //TODO: Add several cloud variations based on weather type
 
             //Store the new cloud settings
-            pendingCloud = cloud;
-            pendingCloudTop = cloudTop;
-            pendingCloudColors = cloudColors;
+            //pendingCloud = cloud;
+            //pendingCloudTop = cloudTop;
+            //pendingCloudColors = cloudColors;
             
             //Apply the pending weather settings
             ApplyPendingWeatherSettings();
@@ -324,30 +328,34 @@ public class BLBSkybox : MonoBehaviour
     }
 
     private void ApplyPendingWeatherSettings() {
-        //Change cloud colors
-        skyboxMat.SetColor("_CloudColor", pendingCloudColors.CloudColor);
-        skyboxMat.SetColor("_CloudNightColor", pendingCloudColors.CloudNightColor);
-        skyboxMat.SetColor("_CloudTopColor", pendingCloudColors.CloudTopColor);
-        skyboxMat.SetColor("_CloudTopNightColor", pendingCloudColors.CloudTopNightColor);
+        BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings);
+        /*
+        if(2 == 3) {
+            //Change cloud colors
+            skyboxMat.SetColor("_CloudColor", pendingCloudColors.CloudColor);
+            skyboxMat.SetColor("_CloudNightColor", pendingCloudColors.CloudNightColor);
+            skyboxMat.SetColor("_CloudTopColor", pendingCloudColors.CloudTopColor);
+            skyboxMat.SetColor("_CloudTopNightColor", pendingCloudColors.CloudTopNightColor);
 
-        //Change settings for cloud top layer
-        skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(pendingCloudTop.TilingX, pendingCloudTop.TilingY));
-        skyboxMat.SetFloat("_CloudTopAlphaCutoff", pendingCloudTop.AlphaThreshold);
-        skyboxMat.SetFloat("_CloudTopAlphaMax", pendingCloudTop.AlphaMax);
-        skyboxMat.SetFloat("_CloudTopNormalEffect", pendingCloudTop.NormalEffect);
-        skyboxMat.SetFloat("_CloudTopBending", pendingCloudTop.Bending);
-        skyboxMat.SetFloat("_CloudTopOpacity", pendingCloudTop.Opacity);
+            //Change settings for cloud top layer
+            skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(pendingCloudTop.TilingX, pendingCloudTop.TilingY));
+            skyboxMat.SetFloat("_CloudTopAlphaCutoff", pendingCloudTop.AlphaThreshold);
+            skyboxMat.SetFloat("_CloudTopAlphaMax", pendingCloudTop.AlphaMax);
+            skyboxMat.SetFloat("_CloudTopNormalEffect", pendingCloudTop.NormalEffect);
+            skyboxMat.SetFloat("_CloudTopBending", pendingCloudTop.Bending);
+            skyboxMat.SetFloat("_CloudTopOpacity", pendingCloudTop.Opacity);
 
-        //Change settings for cloud layer
-        skyboxMat.SetFloat("_CloudDirection", pendingWindDirection);
-        skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(pendingCloud.TilingX, pendingCloud.TilingY));
-        skyboxMat.SetFloat("_CloudAlphaCutoff", pendingCloud.AlphaThreshold);
-        skyboxMat.SetFloat("_CloudAlphaMax", pendingCloud.AlphaMax);
-        skyboxMat.SetFloat("_CloudNormalEffect", pendingCloud.NormalEffect);
-        skyboxMat.SetFloat("_CloudBending", pendingCloud.Bending);
-        skyboxMat.SetFloat("_CloudBlendScale", pendingCloud.BlendScale);
-        skyboxMat.SetFloat("_CloudOpacity", pendingCloud.Opacity);
-
+            //Change settings for cloud layer
+            skyboxMat.SetFloat("_CloudDirection", pendingWindDirection);
+            skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(pendingCloud.TilingX, pendingCloud.TilingY));
+            skyboxMat.SetFloat("_CloudAlphaCutoff", pendingCloud.AlphaThreshold);
+            skyboxMat.SetFloat("_CloudAlphaMax", pendingCloud.AlphaMax);
+            skyboxMat.SetFloat("_CloudNormalEffect", pendingCloud.NormalEffect);
+            skyboxMat.SetFloat("_CloudBending", pendingCloud.Bending);
+            skyboxMat.SetFloat("_CloudBlendScale", pendingCloud.BlendScale);
+            skyboxMat.SetFloat("_CloudOpacity", pendingCloud.Opacity);
+        }
+        */
         //Change exposure to match Daggerfall Unity's sunlight reduction - might be a better way
         SetExposure(currentWeather);
         pendingWeather = false;
@@ -459,7 +467,7 @@ public class BLBSkybox : MonoBehaviour
     #endregion
 
     #region Clouds
-    private float cloudSpeed = 0.001f / 12; //Default sloud speed in realtime (timescale = 1)
+    private float cloudSpeed = 0.001f / 12; //Default cloud speed in realtime (timescale = 1)    
     //TODO: needs to rethink this and tie them to weather types instead
     //Defines the settings needed for the skybox material to get a specific type of cloud
     struct CloudTypeStruct {
@@ -497,6 +505,44 @@ public class BLBSkybox : MonoBehaviour
         public Color CloudNightColor;
         public Color CloudTopColor;
         public Color CloudTopNightColor;
+    }
+
+
+    //Dictionaries to store skybox settings
+    private Dictionary<WeatherType, BLBSkyboxSetting> SkyboxSettings;
+
+    private void loadAllSkyboxSettings() {
+        SkyboxSettings = new Dictionary<WeatherType, BLBSkyboxSetting>();
+
+        string data = Mod.GetAsset<TextAsset>("SkyboxSunny.json", false).text;
+        loadSkyboxSettings(WeatherType.Sunny, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxCloudy.json", false).text;
+        loadSkyboxSettings(WeatherType.Cloudy, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxOvercast.json", false).text;
+        loadSkyboxSettings(WeatherType.Overcast, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxFog.json", false).text;
+        loadSkyboxSettings(WeatherType.Fog, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxRain.json", false).text;
+        loadSkyboxSettings(WeatherType.Rain, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxThunder.json", false).text;
+        loadSkyboxSettings(WeatherType.Thunder, data);
+
+        data = Mod.GetAsset<TextAsset>("SkyboxSnow.json", false).text;
+        loadSkyboxSettings(WeatherType.Snow, data);
+
+    }
+    private void loadSkyboxSettings(WeatherType weatherType, string data) {
+        BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
+
+        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
+        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
+
+        SkyboxSettings.Add(weatherType, skyboxSetting);
     }
 
     //Dictionaries to store cloud settings
@@ -634,6 +680,11 @@ public class BLBSkybox : MonoBehaviour
     private float fogDayDistance = 2048f;
     private Color fogNightColor = new Color(0.05f, 0.05f, 0.05f, 1.0f);
     private float fogNightDistance = 2048f;
+    private void SetFogDefaults() {
+        //Set up some default settings for the Unity renderer
+        UnityEngine.RenderSettings.fogColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+        UnityEngine.RenderSettings.fogEndDistance = 2048f;
+    }
     private void setFogColor(bool day) {
         if(day) {
             UnityEngine.RenderSettings.fogColor = fogDayColor; //TODO: probably should be lerped
@@ -675,8 +726,15 @@ public class BLBSkybox : MonoBehaviour
     #endregion
 
     #region Events
-    private System.Diagnostics.Stopwatch stopWatch;
-    public int TimeInside;
+
+    private void SubscribeToEvents() {
+        //Subscribe to DFU events
+        WeatherManager.OnWeatherChange += OnWeatherChange; //Register event for weather changes
+        PlayerEnterExit.OnTransitionInterior += InteriorTransitionEvent; //interior transition
+        PlayerEnterExit.OnTransitionDungeonInterior += InteriorTransitionEvent; //dungeon interior transition
+        PlayerEnterExit.OnTransitionExterior += ExteriorTransitionEvent; //exterior transition
+        PlayerEnterExit.OnTransitionDungeonExterior += ExteriorTransitionEvent; //dungeon exterior transition
+    }
 
     /// <summary>
     /// Get InteriorTransition & InteriorDungeonTransition events from PlayerEnterExit
@@ -701,6 +759,161 @@ public class BLBSkybox : MonoBehaviour
         //TimeInside = stopWatch.Elapsed.Minutes;
         ToggleSkybox(true);
     }
+    #endregion
+
+    #region Settings management
+
+    static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting) {
+        if(UnityEngine.RenderSettings.skybox == null) {
+            Debug.Log("BLB: Skybox material not found");
+            return false;
+        }
+        Material skyboxMat = UnityEngine.RenderSettings.skybox;
+
+        skyboxMat.SetFloat("_SunSize", skyboxSetting.SunSize);
+        skyboxMat.SetInt("_SunSizeConvergence", skyboxSetting.SunSizeConvergence);
+        skyboxMat.SetFloat("_AtmosphereThickness", skyboxSetting.AtmosphereThickness);
+
+        Color tmpColor;
+        if(ColorUtility.TryParseHtmlString(skyboxSetting.SkyTint, out tmpColor)) {
+            skyboxMat.SetColor("_SkyTint", tmpColor);
+        }
+        if(ColorUtility.TryParseHtmlString(skyboxSetting.GroundColor, out tmpColor)) {
+            skyboxMat.SetColor("_GroundColor", tmpColor);
+        }
+        skyboxMat.SetFloat("_Exposure", skyboxSetting.Exposure);
+        skyboxMat.SetFloat("_NightStartHeight", skyboxSetting.NightStartHeight);
+        skyboxMat.SetFloat("_NightEndHeight", skyboxSetting.NightEndHeight);
+        skyboxMat.SetFloat("_SkyFadeStart", skyboxSetting.SkyFadeStart);
+        skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
+        skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
+
+        skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.TilingX, skyboxSetting.topClouds.TilingY));
+        skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.OffsetX, skyboxSetting.topClouds.OffsetY));
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.topClouds.DayColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudTopColor", tmpColor);
+        }
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.topClouds.NightColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudTopNightColor", tmpColor);
+        }
+        skyboxMat.SetFloat("_CloudTopAlphaCutoff", skyboxSetting.topClouds.AlphaTreshold);
+        skyboxMat.SetFloat("_CloudTopAlphaMax", skyboxSetting.topClouds.AlphaMax);
+        skyboxMat.SetFloat("_CloudTopColorBoost", skyboxSetting.topClouds.ColorBoost);
+        skyboxMat.SetFloat("_CloudTopOpacity", skyboxSetting.topClouds.Opacity);
+        skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.topClouds.NormalEffect);
+        skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.topClouds.Bending);
+
+        skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.TilingX, skyboxSetting.bottomClouds.TilingY));
+        skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.OffsetX, skyboxSetting.bottomClouds.OffsetY));
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.bottomClouds.DayColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudColor", tmpColor);
+        }
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.bottomClouds.NightColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudNightColor", tmpColor);
+        }
+        skyboxMat.SetFloat("_CloudAlphaCutoff", skyboxSetting.bottomClouds.AlphaTreshold);
+        skyboxMat.SetFloat("_CloudAlphaMax", skyboxSetting.bottomClouds.AlphaMax);
+        skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.bottomClouds.ColorBoost);
+        skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.bottomClouds.NormalEffect);
+        skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.bottomClouds.Opacity);
+        skyboxMat.SetFloat("_CloudBending", skyboxSetting.bottomClouds.Bending);
+        
+        Debug.Log("BLB: Applied skybox settings");
+
+        return true;
+    }
+
+    #if UNITY_EDITOR
+    [MenuItem("BLB/Import skybox settings")]
+    static void ImportSkyboxSettings()
+    {
+        string path = EditorUtility.OpenFilePanel("Choose skybox settings to import", "", "json");
+        string data = File.ReadAllText(path);
+
+        BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
+        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
+        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
+        if(ApplySkyboxSettings(skyboxSetting)) {
+            EditorUtility.DisplayDialog("Success", "The following settings have been imported:\n" + path, "Ok","");
+        }
+
+    }
+
+    [MenuItem("BLB/Import skybox settings", true)]
+    static bool ValidateImportSkyboxSettings()
+    {
+        return UnityEngine.RenderSettings.skybox != null;
+    }
+
+    [MenuItem("BLB/Export skybox settings")]
+    static void ExportSkyboxSettings()
+    {
+        Material skyboxMat = UnityEngine.RenderSettings.skybox;
+        string path = EditorUtility.SaveFilePanel("Choose save folder", "", "", "json");
+
+        BLBSkyboxSetting skyboxSetting = new BLBSkyboxSetting();
+        BLBCloudsSetting topClouds = new BLBCloudsSetting();
+        BLBCloudsSetting bottomClouds = new BLBCloudsSetting();
+
+        skyboxSetting.SunSize = skyboxMat.GetFloat("_SunSize");
+        skyboxSetting.SunSizeConvergence = skyboxMat.GetInt("_SunSizeConvergence");
+        skyboxSetting.AtmosphereThickness = skyboxMat.GetFloat("_AtmosphereThickness");
+        skyboxSetting.SkyTint = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_SkyTint"));
+        skyboxSetting.GroundColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_GroundColor"));
+        skyboxSetting.Exposure = skyboxMat.GetFloat("_Exposure");
+        skyboxSetting.NightStartHeight = skyboxMat.GetFloat("_NightStartHeight");
+        skyboxSetting.NightEndHeight = skyboxMat.GetFloat("_NightEndHeight");
+        skyboxSetting.SkyFadeStart = skyboxMat.GetFloat("_SkyFadeStart");
+        skyboxSetting.SkyEndStart = skyboxMat.GetFloat("_SkyFadeEnd");
+        skyboxSetting.FogDistance = skyboxMat.GetFloat("_FogDistance");
+        
+        topClouds.TilingX = skyboxMat.GetTextureScale("_CloudTopDiffuse").x;
+        topClouds.TilingY = skyboxMat.GetTextureScale("_CloudTopDiffuse").y;
+        topClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudTopDiffuse").x;
+        topClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudTopDiffuse").y;
+        topClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopColor"));
+        topClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopNightColor"));
+        topClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudTopAlphaCutoff");
+        topClouds.AlphaMax = skyboxMat.GetFloat("_CloudTopAlphaMax");
+        topClouds.ColorBoost = skyboxMat.GetFloat("_CloudTopColorBoost");
+        topClouds.NormalEffect = skyboxMat.GetFloat("_CloudTopNormalEffect");
+        topClouds.Opacity = skyboxMat.GetFloat("_CloudTopOpacity");
+        topClouds.Bending = skyboxMat.GetFloat("_CloudTopBending");
+
+        skyboxSetting.topCloudsFlat = JsonUtility.ToJson(topClouds);
+
+        bottomClouds.TilingX = skyboxMat.GetTextureScale("_CloudDiffuse").x;
+        bottomClouds.TilingY = skyboxMat.GetTextureScale("_CloudDiffuse").y;
+        bottomClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudDiffuse").x;
+        bottomClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudDiffuse").y;
+        bottomClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudColor"));
+        bottomClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudNightColor"));
+        bottomClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudAlphaCutoff");
+        bottomClouds.AlphaMax = skyboxMat.GetFloat("_CloudAlphaMax");
+        bottomClouds.ColorBoost = skyboxMat.GetFloat("_CloudColorBoost");
+        bottomClouds.NormalEffect = skyboxMat.GetFloat("_CloudNormalEffect");
+        bottomClouds.Opacity = skyboxMat.GetFloat("_CloudOpacity");
+        bottomClouds.Bending = skyboxMat.GetFloat("_CloudBending");
+
+        skyboxSetting.bottomCloudsFlat = JsonUtility.ToJson(bottomClouds);
+
+        string data = JsonUtility.ToJson(skyboxSetting, true);
+        
+        File.WriteAllText(path, data);
+
+        EditorUtility.DisplayDialog("Success","Skybox settings have been saved to: \n" + path, "Ok","");
+        
+        //File.WriteAllBytes(path, pngData);
+
+    }
+    [MenuItem("BLB/Export skybox settings", true)]
+    static bool ValidateExportSkyboxSettings()
+    {
+        return UnityEngine.RenderSettings.skybox != null;
+    }
+
+    #endif
+
     #endregion
 
 }

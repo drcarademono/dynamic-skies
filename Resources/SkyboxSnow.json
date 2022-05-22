@@ -1,0 +1,15 @@
+{
+    "SunSize": 0.03999999910593033,
+    "SunSizeConvergence": 3,
+    "AtmosphereThickness": 0.800000011920929,
+    "SkyTint": "87CEEBFF",
+    "GroundColor": "000000FF",
+    "Exposure": 1.0,
+    "NightStartHeight": -0.03200000151991844,
+    "NightEndHeight": -0.06400000303983689,
+    "SkyFadeStart": -0.03200000151991844,
+    "SkyEndStart": -0.06400000303983689,
+    "FogDistance": 2048.0,
+    "topCloudsFlat": "{\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"666666FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":0.0,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.44999998807907107}",
+    "bottomCloudsFlat": "{\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"4C4C4CFF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":0.2540000081062317,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":0.9980000257492065,\"Bending\":0.550000011920929}"
+}
