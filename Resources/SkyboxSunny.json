@@ -1,9 +1,9 @@
 {
     "SunSize": 0.03999999910593033,
     "SunSizeConvergence": 3,
-    "AtmosphereThickness": 0.800000011920929,
+    "AtmosphereThickness": 1.0,
     "SkyTint": "87CEEBFF",
-    "GroundColor": "000000FF",
+    "GroundColor": "4C4C4CFF",
     "Exposure": 1.0,
     "NightStartHeight": -0.03200000151991844,
     "NightEndHeight": -0.06400000303983689,

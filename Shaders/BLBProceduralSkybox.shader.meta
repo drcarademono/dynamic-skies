@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 86de95ef4a2cc4048b91b202864c9f94
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _CloudDiffuse: {fileID: 2800000, guid: e25c2c0b369acf844865ad67727c8714, type: 3}
+  - _CloudNormal: {fileID: 2800000, guid: e2f127790fe83844e9244dac52408005, type: 3}
+  - _StarTex: {fileID: 2800000, guid: 4fde6d19169dfa543b8944900c26df2d, type: 3}
+  - _TwinkleTex: {fileID: 2800000, guid: 4001f894680cc4245ba80515fbc1fbd4, type: 3}
+  - _MoonTex: {fileID: 2800000, guid: 4f6f659f978334e4c845999bcf15ab5a, type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

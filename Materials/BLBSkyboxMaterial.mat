@@ -89,10 +89,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtmosphereThickness: 0.8
+    - _AtmosphereThickness: 1
     - _BumpScale: 1
     - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.254
+    - _CloudAlphaMax: 0.334
     - _CloudBending: 0.55
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0.25
@@ -100,15 +100,15 @@ Material:
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0
     - _CloudDirection: 194.4
-    - _CloudNormalEffect: 0.5
+    - _CloudNormalEffect: 0.407
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.998
     - _CloudSpeed: 0.02
     - _CloudTopAlphaCutoff: 0
-    - _CloudTopAlphaMax: 0
+    - _CloudTopAlphaMax: 0.506
     - _CloudTopBending: 0.45
     - _CloudTopColorBoost: 0
-    - _CloudTopNormalEffect: 0.5
+    - _CloudTopNormalEffect: 0.53
     - _CloudTopOpacity: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -155,13 +155,13 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CloudColor: {r: 0.5254902, g: 0.5254902, b: 0.5254902, a: 1}
+    - _CloudColor: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 1}
     - _CloudNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _CloudTopColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    - _CloudTopColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
     - _CloudTopNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GroundColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
     - _MoonColor: {r: 1, g: 1, b: 1, a: 1}
     - _MoonOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
     - _MoonPhase: {r: 0, g: 0, b: 0, a: 0}
