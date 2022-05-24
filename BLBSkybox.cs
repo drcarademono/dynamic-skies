@@ -6,6 +6,7 @@ using System.IO;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility.ModSupport;   //required for modding features
+using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game.Weather;
 
@@ -167,6 +168,30 @@ public class BLBSkybox : MonoBehaviour
             setFogColor(false);
         }
         ApplyPendingWeatherSettings();
+    }
+
+    void onEnable()
+    {
+        SaveLoadManager.OnLoad += OnLoadEvent;
+    }
+
+    void onDisable()
+    {
+        SaveLoadManager.OnLoad -= OnLoadEvent;
+    }
+
+    void OnLoadEvent(SaveData_v1 saveData)
+    {
+        if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
+            playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+        }
+    }
+
+    //Force skybox flag to prevent Distant Terrain from overriding it again in it's Update function
+    void LateUpdate() {
+        if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside && playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox) {
+            playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+        }
     }
 
     #region Helper methods
@@ -743,9 +768,7 @@ public class BLBSkybox : MonoBehaviour
     public void InteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)      //player went indoors (or dungeon), disable sky objects
     {
         Debug.Log("Deactivating skybox");
-        //stopWatch.Reset();
         ToggleSkybox(false);
-        //stopWatch.Start();
     }
 
     /// <summary>
@@ -755,8 +778,6 @@ public class BLBSkybox : MonoBehaviour
     public void ExteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)   //player transitioned to exterior from indoors or dungeon
     {
         Debug.Log("Activating skybox");
-        //stopWatch.Stop();
-        //TimeInside = stopWatch.Elapsed.Minutes;
         ToggleSkybox(true);
     }
     #endregion
