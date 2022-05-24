@@ -796,10 +796,10 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_AtmosphereThickness", skyboxSetting.AtmosphereThickness);
 
         Color tmpColor;
-        if(ColorUtility.TryParseHtmlString(skyboxSetting.SkyTint, out tmpColor)) {
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.SkyTint, out tmpColor)) {
             skyboxMat.SetColor("_SkyTint", tmpColor);
         }
-        if(ColorUtility.TryParseHtmlString(skyboxSetting.GroundColor, out tmpColor)) {
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.GroundColor, out tmpColor)) {
             skyboxMat.SetColor("_GroundColor", tmpColor);
         }
         skyboxMat.SetFloat("_Exposure", skyboxSetting.Exposure);
