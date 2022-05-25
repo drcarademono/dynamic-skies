@@ -417,7 +417,7 @@ public class BLBSkybox : MonoBehaviour
         
         UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
 
-        skyboxMat.SetFloat("_Exposure", exposure * 1.25f);
+        //skyboxMat.SetFloat("_Exposure", exposure * 1.25f);
         skyboxMat.SetFloat("_FogDistance", fogDistance);
     }
 
