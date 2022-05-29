@@ -20,6 +20,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
+    public string jsonPrefix = "CD";
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
     private GameObject dfSky;   //Reference to classic Daggerfall sky object so we can disable it
@@ -102,7 +103,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.currentWeather = WeatherType.None;
         Instance.forceWeatherUpdate = true;
         Instance.OnWeatherChange(Instance.currentWeather);
-        Instance.SetExposure(Instance.currentWeather);
+        Instance.SetFogDistance(Instance.currentWeather);
 
         Instance.updateSpeeds();
 
@@ -246,12 +247,12 @@ public class BLBSkybox : MonoBehaviour
             fogEndColor = fogNightColor;
         }
         sunFogLerpDuration = calculateScaledLerpDuration(2);
-        StopCoroutine("SunFogLerp");
-        sunFogLerpRunning = true;
-        StartCoroutine("SunFogLerp");
+        //StopCoroutine("SunFogLerp");
+        //sunFogLerpRunning = true;
+        //StartCoroutine("SunFogLerp");
     }
 
-        //The different day parts we can identify in isHourDayPart
+    //The different day parts we can identify in isHourDayPart
     private enum DayParts {
         None,
         Dawn,
@@ -320,9 +321,6 @@ public class BLBSkybox : MonoBehaviour
 
     private BLBSkyboxSetting pendingSkyboxSettings; //The new settings for the skybox
 
-    private CloudTypeStruct pendingCloudTop; //The new settings for the cloud top layer
-    private CloudTypeStruct pendingCloud; //The new settings for the cloud layer
-    private CloudColorStruct pendingCloudColors; //The new settings for cloud colors (both layers)
     private WeatherType currentWeather = WeatherType.Sunny; //Keeps track of the current weather to detect a change
     private void OnWeatherChange(WeatherType weather) {
         //Only change weather if it's not the same weather as the current weather
@@ -354,101 +352,16 @@ public class BLBSkybox : MonoBehaviour
 
     private void ApplyPendingWeatherSettings() {
         BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings);
-        /*
-        if(2 == 3) {
-            //Change cloud colors
-            skyboxMat.SetColor("_CloudColor", pendingCloudColors.CloudColor);
-            skyboxMat.SetColor("_CloudNightColor", pendingCloudColors.CloudNightColor);
-            skyboxMat.SetColor("_CloudTopColor", pendingCloudColors.CloudTopColor);
-            skyboxMat.SetColor("_CloudTopNightColor", pendingCloudColors.CloudTopNightColor);
-
-            //Change settings for cloud top layer
-            skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(pendingCloudTop.TilingX, pendingCloudTop.TilingY));
-            skyboxMat.SetFloat("_CloudTopAlphaCutoff", pendingCloudTop.AlphaThreshold);
-            skyboxMat.SetFloat("_CloudTopAlphaMax", pendingCloudTop.AlphaMax);
-            skyboxMat.SetFloat("_CloudTopNormalEffect", pendingCloudTop.NormalEffect);
-            skyboxMat.SetFloat("_CloudTopBending", pendingCloudTop.Bending);
-            skyboxMat.SetFloat("_CloudTopOpacity", pendingCloudTop.Opacity);
-
-            //Change settings for cloud layer
-            skyboxMat.SetFloat("_CloudDirection", pendingWindDirection);
-            skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(pendingCloud.TilingX, pendingCloud.TilingY));
-            skyboxMat.SetFloat("_CloudAlphaCutoff", pendingCloud.AlphaThreshold);
-            skyboxMat.SetFloat("_CloudAlphaMax", pendingCloud.AlphaMax);
-            skyboxMat.SetFloat("_CloudNormalEffect", pendingCloud.NormalEffect);
-            skyboxMat.SetFloat("_CloudBending", pendingCloud.Bending);
-            skyboxMat.SetFloat("_CloudBlendScale", pendingCloud.BlendScale);
-            skyboxMat.SetFloat("_CloudOpacity", pendingCloud.Opacity);
-        }
-        */
         //Change exposure to match Daggerfall Unity's sunlight reduction - might be a better way
-        SetExposure(currentWeather);
+        SetFogDistance(currentWeather);
         pendingWeather = false;
     }
 
     private WeatherManager wm;
-    //Adjusts exposure and fog of the skybox according to Daggerfall Unity's weather sun light scales
-    private void SetExposure(WeatherType weather) {
-        
-        float exposure = 1.0f;
-        if(weather == WeatherType.Cloudy) {
-            exposure = 0.9f;
-        } else if(weather == WeatherType.Overcast) {
-            exposure = wm.OvercastSunlightScale;
-        } else if(weather == WeatherType.Fog) {
-            exposure = wm.OvercastSunlightScale;
-        } else if(weather == WeatherType.Rain) {
-            exposure = wm.RainSunlightScale;
-        } else if(weather == WeatherType.Thunder) {
-            exposure = wm.StormSunlightScale;
-        } else if(weather == WeatherType.Snow) {
-            exposure = wm.SnowSunlightScale;
-        }
-
-        float fogDistance;
-        WeatherManager.FogSettings fogSettings = FogSettings[weather];
-        if(fogSettings.fogMode == FogMode.Linear) {
-            fogDistance = fogSettings.endDistance * 0.25f;
-        } else {
-            fogDistance = 1f / fogSettings.density;
-        }
-        fogDayDistance = fogDistance;
-        fogNightDistance = fogDayDistance;
-        
-        UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
-
-        //skyboxMat.SetFloat("_Exposure", exposure * 1.25f);
-        skyboxMat.SetFloat("_FogDistance", fogDistance);
-    }
-
+    //Adjusts fog distance of the skybox according to Daggerfall Unity's weather settings
     //Returns a random wind direction
     private float getWindDirection() {
         return Random.Range(0f, 360f);
-    }
-
-    private Color getWeatherSunColor(WeatherType weather) {
-        Color sunColor;
-        switch(weather) {
-            case WeatherType.Overcast:
-                sunColor = new Color(0.6f, 0.6f, 0.6f, 1.0f);
-                break;
-            case WeatherType.Fog:
-                sunColor = new Color(0.4f, 0.4f, 0.4f, 1.0f);
-                break;
-            case WeatherType.Rain:
-                sunColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-                break;
-            case WeatherType.Thunder:
-                sunColor = new Color(0.45f, 0.45f, 0.45f, 1.0f);
-                break;
-            case WeatherType.Snow:
-                sunColor = new Color(0.375f, 0.375f, 0.375f, 1.0f);
-                break;
-            default:
-                sunColor = new Color(1.0f, 1.0f, 0.9843137f, 1.0f);
-                break;
-        }
-        return sunColor;
     }
     #endregion
 
@@ -491,73 +404,33 @@ public class BLBSkybox : MonoBehaviour
     }
     #endregion
 
-    #region Clouds
+    #region Skybox settings
     private float cloudSpeed = 0.001f / 12; //Default cloud speed in realtime (timescale = 1)    
-    //TODO: needs to rethink this and tie them to weather types instead
-    //Defines the settings needed for the skybox material to get a specific type of cloud
-    struct CloudTypeStruct {
-        public CloudTypeStruct(float tilingX, float tilingY, float alphaThreshold, float alphaMax, float colorBoost, float normalEffect, float bending, float blendScale, float opacity) {
-            TilingX = tilingX;
-            TilingY = tilingY;
-            AlphaThreshold = alphaThreshold;
-            AlphaMax = alphaMax;
-            ColorBoost = colorBoost;
-            NormalEffect = normalEffect;
-            Bending = bending;
-            BlendScale = blendScale;
-            Opacity = opacity;
-        }
-        public float TilingX;
-        public float TilingY;
-        public float AlphaThreshold;
-        public float AlphaMax;
-        public float ColorBoost;
-        public float NormalEffect;
-        public float Bending;
-        public float BlendScale;
-        public float Opacity;
-    }
-
-    //Defines the colors for both cloud layers
-    struct CloudColorStruct {
-        public CloudColorStruct(Color cloudColor, Color cloudNightColor, Color cloudTopColor, Color cloudTopNightColor) {
-            CloudColor = cloudColor;
-            CloudNightColor = cloudNightColor;
-            CloudTopColor = cloudTopColor;
-            CloudTopNightColor = cloudTopNightColor;
-        }
-        public Color CloudColor;
-        public Color CloudNightColor;
-        public Color CloudTopColor;
-        public Color CloudTopNightColor;
-    }
-
-
     //Dictionaries to store skybox settings
     private Dictionary<WeatherType, BLBSkyboxSetting> SkyboxSettings;
 
     private void loadAllSkyboxSettings() {
         SkyboxSettings = new Dictionary<WeatherType, BLBSkyboxSetting>();
 
-        string data = Mod.GetAsset<TextAsset>("SkyboxSunny.json", false).text;
+        string data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxSunny.json", false).text;
         loadSkyboxSettings(WeatherType.Sunny, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxCloudy.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxCloudy.json", false).text;
         loadSkyboxSettings(WeatherType.Cloudy, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxOvercast.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxOvercast.json", false).text;
         loadSkyboxSettings(WeatherType.Overcast, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxFog.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxFog.json", false).text;
         loadSkyboxSettings(WeatherType.Fog, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxRain.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxRain.json", false).text;
         loadSkyboxSettings(WeatherType.Rain, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxThunder.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxThunder.json", false).text;
         loadSkyboxSettings(WeatherType.Thunder, data);
 
-        data = Mod.GetAsset<TextAsset>("SkyboxSnow.json", false).text;
+        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxSnow.json", false).text;
         loadSkyboxSettings(WeatherType.Snow, data);
 
     }
@@ -568,95 +441,6 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
 
         SkyboxSettings.Add(weatherType, skyboxSetting);
-    }
-
-    //Dictionaries to store cloud settings
-    private Dictionary<WeatherType, CloudTypeStruct> Clouds;
-    private Dictionary<WeatherType, CloudTypeStruct> CloudsTop;
-    private Dictionary<WeatherType, CloudColorStruct> CloudColors;
-    
-    //Set up the available cloud types
-    private void setCloudTypes() {
-        CloudsTop = new Dictionary<WeatherType, CloudTypeStruct>();
-        Clouds = new Dictionary<WeatherType, CloudTypeStruct>();
-
-        CloudsTop.Add(WeatherType.Sunny,    new CloudTypeStruct(0.25f, 0.25f, 0.0f, 1.0f, 0.0f, 0.64f, 0.56f, 0.0f, 0.0f));
-        Clouds.Add(WeatherType.Sunny,       new CloudTypeStruct(0.125f, 0.125f, 0.0f, 1.0f, 0.0f, 0.48f, 0.48f, 0.25f, 0.0f));
-
-        CloudsTop.Add(WeatherType.Cloudy,   new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.32f, 0.0f, 0.64f, 0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Cloudy,      new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.32f, 0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-        
-        CloudsTop.Add(WeatherType.Overcast, new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.024f, 0.0f, 0.64f, 0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Overcast,    new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.096f, 0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-        
-        CloudsTop.Add(WeatherType.Fog,      new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.000f, 0.0f, 0.64f, 0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Fog,         new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.024f, 0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-        
-        CloudsTop.Add(WeatherType.Rain,     new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.000f, 0.0f, 0.64f, 0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Rain,        new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.048f, 0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-
-        CloudsTop.Add(WeatherType.Thunder,  new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.000f, 0.0f, 0.64f, 0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Thunder,     new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.032f, 0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-
-        CloudsTop.Add(WeatherType.Snow,     new CloudTypeStruct(0.25f, 0.25f, 0.0f, 0.008f, 0.0f, 0.64f,  0.56f, 0.0f, 1.0f));
-        Clouds.Add(WeatherType.Snow,        new CloudTypeStruct(0.125f, 0.125f, 0.0f, 0.064f,  0.0f, 0.48f, 0.48f, 0.25f, 1.0f));
-
-        Color cloudColor;
-        Color cloudNightColor;
-        Color cloudTopColor;
-        Color cloudTopNightColor;
-        CloudColorStruct cloudColors;
-
-        CloudColors = new Dictionary<WeatherType, CloudColorStruct>();
-
-        cloudTopColor = new Color(0.9056604f, 0.9056604f, 0.9056604f);
-        cloudColor = new Color(0.8873585f, 0.8873585f, 0.8873585f);
-        cloudTopNightColor = new Color(0.09056604f, 0.09056604f, 0.09056604f);
-        cloudNightColor = new Color(0.08873585f, 0.08873585f, 0.08873585f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Sunny, cloudColors);
-        CloudColors.Add(WeatherType.Cloudy, cloudColors);
-
-        cloudTopColor = new Color(0.6415094f, 0.6415094f, 0.6415094f);
-        cloudColor = new Color(0.6647169f, 0.6647169f, 0.6647169f);
-        cloudTopNightColor = new Color(0.06415094f, 0.06415094f, 0.06415094f);
-        cloudNightColor = new Color(0.06647169f, 0.06647169f, 0.06647169f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Overcast, cloudColors);
-
-        cloudTopColor = new Color(0.5849056f, 0.5849056f, 0.5849056f);
-        cloudColor = new Color(0.6037736f, 0.6037736f, 0.6037736f);
-        cloudTopNightColor = new Color(0.05849056f, 0.05849056f, 0.05849056f);
-        cloudNightColor = new Color(0.06037736f, 0.06037736f, 0.06037736f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Fog, cloudColors);
-
-        cloudTopColor = new Color(0.509434f, 0.509434f, 0.509434f);
-        cloudColor = new Color(0.5283019f, 0.5283019f, 0.5283019f);
-        cloudTopNightColor = new Color(0.0509434f, 0.0509434f, 0.0509434f);        
-        cloudNightColor = new Color(0.05283019f, 0.05283019f, 0.05283019f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Rain, cloudColors);
-
-        cloudTopColor = new Color(0.409434f, 0.409434f, 0.409434f);
-        cloudColor = new Color(0.4283019f, 0.4283019f, 0.4283019f);
-        cloudTopNightColor = new Color(0.0409434f, 0.0409434f, 0.0409434f);
-        cloudNightColor = new Color(0.04283019f, 0.04283019f, 0.04283019f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Thunder, cloudColors);
-
-        cloudTopColor = new Color(0.9224528f, 0.9224528f, 0.9224528f);
-        cloudColor = new Color(0.9433962f, 0.9433962f, 0.9433962f);
-        cloudTopNightColor = new Color(0.09224528f, 0.09224528f, 0.09224528f);
-        cloudNightColor = new Color(0.09433962f, 0.09433962f, 0.09433962f);
-
-        cloudColors = new CloudColorStruct(cloudColor, cloudNightColor, cloudTopColor, cloudTopNightColor);
-        CloudColors.Add(WeatherType.Snow, cloudColors);
     }
     #endregion
 
@@ -716,6 +500,21 @@ public class BLBSkybox : MonoBehaviour
         } else {
             UnityEngine.RenderSettings.fogColor = fogNightColor; //TODO: probably should be lerped
         }
+    }
+    private void SetFogDistance(WeatherType weather) {
+        
+        float fogDistance;
+        WeatherManager.FogSettings fogSettings = FogSettings[weather];
+        if(fogSettings.fogMode == FogMode.Linear) {
+            fogDistance = fogSettings.endDistance * 0.25f;
+        } else {
+            fogDistance = 1f / fogSettings.density;
+        }
+        fogDayDistance = fogDistance;
+        fogNightDistance = fogDayDistance;
+        
+        UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
+        skyboxMat.SetFloat("_FogDistance", fogDistance);
     }
     private Dictionary<WeatherType, WeatherManager.FogSettings> FogSettings;
     private void getVanillaFogSettings() {

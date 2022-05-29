@@ -22,6 +22,13 @@
         "Assets/Game/Mods/blb-skybox-shader/Shaders/Includes/Scattering.cginc",
         "Assets/Game/Mods/blb-skybox-shader/Shaders/Includes/MoonFunctions.cginc",
         "Assets/Game/Mods/blb-skybox-shader/BLBSkybox.cs",
-        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json"
+        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxRain.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxSunny.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxSnow.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxFog.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxOvercast.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxCloudy.json",
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxThunder.json"
     ]
 }
