@@ -70,11 +70,14 @@ public class SunShafts : PostEffectsBase {
 		Vector3 v = Vector3.one * 0.5f;
         Light sun = UnityEngine.RenderSettings.sun;
         sunTransform = sun.transform;
-		if (sun)
+		if (sun) {
 			//v = GetComponent<Camera>().WorldToViewportPoint (sunTransform.position);
             v = GetComponent<Camera>().WorldToViewportPoint (sunTransform.position);
-		else 
+            //v = sunTransform.position;
+            //Debug.Log(v.ToString());
+        } else {
 			v = new Vector3(0.5f, 0.5f, 0.0f);
+        }
 
 		int rtW = source.width / divider;
 		int rtH = source.height / divider;

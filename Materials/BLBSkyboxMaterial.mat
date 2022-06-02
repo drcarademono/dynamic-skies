@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: BLBSkyboxMaterial
   m_Shader: {fileID: 4800000, guid: 86de95ef4a2cc4048b91b202864c9f94, type: 3}
-  m_ShaderKeywords: _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
+  m_ShaderKeywords: PHASE_LIGHT SECUNDA_PHASE_LIGHT _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
     _SECUNDASPINOPTION_TIDAL_LOCK _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -33,11 +33,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudTopDiffuse:
-        m_Texture: {fileID: 2800000, guid: 5961426998df6c94d820e0ae0f574774, type: 3}
+        m_Texture: {fileID: 2800000, guid: 52b535a4c9aca5044874d5536530abbb, type: 3}
         m_Scale: {x: 0.125, y: 0.125}
         m_Offset: {x: 0, y: 0}
     - _CloudTopNormal:
-        m_Texture: {fileID: 2800000, guid: d801d191d90c7cc4a8d7ff3d7073408e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 967aeea025d29f541a36af81d2fe28a4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -86,34 +86,34 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _TwinkleTex:
         m_Texture: {fileID: 2800000, guid: b9be88717350cf240874d9d1063eb189, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtmosphereThickness: 0.7
+    - _AtmosphereThickness: 0.75
     - _BumpScale: 1
-    - _CloudAlphaCutoff: 0.09
-    - _CloudAlphaMax: 0.33
+    - _CloudAlphaCutoff: 0
+    - _CloudAlphaMax: 0.663
     - _CloudBending: 0.5
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
-    - _CloudColorBoost: 0.75
-    - _CloudDirection: 194.4
-    - _CloudNormalEffect: 0.5
+    - _CloudColorBoost: 0
+    - _CloudDirection: 217
+    - _CloudNormalEffect: 0.409
     - _CloudNormalSpeed: 0
-    - _CloudOpacity: 1
+    - _CloudOpacity: 0.997
     - _CloudSpeed: 0.02
-    - _CloudTopAlphaCutoff: 0
-    - _CloudTopAlphaMax: 0.5
+    - _CloudTopAlphaCutoff: 0.028
+    - _CloudTopAlphaMax: 0.608
     - _CloudTopBending: 0.5
     - _CloudTopColorBoost: 0
-    - _CloudTopNormalEffect: 0.5
-    - _CloudTopOpacity: 0.5
+    - _CloudTopNormalEffect: 0.7
+    - _CloudTopOpacity: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exposure: 4
+    - _Exposure: 1
     - _FogDistance: 2048
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -124,40 +124,40 @@ Material:
     - _MoonMinSize: 0.032
     - _MoonOrbitOffset: 0
     - _MoonOrbitSpeed: 0.001
-    - _MoonPhaseOption: 0
+    - _MoonPhaseOption: 1
     - _MoonSemiMajAxis: 1
     - _MoonSemiMinAxis: 1
     - _MoonSpinOption: 0
     - _NightEndHeight: -0.064
-    - _NightStartHeight: 1
+    - _NightStartHeight: -0.032
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SecundaMaxSize: 0.016
     - _SecundaMinSize: 0.016
     - _SecundaOrbitOffset: 10
     - _SecundaOrbitSpeed: 0.001
-    - _SecundaPhaseOption: 0
+    - _SecundaPhaseOption: 1
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
     - _SecundaSpinOption: 0
-    - _SkyFadeEnd: 0.1
-    - _SkyFadeStart: 0.4
+    - _SkyFadeEnd: -0.064
+    - _SkyFadeStart: -0.032
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _StarBending: 1
     - _StarBrightness: 100
     - _SunDisk: 2
-    - _SunSize: 0.08
-    - _SunSizeConvergence: 6
-    - _TwinkleBoost: 0.653
+    - _SunSize: 0.048
+    - _SunSizeConvergence: 5
+    - _TwinkleBoost: 0.05
     - _TwinkleSpeed: 0.001
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - _CloudNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _CloudTopColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudTopColor: {r: 0.8117647, g: 0.8117647, b: 0.8117647, a: 1}
     - _CloudTopNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
@@ -172,4 +172,4 @@ Material:
     - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaTidalAngle: {r: 90, g: 0, b: 0, a: 0}
-    - _SkyTint: {r: 0.3764706, g: 0.4627451, b: 0.85882354, a: 1}
+    - _SkyTint: {r: 0.5294118, g: 0.80784315, b: 0.92156863, a: 1}

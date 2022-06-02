@@ -114,12 +114,14 @@ Shader "Hidden/SunShaftsComposite" {
 		depthSample = Linear01Depth (depthSample);
 		 
 		// consider maximum radius
-		#if UNITY_UV_STARTS_AT_TOP
-		half2 vec = _SunPosition.xy - i.uv1.xy;
-		#else
+		//#if UNITY_UV_STARTS_AT_TOP
+		//half2 vec = _SunPosition.xy - i.uv1.xy;
+		//#else
 		half2 vec = _SunPosition.xy - i.uv.xy;		
-		#endif
+		//#endif
 		half dist = saturate (_SunPosition.w - length (vec.xy));		
+		//half dist = _SunPosition.w;
+		//half dist = 0.9;
 		
 		half4 outColor = 0;
 		
@@ -131,11 +133,11 @@ Shader "Hidden/SunShaftsComposite" {
 	}
 	
 	half4 frag_nodepth (v2f i) : SV_Target {
-		#if UNITY_UV_STARTS_AT_TOP
+		//#if UNITY_UV_STARTS_AT_TOP
 		float4 sky = (tex2D (_Skybox, i.uv1.xy));
-		#else
-		float4 sky = (tex2D (_Skybox, i.uv.xy));		
-		#endif
+		//#else
+		//float4 sky = (tex2D (_Skybox, i.uv.xy));		
+		//#endif
 		
 		float4 tex = (tex2D (_MainTex, i.uv.xy));
 		
@@ -146,6 +148,8 @@ Shader "Hidden/SunShaftsComposite" {
 		half2 vec = _SunPosition.xy - i.uv.xy;		
 		#endif
 		half dist = saturate (_SunPosition.w - length (vec));			
+		//half dist = _SunPosition.w;
+		//half dist = 0.1;
 		
 		half4 outColor = 0;		
 		
