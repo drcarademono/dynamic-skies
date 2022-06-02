@@ -20,7 +20,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
-    public string jsonPrefix = "CD";
+    public string jsonPrefix = "";
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
     private GameObject dfSky;   //Reference to classic Daggerfall sky object so we can disable it
@@ -41,6 +41,7 @@ public class BLBSkybox : MonoBehaviour
     private float nightEndHeight = -0.01f;
     private float skyFadeStart = -0.01f;
     private float skyFadeEnd = -0.04f;
+    private Camera stackedCam;
     #endregion
 
     [Invoke(StateManager.StateTypes.Start, 0)]
@@ -78,6 +79,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.wm = GameManager.Instance.WeatherManager;
 
         //Set wind direction on material
+        
         Instance.skyboxMat.SetFloat("_AtmosphereThickness", Instance.atmosphere);
         Instance.skyboxMat.SetColor("_SkyTint", Instance.skyTint);
         Instance.skyboxMat.SetFloat("_SunSize", Instance.sunSize);
@@ -91,10 +93,6 @@ public class BLBSkybox : MonoBehaviour
         //Disable the vanilla sky
         Instance.dfSky.SetActive(false);
 
-        //Change the clear flags in the camera clear manager, otherwise it would unset the skybox in its Update method after an exterior transition
-        CameraClearManager ccm = Instance.playerCam.GetComponent<CameraClearManager>();
-        ccm.cameraClearExterior = CameraClearFlags.Skybox;
-
         //Turn on the skybox
         Instance.ToggleSkybox(true);
 
@@ -106,6 +104,23 @@ public class BLBSkybox : MonoBehaviour
         Instance.SetFogDistance(Instance.currentWeather);
 
         Instance.updateSpeeds();
+
+        GameObject distantTerrain = GameObject.Find("DistantTerrain");
+        if(distantTerrain == null) {
+            //Change the clear flags in the camera clear manager, otherwise it would unset the skybox in its Update method after an exterior transition
+            CameraClearManager ccm = Instance.playerCam.GetComponent<CameraClearManager>();
+            ccm.cameraClearExterior = CameraClearFlags.Skybox;
+        } else {
+            Debug.Log("BLB: Detected distant terrain");
+            GameObject goCam = GameObject.Find("stackedCamera");
+            if(goCam) {
+                Instance.stackedCam = goCam.GetComponent<Camera>();
+                if(Instance.stackedCam) {
+                    Debug.Log("Found stacked camera object");
+                }
+            }
+            
+        }
 
         Debug.Log("BLB Skybox has been set up");
     }
@@ -184,14 +199,22 @@ public class BLBSkybox : MonoBehaviour
     void OnLoadEvent(SaveData_v1 saveData)
     {
         if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
-            playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            if(stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            } else {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
         }
     }
 
     //Force skybox flag to prevent Distant Terrain from overriding it again in it's Update function
     void LateUpdate() {
-        if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside && playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox) {
-            playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+        if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
+            if(playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox && stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            } else {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
         }
     }
 
@@ -201,11 +224,19 @@ public class BLBSkybox : MonoBehaviour
         if(activate) {
             UnityEngine.RenderSettings.skybox = skyboxMat;
             UnityEngine.RenderSettings.sun = dfSunlight;
-            playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            if(stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            } else {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
         } else {
             UnityEngine.RenderSettings.skybox = null;
             UnityEngine.RenderSettings.sun = null;
-            playerCam.clearFlags = UnityEngine.CameraClearFlags.Depth;
+            if(stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Depth;
+            } else {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
         }
     }
 
