@@ -212,7 +212,7 @@ public class BLBSkybox : MonoBehaviour
         if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
             if(playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox && stackedCam == null) {
                 playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
-            } else {
+            } else if(stackedCam != null) {
                 stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
             }
         }
