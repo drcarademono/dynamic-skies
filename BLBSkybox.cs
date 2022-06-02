@@ -20,7 +20,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
-    public string jsonPrefix = "";
+    public string jsonPrefix = "CD";
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
     private GameObject dfSky;   //Reference to classic Daggerfall sky object so we can disable it
