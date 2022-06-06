@@ -29,6 +29,10 @@
         "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxFog.json",
         "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxOvercast.json",
         "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxCloudy.json",
-        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxThunder.json"
+        "Assets/Game/Mods/blb-skybox-shader/Resources/CDSkyboxThunder.json",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/Final/CloudsMiddle.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/Final/CloudsTopBump.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/Final/CloudsMiddleBump.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/Final/CloudsTop.png"
     ]
 }

@@ -33,11 +33,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudTopDiffuse:
-        m_Texture: {fileID: 2800000, guid: 52b535a4c9aca5044874d5536530abbb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 38cc6f94a72c4f6409804b5d89f260ff, type: 3}
         m_Scale: {x: 0.125, y: 0.125}
         m_Offset: {x: 0, y: 0}
     - _CloudTopNormal:
-        m_Texture: {fileID: 2800000, guid: 967aeea025d29f541a36af81d2fe28a4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0cf8c1132f945174eaeb0d19f4bef4d9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -92,7 +92,7 @@ Material:
     - _AtmosphereThickness: 0.75
     - _BumpScale: 1
     - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.663
+    - _CloudAlphaMax: 0.585
     - _CloudBending: 0.5
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0

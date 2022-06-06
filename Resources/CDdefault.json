@@ -10,6 +10,6 @@
     "SkyFadeStart": 1.0,
     "SkyEndStart": 0.1,
     "FogDistance": 2048.0,
-    "topCloudsFlat": "{\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"E6E6E6FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":1.0,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":0.0,\"Bending\":0.44999998807907107}",
-    "bottomCloudsFlat": "{\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"D9D9D9FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":1.0,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":0.1720000058412552,\"Bending\":0.550000011920929}"
+    "topCloudsFlat": "{\"cloudsTextureFile\":\"CloudsTop\",\"cloudsNormalTextureFile\":\"CloudsTopBump\",\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"E6E6E6FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":1.0,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":0.0,\"Bending\":0.44999998807907107}",
+    "bottomCloudsFlat": "{\"cloudsTextureFile\":\"CloudsMiddle\",\"cloudsNormalTextureFile\":\"CloudsMiddleBump\",\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"D9D9D9FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":1.0,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":0.1720000058412552,\"Bending\":0.550000011920929}"
 }

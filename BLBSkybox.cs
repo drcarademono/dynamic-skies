@@ -466,11 +466,7 @@ public class BLBSkybox : MonoBehaviour
 
     }
     private void loadSkyboxSettings(WeatherType weatherType, string data) {
-        BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
-
-        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
-        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
-
+        BLBSkyboxSetting skyboxSetting = BLBSkybox.ProcessSkyboxSetting(data);
         SkyboxSettings.Add(weatherType, skyboxSetting);
     }
     #endregion
@@ -614,7 +610,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region Settings management
 
-    static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting) {
+    private static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting) {
         if(UnityEngine.RenderSettings.skybox == null) {
             Debug.Log("BLB: Skybox material not found");
             return false;
@@ -639,6 +635,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
         skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
 
+        skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.topClouds.cloudsTexture);
+        skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.topClouds.cloudsNormalTexture);
         skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.TilingX, skyboxSetting.topClouds.TilingY));
         skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.OffsetX, skyboxSetting.topClouds.OffsetY));
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.topClouds.DayColor, out tmpColor)) {
@@ -654,6 +652,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.topClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.topClouds.Bending);
 
+        skyboxMat.SetTexture("_CloudDiffuse", skyboxSetting.bottomClouds.cloudsTexture);
+        skyboxMat.SetTexture("_CloudNormal", skyboxSetting.bottomClouds.cloudsNormalTexture);
         skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.TilingX, skyboxSetting.bottomClouds.TilingY));
         skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.OffsetX, skyboxSetting.bottomClouds.OffsetY));
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.bottomClouds.DayColor, out tmpColor)) {
@@ -674,6 +674,46 @@ public class BLBSkybox : MonoBehaviour
         return true;
     }
 
+    private static BLBSkyboxSetting ProcessSkyboxSetting(string data) {
+        BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
+
+        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
+        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
+
+        Texture2D topCloudsTexture;
+        Texture2D topCloudsNormalTexture;
+
+        Texture2D bottomCloudsTexture;
+        Texture2D bottomCloudsNormalTexture;
+        string[] guids;
+        #if UNITY_EDITOR
+            guids = AssetDatabase.FindAssets(skyboxSetting.topClouds.cloudsTextureFile);
+            topCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.topClouds.cloudsNormalTextureFile);
+            topCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.bottomClouds.cloudsTextureFile);
+            bottomCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
+            bottomCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+        #else
+            topCloudsTexture = Mod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsTextureFile);
+            topCloudsNormalTexture = Mod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsNormalTextureFile);
+
+            bottomCloudsTexture = Mod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsTextureFile);
+            bottomCloudsNormalTexture = Mod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
+        #endif
+        skyboxSetting.topClouds.cloudsTexture = topCloudsTexture;
+        skyboxSetting.topClouds.cloudsNormalTexture = topCloudsNormalTexture;
+
+        skyboxSetting.bottomClouds.cloudsTexture = bottomCloudsTexture;
+        skyboxSetting.bottomClouds.cloudsNormalTexture = bottomCloudsNormalTexture;
+
+        return skyboxSetting;
+    }
+
     #if UNITY_EDITOR
     [MenuItem("BLB/Import skybox settings")]
     static void ImportSkyboxSettings()
@@ -681,9 +721,7 @@ public class BLBSkybox : MonoBehaviour
         string path = EditorUtility.OpenFilePanel("Choose skybox settings to import", "", "json");
         string data = File.ReadAllText(path);
 
-        BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
-        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
-        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
+        BLBSkyboxSetting skyboxSetting = ProcessSkyboxSetting(data);
         if(ApplySkyboxSettings(skyboxSetting)) {
             EditorUtility.DisplayDialog("Success", "The following settings have been imported:\n" + path, "Ok","");
         }
@@ -718,6 +756,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.SkyEndStart = skyboxMat.GetFloat("_SkyFadeEnd");
         skyboxSetting.FogDistance = skyboxMat.GetFloat("_FogDistance");
         
+        topClouds.cloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopDiffuse")));
+        topClouds.cloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopNormal")));
         topClouds.TilingX = skyboxMat.GetTextureScale("_CloudTopDiffuse").x;
         topClouds.TilingY = skyboxMat.GetTextureScale("_CloudTopDiffuse").y;
         topClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudTopDiffuse").x;
@@ -733,6 +773,8 @@ public class BLBSkybox : MonoBehaviour
 
         skyboxSetting.topCloudsFlat = JsonUtility.ToJson(topClouds);
 
+        bottomClouds.cloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudDiffuse")));
+        bottomClouds.cloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudNormal")));
         bottomClouds.TilingX = skyboxMat.GetTextureScale("_CloudDiffuse").x;
         bottomClouds.TilingY = skyboxMat.GetTextureScale("_CloudDiffuse").y;
         bottomClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudDiffuse").x;

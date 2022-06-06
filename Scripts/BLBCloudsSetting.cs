@@ -6,6 +6,12 @@ using UnityEngine;
 [Serializable]
 public struct BLBCloudsSetting
 {
+    [NonSerialized]
+    public Texture2D cloudsTexture;
+    public string cloudsTextureFile;
+    [NonSerialized]
+    public Texture2D cloudsNormalTexture;
+    public string cloudsNormalTextureFile;
     public float TilingX;
     public float TilingY;
     public float OffsetX;
