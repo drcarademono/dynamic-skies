@@ -1,0 +1,15 @@
+{
+    "SunSize": 0.04800000041723251,
+    "SunSizeConvergence": 2,
+    "AtmosphereThickness": 0.8500000238418579,
+    "SkyTint": "87CEEBFF",
+    "GroundColor": "4C4C4CFF",
+    "Exposure": 1.0,
+    "NightStartHeight": -0.03200000151991844,
+    "NightEndHeight": -0.06400000303983689,
+    "SkyFadeStart": -0.00800000037997961,
+    "SkyEndStart": -0.04800000041723251,
+    "FogDistance": 2048.0,
+    "topCloudsFlat": "{\"cloudsTextureFile\":\"Test3\",\"cloudsNormalTextureFile\":\"Test3Bump\",\"TilingX\":0.125,\"TilingY\":0.0625,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"6A6666FF\",\"NightColor\":\"3F3F3FFF\",\"AlphaTreshold\":0.0,\"AlphaMax\":0.1120000034570694,\"ColorBoost\":0.0,\"NormalEffect\":0.4000000059604645,\"NormalSpeed\":0.0,\"Opacity\":0.9980000257492065,\"Bending\":0.2750000059604645}",
+    "bottomCloudsFlat": "{\"cloudsTextureFile\":\"Test3\",\"cloudsNormalTextureFile\":\"Test3Bump\",\"TilingX\":0.125,\"TilingY\":0.0625,\"OffsetX\":0.5,\"OffsetY\":0.25,\"DayColor\":\"959595FF\",\"NightColor\":\"333333FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":0.4390000104904175,\"ColorBoost\":0.0,\"NormalEffect\":0.47999998927116396,\"NormalSpeed\":0.0,\"Opacity\":0.996999979019165,\"Bending\":0.2750000059604645}"
+}

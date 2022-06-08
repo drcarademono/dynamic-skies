@@ -412,7 +412,7 @@
                 cloudDir.x = cloudDir.x * cos(radians(_CloudDirection));
                 cloudDir.y = cloudDir.y * sin(radians(_CloudDirection));
 
-                float cloudSpeedMultiplier = 0.5;
+                float cloudSpeedMultiplier = 0.75;
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);                
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly

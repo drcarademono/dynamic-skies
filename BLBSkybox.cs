@@ -20,7 +20,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
-    public string jsonPrefix = "CD";
+    public string jsonPrefix = "BLBLarge";
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
     private GameObject dfSky;   //Reference to classic Daggerfall sky object so we can disable it
@@ -183,7 +183,7 @@ public class BLBSkybox : MonoBehaviour
             currentDayPart = DayParts.Evening;
             setFogColor(false);
         }
-        ApplyPendingWeatherSettings();
+        //ApplyPendingWeatherSettings();
     }
 
     void onEnable()
@@ -382,10 +382,12 @@ public class BLBSkybox : MonoBehaviour
     }
 
     private void ApplyPendingWeatherSettings() {
-        BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings);
-        //Change exposure to match Daggerfall Unity's sunlight reduction - might be a better way
-        SetFogDistance(currentWeather);
-        pendingWeather = false;
+        //if(pendingWeather == true) {
+            BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings);
+            //Change exposure to match Daggerfall Unity's sunlight reduction - might be a better way
+            SetFogDistance(currentWeather);
+            pendingWeather = false;
+        //}
     }
 
     private WeatherManager wm;

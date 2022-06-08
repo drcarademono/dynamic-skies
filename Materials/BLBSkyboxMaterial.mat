@@ -25,19 +25,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudDiffuse:
-        m_Texture: {fileID: 2800000, guid: 24eb990c68c4cd241b47a12049bf9aff, type: 3}
-        m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: 758912a39d719cc4f9a434ea7ece3521, type: 3}
+        m_Scale: {x: 0.125, y: 0.0625}
+        m_Offset: {x: 0.5, y: 0.25}
     - _CloudNormal:
-        m_Texture: {fileID: 2800000, guid: 02a15e41a55c28b4682fe78787eeafa1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 316e4f9f92016be489bdb258b614adb2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudTopDiffuse:
-        m_Texture: {fileID: 2800000, guid: 38cc6f94a72c4f6409804b5d89f260ff, type: 3}
-        m_Scale: {x: 0.125, y: 0.125}
+        m_Texture: {fileID: 2800000, guid: 758912a39d719cc4f9a434ea7ece3521, type: 3}
+        m_Scale: {x: 0.125, y: 0.0625}
         m_Offset: {x: 0, y: 0}
     - _CloudTopNormal:
-        m_Texture: {fileID: 2800000, guid: 0cf8c1132f945174eaeb0d19f4bef4d9, type: 3}
+        m_Texture: {fileID: 2800000, guid: 316e4f9f92016be489bdb258b614adb2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -89,27 +89,27 @@ Material:
         m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtmosphereThickness: 0.75
+    - _AtmosphereThickness: 0.85
     - _BumpScale: 1
     - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.585
-    - _CloudBending: 0.5
+    - _CloudAlphaMax: 0.636
+    - _CloudBending: 0.275
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0
     - _CloudDirection: 217
-    - _CloudNormalEffect: 0.409
+    - _CloudNormalEffect: 0.48
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.997
     - _CloudSpeed: 0.02
-    - _CloudTopAlphaCutoff: 0.028
-    - _CloudTopAlphaMax: 0.608
-    - _CloudTopBending: 0.5
+    - _CloudTopAlphaCutoff: 0
+    - _CloudTopAlphaMax: 0.05
+    - _CloudTopBending: 0.275
     - _CloudTopColorBoost: 0
-    - _CloudTopNormalEffect: 0.7
-    - _CloudTopOpacity: 1
+    - _CloudTopNormalEffect: 0.4
+    - _CloudTopOpacity: 0.998
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -140,8 +140,8 @@ Material:
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
     - _SecundaSpinOption: 0
-    - _SkyFadeEnd: -0.064
-    - _SkyFadeStart: -0.032
+    - _SkyFadeEnd: -0.048
+    - _SkyFadeStart: -0.008
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -149,16 +149,16 @@ Material:
     - _StarBrightness: 100
     - _SunDisk: 2
     - _SunSize: 0.048
-    - _SunSizeConvergence: 5
+    - _SunSizeConvergence: 2
     - _TwinkleBoost: 0.05
     - _TwinkleSpeed: 0.001
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CloudColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _CloudColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
     - _CloudNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _CloudTopColor: {r: 0.8117647, g: 0.8117647, b: 0.8117647, a: 1}
-    - _CloudTopNightColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _CloudTopColor: {r: 0.41509432, g: 0.40138838, b: 0.40138838, a: 1}
+    - _CloudTopNightColor: {r: 0.24705882, g: 0.24705882, b: 0.24705882, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
