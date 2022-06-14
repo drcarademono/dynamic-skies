@@ -2,6 +2,9 @@
 {
     Properties
     {
+        [Header(Retro)]
+        [NoScaleOffset]_Lut ("LUT Texture", 3D) = "white" {}
+        [Toggle(REDUCE_COLOR)] _ReduceColor ("Reduce color", float) = 1
         [Header(SkyAndSun)]
         [KeywordEnum(None, Simple, High Quality)] _SunDisk ("Sun", Int) = 2
         _SunSize ("Sun Size", Range(0,1)) = 0.04
@@ -107,6 +110,7 @@
             #pragma multi_compile _MOONSPINOPTION_TIDAL_LOCK _MOONSPINOPTION_LOCAL_ROTATE _MOONSPINOPTION_WORLD_ROTATE
             #pragma multi_compile _SECUNDASPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_LOCAL_ROTATE _SECUNDASPINOPTION_WORLD_ROTATE
             #pragma multi_compile _ PHASE_LIGHT
+            #pragma multi_compile _ REDUCE_COLOR
             #pragma multi_compile_local _SUNDISK_NONE _SUNDISK_SIMPLE _SUNDISK_HIGH_QUALITY
 
             uniform half _Exposure;     // HDR exposure
@@ -356,6 +360,8 @@
                 return OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
             }
 
+            sampler3D _Lut;
+
             fixed4 frag (v2f IN) : SV_Target
             {
                 //first off we declare some values and set up some stuff that will get used a lot in the shader
@@ -490,6 +496,7 @@
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
                 
+
 
     //Moon
                 float orbitAngle = _Time.y * _MoonOrbitSpeed;
@@ -674,7 +681,18 @@
 
                 //then lerp to the stars color masking out the horizon
                 col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, sphere)));
-    
+
+#ifdef REDUCE_COLOR
+                float stepSize = 0.02083333333333333333333333333333;
+                //col.r = floor(((col.r * 256) * 63) / 256) * stepSize;
+                //col.g = floor(((col.r * 256) * 63) / 256) * stepSize;
+                //col.b = floor(((col.r * 256) * 63) / 256) * stepSize;
+                col.r = (floor(col.r / stepSize) * stepSize);
+                col.g = (floor(col.g / stepSize) * stepSize);
+                col.b = (floor(col.b / stepSize) * stepSize);
+#endif
+                //col = fixed4(GammaToLinearSpace(tex3D(_Lut, LinearToGammaSpace(col.rgb)).rgb), col.a);
+
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
                 col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));

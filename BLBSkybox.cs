@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -20,7 +21,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
-    public string jsonPrefix = "BLBLarge";
+    private Mod presetMod = null;
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
     private GameObject dfSky;   //Reference to classic Daggerfall sky object so we can disable it
@@ -121,6 +122,8 @@ public class BLBSkybox : MonoBehaviour
             }
             
         }
+
+        //Instance.SetPalettizationMaterial();
 
         Debug.Log("BLB Skybox has been set up");
     }
@@ -442,30 +445,63 @@ public class BLBSkybox : MonoBehaviour
     //Dictionaries to store skybox settings
     private Dictionary<WeatherType, BLBSkyboxSetting> SkyboxSettings;
 
+    private void FindPresetMod()
+    {
+        string[] presetNames = new string[]{
+            "SkyboxSunny",
+            "SkyboxCloudy",
+            "SkyboxOvercast",
+            "SkyboxFog",
+            "SkyboxRain",
+            "SkyboxThunder",
+            "SkyboxSnow",
+        };
+        List<string> names = null;
+        foreach(Mod mod in ModManager.Instance.EnumerateModsReverse())
+        {
+            //Skip disabled mods and this mod
+            if(!mod.Enabled || mod.GUID == Mod.GUID) {
+                continue;
+            }
+            if (mod.FindAssetNames(ref names, "SkyboxPresets", ".json") != 0)
+            {
+                if(names.Count == presetNames.Length) {
+                    presetMod = mod;
+                    Debug.Log("BLB Skybox - Found preset mod: " + presetMod.Title);
+                }
+                break;
+            }
+        }
+        return;
+    }
+
     private void loadAllSkyboxSettings() {
+        presetMod = Mod;
+        Debug.Log("BLB Skybox - set mod instance as default preset, looking for preset mods");
+        FindPresetMod();
+
         SkyboxSettings = new Dictionary<WeatherType, BLBSkyboxSetting>();
 
-        string data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxSunny.json", false).text;
+        string data = presetMod.GetAsset<TextAsset>("SkyboxSunny.json", false).text;
         loadSkyboxSettings(WeatherType.Sunny, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxCloudy.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxCloudy.json", false).text;
         loadSkyboxSettings(WeatherType.Cloudy, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxOvercast.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxOvercast.json", false).text;
         loadSkyboxSettings(WeatherType.Overcast, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxFog.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxFog.json", false).text;
         loadSkyboxSettings(WeatherType.Fog, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxRain.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxRain.json", false).text;
         loadSkyboxSettings(WeatherType.Rain, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxThunder.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxThunder.json", false).text;
         loadSkyboxSettings(WeatherType.Thunder, data);
 
-        data = Mod.GetAsset<TextAsset>(jsonPrefix + "SkyboxSnow.json", false).text;
+        data = presetMod.GetAsset<TextAsset>("SkyboxSnow.json", false).text;
         loadSkyboxSettings(WeatherType.Snow, data);
-
     }
     private void loadSkyboxSettings(WeatherType weatherType, string data) {
         BLBSkyboxSetting skyboxSetting = BLBSkybox.ProcessSkyboxSetting(data);
@@ -542,6 +578,8 @@ public class BLBSkybox : MonoBehaviour
         fogDayDistance = fogDistance;
         fogNightDistance = fogDayDistance;
         
+        Debug.Log("BLB: Weather type: " + weather.ToString() + " fogDistance = " + fogDistance.ToString());
+
         UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
         skyboxMat.SetFloat("_FogDistance", fogDistance);
     }
@@ -701,12 +739,13 @@ public class BLBSkybox : MonoBehaviour
             guids = AssetDatabase.FindAssets(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
             bottomCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
         #else
-            topCloudsTexture = Mod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsTextureFile);
-            topCloudsNormalTexture = Mod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsNormalTextureFile);
-
-            bottomCloudsTexture = Mod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsTextureFile);
-            bottomCloudsNormalTexture = Mod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
+            topCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsTextureFile);
+            topCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsNormalTextureFile);
+            
+            bottomCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsTextureFile);
+            bottomCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
         #endif
+        
         skyboxSetting.topClouds.cloudsTexture = topCloudsTexture;
         skyboxSetting.topClouds.cloudsNormalTexture = topCloudsNormalTexture;
 
@@ -808,6 +847,568 @@ public class BLBSkybox : MonoBehaviour
     }
 
     #endif
+
+    #endregion
+
+    #region VGA Color palette
+
+    private void SetPalettizationMaterial()
+    {
+        int lutShift = DaggerfallUnity.Settings.PalettizationLUTShift;
+        int size = 256 >> lutShift;
+        //InitLut(lutShift, size);
+        //skyboxMat.SetTexture("_Lut", lut);
+    }
+
+    static Color32[] vgaPalette = new Color32[]{
+        new Color32( 0, 0, 0, 255),
+        new Color32( 131, 161, 74, 255),
+        new Color32( 172, 121, 123, 255),
+        new Color32( 106, 145, 65, 255),
+        new Color32( 90, 129, 90, 255),
+        new Color32( 131, 186, 189, 255),
+        new Color32( 106, 153, 222, 255),
+        new Color32( 222, 178, 180, 255),
+        new Color32( 205, 157, 156, 255),
+        new Color32( 156, 133, 131, 255),
+        new Color32( 156, 145, 115, 255),
+        new Color32( 156, 202, 205, 255),
+        new Color32( 172, 93, 74, 255),
+        new Color32( 213, 198, 139, 255),
+        new Color32( 213, 153, 74, 255),
+        new Color32( 189, 206, 123, 255),
+        new Color32( 246, 210, 139, 255),
+        new Color32( 164, 85, 57, 255),
+        new Color32( 156, 105, 106, 255),
+        new Color32( 57, 40, 32, 255),
+        new Color32( 230, 153, 65, 255),
+        new Color32( 139, 161, 222, 255),
+        new Color32( 148, 121, 106, 255),
+        new Color32( 180, 72, 32, 255),
+        new Color32( 115, 60, 57, 255),
+        new Color32( 180, 190, 197, 255),
+        new Color32( 197, 206, 222, 255),
+        new Color32( 74, 32, 24, 255),
+        new Color32( 230, 210, 131, 255),
+        new Color32( 213, 210, 189, 255),
+        new Color32( 123, 68, 57, 255),
+        new Color32( 230, 226, 205, 255),
+        new Color32( 156, 68, 32, 255),
+        new Color32( 180, 141, 90, 255),
+        new Color32( 189, 210, 238, 255),
+        new Color32( 172, 125, 65, 255),
+        new Color32( 156, 165, 189, 255),
+        new Color32( 98, 40, 24, 255),
+        new Color32( 82, 40, 24, 255),
+        new Color32( 156, 44, 16, 255),
+        new Color32( 213, 174, 131, 255),
+        new Color32( 82, 85, 82, 255),
+        new Color32( 172, 186, 238, 255),
+        new Color32( 205, 234, 255, 255),
+        new Color32( 148, 113, 98, 255),
+        new Color32( 213, 194, 139, 255),
+        new Color32( 230, 178, 90, 255),
+        new Color32( 115, 89, 65, 255),
+        new Color32( 164, 170, 139, 255),
+        new Color32( 164, 97, 57, 255),
+        new Color32( 197, 101, 49, 255),
+        new Color32( 74, 76, 74, 255),
+        new Color32( 32, 4, 0, 255),
+        new Color32( 164, 149, 123, 255),
+        new Color32( 205, 210, 197, 255),
+        new Color32( 148, 93, 57, 255),
+        new Color32( 172, 60, 24, 255),
+        new Color32( 148, 89, 41, 255),
+        new Color32( 246, 246, 164, 255),
+        new Color32( 139, 137, 139, 255),
+        new Color32( 189, 64, 16, 255),
+        new Color32( 123, 68, 41, 255),
+        new Color32( 255, 250, 189, 255),
+        new Color32( 106, 109, 106, 255),
+        new Color32( 222, 137, 57, 255),
+        new Color32( 148, 76, 41, 255),
+        new Color32( 123, 80, 57, 255),
+        new Color32( 255, 194, 82, 255),
+        new Color32( 189, 101, 57, 255),
+        new Color32( 164, 109, 74, 255),
+        new Color32( 139, 145, 148, 255),
+        new Color32( 98, 56, 41, 255),
+        new Color32( 230, 246, 238, 255),
+        new Color32( 156, 170, 230, 255),
+        new Color32( 255, 226, 115, 255),
+        new Color32( 246, 234, 139, 255),
+        new Color32( 246, 202, 98, 255),
+        new Color32( 180, 182, 189, 255),
+        new Color32( 238, 222, 148, 255),
+        new Color32( 131, 121, 106, 255),
+        new Color32( 164, 174, 222, 255),
+        new Color32( 172, 178, 197, 255),
+        new Color32( 230, 190, 82, 255),
+        new Color32( 123, 97, 82, 255),
+        new Color32( 189, 76, 24, 255),
+        new Color32( 197, 93, 32, 255),
+        new Color32( 131, 56, 24, 255),
+        new Color32( 74, 56, 65, 255),
+        new Color32( 172, 186, 222, 255),
+        new Color32( 246, 214, 98, 255),
+        new Color32( 106, 170, 172, 255),
+        new Color32( 123, 121, 139, 255),
+        new Color32( 164, 157, 148, 255),
+        new Color32( 197, 194, 189, 255),
+        new Color32( 164, 137, 98, 255),
+        new Color32( 164, 178, 222, 255),
+        new Color32( 148, 52, 24, 255),
+        new Color32( 74, 4, 0, 255),
+        new Color32( 49, 4, 0, 255),
+        new Color32( 74, 60, 32, 255),
+        new Color32( 115, 28, 16, 255),
+        new Color32( 222, 214, 189, 255),
+        new Color32( 197, 133, 82, 255),
+        new Color32( 139, 64, 41, 255),
+        new Color32( 131, 93, 90, 255),
+        new Color32( 148, 186, 246, 255),
+        new Color32( 205, 226, 246, 255),
+        new Color32( 148, 137, 98, 255),
+        new Color32( 139, 105, 65, 255),
+        new Color32( 156, 64, 24, 255),
+        new Color32( 139, 93, 90, 255),
+        new Color32( 205, 105, 32, 255),
+        new Color32( 222, 238, 255, 255),
+        new Color32( 139, 121, 90, 255),
+        new Color32( 172, 85, 41, 255),
+        new Color32( 246, 250, 205, 255),
+        new Color32( 148, 149, 139, 255),
+        new Color32( 164, 161, 148, 255),
+        new Color32( 238, 238, 230, 255),
+        new Color32( 139, 89, 57, 255),
+        new Color32( 164, 165, 156, 255),
+        new Color32( 57, 32, 16, 255),
+        new Color32( 205, 129, 65, 255),
+        new Color32( 98, 68, 82, 255),
+        new Color32( 115, 117, 115, 255),
+        new Color32( 156, 117, 65, 255),
+        new Color32( 148, 117, 98, 255),
+        new Color32( 156, 174, 213, 255),
+        new Color32( 148, 117, 82, 255),
+        new Color32( 82, 52, 41, 255),
+        new Color32( 164, 129, 65, 255),
+        new Color32( 156, 182, 98, 255),
+        new Color32( 123, 117, 98, 255),
+        new Color32( 205, 149, 82, 255),
+        new Color32( 164, 174, 205, 255),
+        new Color32( 238, 182, 82, 255),
+        new Color32( 131, 76, 57, 255),
+        new Color32( 106, 24, 16, 255),
+        new Color32( 98, 16, 8, 255),
+        new Color32( 123, 109, 82, 255),
+        new Color32( 139, 80, 57, 255),
+        new Color32( 197, 202, 172, 255),
+        new Color32( 139, 137, 106, 255),
+        new Color32( 205, 218, 238, 255),
+        new Color32( 172, 153, 90, 255),
+        new Color32( 205, 210, 222, 255),
+        new Color32( 180, 198, 222, 255),
+        new Color32( 74, 20, 16, 255),
+        new Color32( 189, 222, 246, 255),
+        new Color32( 189, 194, 172, 255),
+        new Color32( 238, 234, 180, 255),
+        new Color32( 131, 32, 16, 255),
+        new Color32( 213, 182, 98, 255),
+        new Color32( 189, 170, 115, 255),
+        new Color32( 41, 12, 8, 255),
+        new Color32( 180, 109, 41, 255),
+        new Color32( 98, 64, 57, 255),
+        new Color32( 106, 32, 16, 255),
+        new Color32( 213, 133, 57, 255),
+        new Color32( 148, 109, 65, 255),
+        new Color32( 197, 129, 65, 255),
+        new Color32( 205, 165, 115, 255),
+        new Color32( 222, 230, 222, 255),
+        new Color32( 123, 44, 24, 255),
+        new Color32( 222, 218, 164, 255),
+        new Color32( 57, 20, 16, 255),
+        new Color32( 123, 157, 115, 255),
+        new Color32( 180, 89, 41, 255),
+        new Color32( 222, 174, 106, 255),
+        new Color32( 106, 64, 57, 255),
+        new Color32( 57, 24, 16, 255),
+        new Color32( 213, 222, 230, 255),
+        new Color32( 148, 105, 90, 255),
+        new Color32( 106, 76, 65, 255),
+        new Color32( 238, 165, 57, 255),
+        new Color32( 246, 230, 131, 255),
+        new Color32( 82, 137, 205, 255),
+        new Color32( 123, 97, 65, 255),
+        new Color32( 74, 12, 8, 255),
+        new Color32( 197, 145, 98, 255),
+        new Color32( 205, 222, 255, 255),
+        new Color32( 180, 198, 238, 255),
+        new Color32( 222, 230, 238, 255),
+        new Color32( 246, 226, 139, 255),
+        new Color32( 180, 165, 139, 255),
+        new Color32( 189, 174, 148, 255),
+        new Color32( 172, 174, 164, 255),
+        new Color32( 213, 190, 115, 255),
+        new Color32( 246, 222, 156, 255),
+        new Color32( 148, 44, 16, 255),
+        new Color32( 189, 121, 74, 255),
+        new Color32( 148, 149, 180, 255),
+        new Color32( 189, 137, 139, 255),
+        new Color32( 213, 202, 164, 255),
+        new Color32( 139, 153, 205, 255),
+        new Color32( 139, 149, 172, 255),
+        new Color32( 90, 56, 57, 255),
+        new Color32( 180, 80, 41, 255),
+        new Color32( 148, 165, 205, 255),
+        new Color32( 115, 64, 41, 255),
+        new Color32( 172, 149, 115, 255),
+        new Color32( 238, 198, 197, 255),
+        new Color32( 213, 186, 131, 255),
+        new Color32( 189, 214, 255, 255),
+        new Color32( 180, 202, 255, 255),
+        new Color32( 156, 182, 255, 255),
+        new Color32( 98, 48, 41, 255),
+        new Color32( 98, 97, 98, 255),
+        new Color32( 82, 44, 41, 255),
+        new Color32( 148, 161, 213, 255),
+        new Color32( 115, 16, 8, 255),
+        new Color32( 180, 178, 156, 255),
+        new Color32( 180, 182, 164, 255),
+        new Color32( 156, 109, 57, 255),
+        new Color32( 246, 214, 172, 255),
+        new Color32( 197, 186, 131, 255),
+        new Color32( 98, 76, 57, 255),
+        new Color32( 238, 238, 213, 255),
+        new Color32( 197, 202, 197, 255),
+        new Color32( 57, 12, 8, 255),
+        new Color32( 197, 186, 148, 255),
+        new Color32( 222, 202, 131, 255),
+        new Color32( 156, 157, 172, 255),
+        new Color32( 213, 206, 172, 255),
+        new Color32( 255, 250, 148, 255),
+        new Color32( 205, 113, 49, 255),
+        new Color32( 246, 174, 74, 255),
+        new Color32( 115, 56, 41, 255),
+        new Color32( 148, 153, 197, 255),
+        new Color32( 164, 161, 164, 255),
+        new Color32( 139, 44, 24, 255),
+        new Color32( 115, 105, 90, 255),
+        new Color32( 255, 222, 106, 255),
+        new Color32( 139, 133, 123, 255),
+        new Color32( 255, 242, 148, 255),
+        new Color32( 90, 20, 16, 255),
+        new Color32( 131, 133, 131, 255),
+        new Color32( 189, 149, 74, 255),
+        new Color32( 90, 56, 41, 255),
+        new Color32( 222, 218, 205, 255),
+        new Color32( 148, 174, 255, 255),
+        new Color32( 180, 137, 98, 255),
+        new Color32( 238, 206, 115, 255),
+        new Color32( 230, 255, 255, 255),
+        new Color32( 139, 149, 164, 255),
+        new Color32( 180, 161, 123, 255),
+        new Color32( 98, 72, 57, 255),
+        new Color32( 172, 105, 65, 255),
+        new Color32( 172, 161, 98, 255),
+        new Color32( 222, 117, 41, 255),
+        new Color32( 222, 129, 41, 255),
+        new Color32( 197, 153, 106, 255),
+        new Color32( 180, 174, 131, 255),
+        new Color32( 148, 145, 115, 255),
+        new Color32( 197, 165, 82, 255),
+        new Color32( 156, 161, 172, 255)
+        /*new Color32( 0, 0, 170, 255),
+        new Color32( 0, 170, 0, 255),
+        new Color32( 0, 170, 170, 255),
+        new Color32( 170, 0, 0, 255),
+        new Color32( 170, 0, 170, 255),
+        new Color32( 170, 85, 0, 255),
+        new Color32( 170, 170, 170, 255),
+        new Color32( 85, 85, 85, 255),
+        new Color32( 85, 85, 255, 255),
+        new Color32( 85, 255, 85, 255),
+        new Color32( 85, 255, 255, 255),
+        new Color32( 255, 85, 85, 255),
+        new Color32( 255, 85, 255, 255),
+        new Color32( 255, 255, 85, 255),
+        new Color32( 255, 255, 255, 255),
+        new Color32( 16, 16, 16, 255),
+        new Color32( 32, 32, 32, 255),
+        new Color32( 53, 53, 53, 255),
+        new Color32( 69, 69, 69, 255),
+        new Color32( 85, 85, 85, 255),
+        new Color32( 101, 101, 101, 255),
+        new Color32( 117, 117, 117, 255),
+        new Color32( 138, 138, 138, 255),
+        new Color32( 154, 154, 154, 255),
+        new Color32( 170, 170, 170, 255),
+        new Color32( 186, 186, 186, 255),
+        new Color32( 202, 202, 202, 255),
+        new Color32( 223, 223, 223, 255),
+        new Color32( 239, 239, 239, 255),
+        new Color32( 255, 255, 255, 255),
+        new Color32( 0, 0, 255, 255),
+        new Color32( 65, 0, 255, 255),
+        new Color32( 130, 0, 255, 255),
+        new Color32( 190, 0, 255, 255),
+        new Color32( 255, 0, 255, 255),
+        new Color32( 255, 0, 190, 255),
+        new Color32( 255, 0, 130, 255),
+        new Color32( 255, 0, 65, 255),
+        new Color32( 255, 0, 0, 255),
+        new Color32( 255, 65, 0, 255),
+        new Color32( 255, 130, 0, 255),
+        new Color32( 255, 190, 0, 255),
+        new Color32( 255, 255, 0, 255),
+        new Color32( 190, 255, 0, 255),
+        new Color32( 130, 255, 0, 255),
+        new Color32( 65, 255, 0, 255),
+        new Color32( 0, 255, 0, 255),
+        new Color32( 0, 255, 65, 255),
+        new Color32( 0, 255, 130, 255),
+        new Color32( 0, 255, 190, 255),
+        new Color32( 0, 255, 255, 255),
+        new Color32( 0, 190, 255, 255),
+        new Color32( 0, 130, 255, 255),
+        new Color32( 0, 65, 255, 255),
+        new Color32( 130, 130, 255, 255),
+        new Color32( 158, 130, 255, 255),
+        new Color32( 190, 130, 255, 255),
+        new Color32( 223, 130, 255, 255),
+        new Color32( 255, 130, 255, 255),
+        new Color32( 255, 130, 223, 255),
+        new Color32( 255, 130, 190, 255),
+        new Color32( 255, 130, 158, 255),
+        new Color32( 255, 130, 130, 255),
+        new Color32( 255, 158, 130, 255),
+        new Color32( 255, 190, 130, 255),
+        new Color32( 255, 223, 130, 255),
+        new Color32( 255, 255, 130, 255),
+        new Color32( 223, 255, 130, 255),
+        new Color32( 190, 255, 130, 255),
+        new Color32( 158, 255, 130, 255),
+        new Color32( 130, 255, 130, 255),
+        new Color32( 130, 255, 158, 255),
+        new Color32( 130, 255, 190, 255),
+        new Color32( 130, 255, 223, 255),
+        new Color32( 130, 255, 255, 255),
+        new Color32( 130, 223, 255, 255),
+        new Color32( 130, 190, 255, 255),
+        new Color32( 130, 158, 255, 255),
+        new Color32( 186, 186, 255, 255),
+        new Color32( 202, 186, 255, 255),
+        new Color32( 223, 186, 255, 255),
+        new Color32( 239, 186, 255, 255),
+        new Color32( 255, 186, 255, 255),
+        new Color32( 255, 186, 239, 255),
+        new Color32( 255, 186, 223, 255),
+        new Color32( 255, 186, 202, 255),
+        new Color32( 255, 186, 186, 255),
+        new Color32( 255, 202, 186, 255),
+        new Color32( 255, 223, 186, 255),
+        new Color32( 255, 239, 186, 255),
+        new Color32( 255, 255, 186, 255),
+        new Color32( 239, 255, 186, 255),
+        new Color32( 223, 255, 186, 255),
+        new Color32( 202, 255, 186, 255),
+        new Color32( 186, 255, 186, 255),
+        new Color32( 186, 255, 202, 255),
+        new Color32( 186, 255, 223, 255),
+        new Color32( 186, 255, 239, 255),
+        new Color32( 186, 255, 255, 255),
+        new Color32( 186, 239, 255, 255),
+        new Color32( 186, 223, 255, 255),
+        new Color32( 186, 202, 255, 255),
+        new Color32( 0, 0, 113, 255),
+        new Color32( 28, 0, 113, 255),
+        new Color32( 57, 0, 113, 255),
+        new Color32( 85, 0, 113, 255),
+        new Color32( 113, 0, 113, 255),
+        new Color32( 113, 0, 85, 255),
+        new Color32( 113, 0, 57, 255),
+        new Color32( 113, 0, 28, 255),
+        new Color32( 113, 0, 0, 255),
+        new Color32( 113, 28, 0, 255),
+        new Color32( 113, 57, 0, 255),
+        new Color32( 113, 85, 0, 255),
+        new Color32( 113, 113, 0, 255),
+        new Color32( 85, 113, 0, 255),
+        new Color32( 57, 113, 0, 255),
+        new Color32( 28, 113, 0, 255),
+        new Color32( 0, 113, 0, 255),
+        new Color32( 0, 113, 28, 255),
+        new Color32( 0, 113, 57, 255),
+        new Color32( 0, 113, 85, 255),
+        new Color32( 0, 113, 113, 255),
+        new Color32( 0, 85, 113, 255),
+        new Color32( 0, 57, 113, 255),
+        new Color32( 0, 28, 113, 255),
+        new Color32( 57, 57, 113, 255),
+        new Color32( 69, 57, 113, 255),
+        new Color32( 85, 57, 113, 255),
+        new Color32( 97, 57, 113, 255),
+        new Color32( 113, 57, 113, 255),
+        new Color32( 113, 57, 97, 255),
+        new Color32( 113, 57, 85, 255),
+        new Color32( 113, 57, 69, 255),
+        new Color32( 113, 57, 57, 255),
+        new Color32( 113, 69, 57, 255),
+        new Color32( 113, 85, 57, 255),
+        new Color32( 113, 97, 57, 255),
+        new Color32( 113, 113, 57, 255),
+        new Color32( 97, 113, 57, 255),
+        new Color32( 85, 113, 57, 255),
+        new Color32( 69, 113, 57, 255),
+        new Color32( 57, 113, 57, 255),
+        new Color32( 57, 113, 69, 255),
+        new Color32( 57, 113, 85, 255),
+        new Color32( 57, 113, 97, 255),
+        new Color32( 57, 113, 113, 255),
+        new Color32( 57, 97, 113, 255),
+        new Color32( 57, 85, 113, 255),
+        new Color32( 57, 69, 113, 255),
+        new Color32( 81, 81, 113, 255),
+        new Color32( 89, 81, 113, 255),
+        new Color32( 97, 81, 113, 255),
+        new Color32( 105, 81, 113, 255),
+        new Color32( 113, 81, 113, 255),
+        new Color32( 113, 81, 105, 255),
+        new Color32( 113, 81, 97, 255),
+        new Color32( 113, 81, 89, 255),
+        new Color32( 113, 81, 81, 255),
+        new Color32( 113, 89, 81, 255),
+        new Color32( 113, 97, 81, 255),
+        new Color32( 113, 105, 81, 255),
+        new Color32( 113, 113, 81, 255),
+        new Color32( 105, 113, 81, 255),
+        new Color32( 97, 113, 81, 255),
+        new Color32( 89, 113, 81, 255),
+        new Color32( 81, 113, 81, 255),
+        new Color32( 81, 113, 89, 255),
+        new Color32( 81, 113, 97, 255),
+        new Color32( 81, 113, 105, 255),
+        new Color32( 81, 113, 113, 255),
+        new Color32( 81, 105, 113, 255),
+        new Color32( 81, 97, 113, 255),
+        new Color32( 81, 89, 113, 255),
+        new Color32( 0, 0, 65, 255),
+        new Color32( 16, 0, 65, 255),
+        new Color32( 32, 0, 65, 255),
+        new Color32( 49, 0, 65, 255),
+        new Color32( 65, 0, 65, 255),
+        new Color32( 65, 0, 49, 255),
+        new Color32( 65, 0, 32, 255),
+        new Color32( 65, 0, 16, 255),
+        new Color32( 65, 0, 0, 255),
+        new Color32( 65, 16, 0, 255),
+        new Color32( 65, 32, 0, 255),
+        new Color32( 65, 49, 0, 255),
+        new Color32( 65, 65, 0, 255),
+        new Color32( 49, 65, 0, 255),
+        new Color32( 32, 65, 0, 255),
+        new Color32( 16, 65, 0, 255),
+        new Color32( 0, 65, 0, 255),
+        new Color32( 0, 65, 16, 255),
+        new Color32( 0, 65, 32, 255),
+        new Color32( 0, 65, 49, 255),
+        new Color32( 0, 65, 65, 255),
+        new Color32( 0, 49, 65, 255),
+        new Color32( 0, 32, 65, 255),
+        new Color32( 0, 16, 65, 255),
+        new Color32( 32, 32, 65, 255),
+        new Color32( 40, 32, 65, 255),
+        new Color32( 49, 32, 65, 255),
+        new Color32( 57, 32, 65, 255),
+        new Color32( 65, 32, 65, 255),
+        new Color32( 65, 32, 57, 255),
+        new Color32( 65, 32, 49, 255),
+        new Color32( 65, 32, 40, 255),
+        new Color32( 65, 32, 32, 255),
+        new Color32( 65, 40, 32, 255),
+        new Color32( 65, 49, 32, 255),
+        new Color32( 65, 57, 32, 255),
+        new Color32( 65, 65, 32, 255),
+        new Color32( 57, 65, 32, 255),
+        new Color32( 49, 65, 32, 255),
+        new Color32( 40, 65, 32, 255),
+        new Color32( 32, 65, 32, 255),
+        new Color32( 32, 65, 40, 255),
+        new Color32( 32, 65, 49, 255),
+        new Color32( 32, 65, 57, 255),
+        new Color32( 32, 65, 65, 255),
+        new Color32( 32, 57, 65, 255),
+        new Color32( 32, 49, 65, 255),
+        new Color32( 32, 40, 65, 255),
+        new Color32( 45, 45, 65, 255),
+        new Color32( 49, 45, 65, 255),
+        new Color32( 53, 45, 65, 255),
+        new Color32( 61, 45, 65, 255),
+        new Color32( 65, 45, 65, 255),
+        new Color32( 65, 45, 61, 255),
+        new Color32( 65, 45, 53, 255),
+        new Color32( 65, 45, 49, 255),
+        new Color32( 65, 45, 45, 255),
+        new Color32( 65, 49, 45, 255),
+        new Color32( 65, 53, 45, 255),
+        new Color32( 65, 61, 45, 255),
+        new Color32( 65, 65, 45, 255),
+        new Color32( 61, 65, 45, 255),
+        new Color32( 53, 65, 45, 255),
+        new Color32( 49, 65, 45, 255),
+        new Color32( 45, 65, 45, 255),
+        new Color32( 45, 65, 49, 255),
+        new Color32( 45, 65, 53, 255),
+        new Color32( 45, 65, 61, 255),
+        new Color32( 45, 65, 65, 255),
+        new Color32( 45, 61, 65, 255),
+        new Color32( 45, 53, 65, 255),
+        new Color32( 45, 49, 65, 255)*/
+    };
+
+    Texture3D lut = null;
+
+    private void InitLut(int lutShift, int size)
+    {
+        if (lut)
+            return;
+
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        BLBFastColorPalette.IPalette palette = BLBFastColorPalette.BuildPalette(vgaPalette);
+        watch.Stop();
+        Debug.Log("Time spent building skybox palette = " + watch.ElapsedMilliseconds + "ms");
+
+        var watch2 = System.Diagnostics.Stopwatch.StartNew();
+        lut = new Texture3D(size, size, size, TextureFormat.RGBA32, false);
+        lut.filterMode = FilterMode.Point;
+        lut.wrapMode = TextureWrapMode.Clamp;
+
+        Color32[] colors = new Color32[size * size * size];
+        Color32 targetColor = new Color32();
+        targetColor.a = 255;
+        int colorsIndex = 0;
+        Color32 color;
+        for (int b = 0; b < size; b++)
+        {
+            targetColor.b = (byte)((b << lutShift));
+            for (int g = 0; g < size; g++)
+            {
+                targetColor.g = (byte)((g << lutShift));
+                for (int r = 0; r < size; r++)
+                {
+                    targetColor.r = (byte)((r << lutShift));
+                    palette.GetNearestColor(targetColor, out color);
+                    colors[colorsIndex++] = color;
+                }
+            }
+        }
+        watch2.Stop();
+        Debug.Log("Time spent filling skybox LUT = " + watch2.ElapsedMilliseconds + "ms");
+        var watch3 = System.Diagnostics.Stopwatch.StartNew();
+        lut.SetPixels32(colors);
+        lut.Apply();
+        watch3.Stop();
+        Debug.Log("Time spent transferring skybox LUT = " + watch3.ElapsedMilliseconds + "ms");
+    }
 
     #endregion
 

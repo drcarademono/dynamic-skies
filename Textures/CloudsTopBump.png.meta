@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0cf8c1132f945174eaeb0d19f4bef4d9
+guid: d801d191d90c7cc4a8d7ff3d7073408e
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -18,9 +18,9 @@ TextureImporter:
   bumpmap:
     convertToNormalMap: 1
     externalNormalMap: 0
-    heightScale: 0.15
+    heightScale: 0.25
     normalMapFilter: 1
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -31,7 +31,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 2
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 0
