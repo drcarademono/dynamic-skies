@@ -32,6 +32,8 @@
         "Assets/Game/Mods/blb-skybox-shader/Resources/SkyboxFog.json",
         "Assets/Game/Mods/blb-skybox-shader/Resources/SkyboxCloudy.json",
         "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSkyboxMaterial.mat",
-        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json"
+        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMClouds.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMCloudsNormal.png"
     ]
 }
