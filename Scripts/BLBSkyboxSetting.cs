@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public struct BLBSkyboxSetting
@@ -18,11 +15,19 @@ public struct BLBSkyboxSetting
     public float SkyEndStart;
     public float FogDistance;
 
-    public string topCloudsFlat;
-    public string bottomCloudsFlat;
+    public string TopCloudsFlat;
+    public string BottomCloudsFlat;
+    public string StarsFlat;
+    public string MasserFlat;
+    public string SecundaFlat;
     [NonSerialized]
-    public BLBCloudsSetting topClouds;
+    public BLBCloudsSetting TopClouds;
     [NonSerialized]
-    public BLBCloudsSetting bottomClouds;
-
+    public BLBCloudsSetting BottomClouds;
+    [NonSerialized]
+    public BLBStarsSetting Stars;
+    [NonSerialized]
+    public BLBMoonSetting Masser;
+    [NonSerialized]
+    public BLBMoonSetting Secunda;
 }

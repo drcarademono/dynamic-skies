@@ -675,40 +675,89 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
         skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
 
-        skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.topClouds.cloudsTexture);
-        skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.topClouds.cloudsNormalTexture);
-        skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.TilingX, skyboxSetting.topClouds.TilingY));
-        skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.topClouds.OffsetX, skyboxSetting.topClouds.OffsetY));
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.topClouds.DayColor, out tmpColor)) {
+        skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
+        skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.TopClouds.CloudsNormalTexture);
+        skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.TilingX, skyboxSetting.TopClouds.TilingY));
+        skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.OffsetX, skyboxSetting.TopClouds.OffsetY));
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.DayColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudTopColor", tmpColor);
         }
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.topClouds.NightColor, out tmpColor)) {
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.NightColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudTopNightColor", tmpColor);
         }
-        skyboxMat.SetFloat("_CloudTopAlphaCutoff", skyboxSetting.topClouds.AlphaTreshold);
-        skyboxMat.SetFloat("_CloudTopAlphaMax", skyboxSetting.topClouds.AlphaMax);
-        skyboxMat.SetFloat("_CloudTopColorBoost", skyboxSetting.topClouds.ColorBoost);
-        skyboxMat.SetFloat("_CloudTopOpacity", skyboxSetting.topClouds.Opacity);
-        skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.topClouds.NormalEffect);
-        skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.topClouds.Bending);
+        skyboxMat.SetFloat("_CloudTopAlphaCutoff", skyboxSetting.TopClouds.AlphaTreshold);
+        skyboxMat.SetFloat("_CloudTopAlphaMax", skyboxSetting.TopClouds.AlphaMax);
+        skyboxMat.SetFloat("_CloudTopColorBoost", skyboxSetting.TopClouds.ColorBoost);
+        skyboxMat.SetFloat("_CloudTopOpacity", skyboxSetting.TopClouds.Opacity);
+        skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.TopClouds.NormalEffect);
+        skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.TopClouds.Bending);
 
-        skyboxMat.SetTexture("_CloudDiffuse", skyboxSetting.bottomClouds.cloudsTexture);
-        skyboxMat.SetTexture("_CloudNormal", skyboxSetting.bottomClouds.cloudsNormalTexture);
-        skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.TilingX, skyboxSetting.bottomClouds.TilingY));
-        skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.bottomClouds.OffsetX, skyboxSetting.bottomClouds.OffsetY));
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.bottomClouds.DayColor, out tmpColor)) {
+        skyboxMat.SetTexture("_CloudDiffuse", skyboxSetting.BottomClouds.CloudsTexture);
+        skyboxMat.SetTexture("_CloudNormal", skyboxSetting.BottomClouds.CloudsNormalTexture);
+        skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.TilingX, skyboxSetting.BottomClouds.TilingY));
+        skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.OffsetX, skyboxSetting.BottomClouds.OffsetY));
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.DayColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudColor", tmpColor);
         }
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.bottomClouds.NightColor, out tmpColor)) {
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.NightColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudNightColor", tmpColor);
         }
-        skyboxMat.SetFloat("_CloudAlphaCutoff", skyboxSetting.bottomClouds.AlphaTreshold);
-        skyboxMat.SetFloat("_CloudAlphaMax", skyboxSetting.bottomClouds.AlphaMax);
-        skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.bottomClouds.ColorBoost);
-        skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.bottomClouds.NormalEffect);
-        skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.bottomClouds.Opacity);
-        skyboxMat.SetFloat("_CloudBending", skyboxSetting.bottomClouds.Bending);
+        skyboxMat.SetFloat("_CloudAlphaCutoff", skyboxSetting.BottomClouds.AlphaTreshold);
+        skyboxMat.SetFloat("_CloudAlphaMax", skyboxSetting.BottomClouds.AlphaMax);
+        skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.BottomClouds.ColorBoost);
+        skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
+        skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
+        skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
         
+        skyboxMat.SetTexture("_StarTex", skyboxSetting.Stars.StarsTexture);
+        skyboxMat.SetTextureScale("_StarTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
+        skyboxMat.SetTextureOffset("_StarTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
+        skyboxMat.SetFloat("_StarBending", skyboxSetting.Stars.StarBending);
+        skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
+        skyboxMat.SetTexture("_TwinkleTex", skyboxSetting.Stars.TwinkleTexture);
+        skyboxMat.SetTextureScale("_TwinkleTex", new Vector2(skyboxSetting.Stars.TwinkleTilingX, skyboxSetting.Stars.TwinkleTilingY));
+        skyboxMat.SetTextureOffset("_TwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));
+        skyboxMat.SetFloat("_TwinkleBoost", skyboxSetting.Stars.TwinkleBoost);
+        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed);
+
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
+            skyboxMat.SetColor("_MoonColor", tmpColor);
+        }
+        skyboxMat.SetTexture("_MoonTex", skyboxSetting.Masser.MoonTexture);
+        skyboxMat.SetTextureScale("_MoonTex", new Vector2(skyboxSetting.Masser.TilingX, skyboxSetting.Masser.TilingY));
+        skyboxMat.SetTextureOffset("_MoonTex", new Vector2(skyboxSetting.Masser.OffsetX, skyboxSetting.Masser.OffsetY));
+        skyboxMat.SetFloat("_MoonMinSize", skyboxSetting.Masser.MinSize);
+        skyboxMat.SetFloat("_MoonMaxSize", skyboxSetting.Masser.MaxSize);
+        skyboxMat.SetVector("_MoonOrbitAngle", skyboxSetting.Masser.OrbitAngle);
+        skyboxMat.SetFloat("_MoonOrbitOffset", skyboxSetting.Masser.OrbitOffset);
+        skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
+        skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
+        skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
+        skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
+        skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
+        skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
+        skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
+        skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed);
+
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Secunda.MoonColor, out tmpColor)) {
+            skyboxMat.SetColor("_SecundaColor", tmpColor);
+        }
+        skyboxMat.SetTexture("_SecundaTex", skyboxSetting.Secunda.MoonTexture);
+        skyboxMat.SetTextureScale("_SecundaTex", new Vector2(skyboxSetting.Secunda.TilingX, skyboxSetting.Secunda.TilingY));
+        skyboxMat.SetTextureOffset("_SecundaTex", new Vector2(skyboxSetting.Secunda.OffsetX, skyboxSetting.Secunda.OffsetY));
+        skyboxMat.SetFloat("_SecundaMinSize", skyboxSetting.Secunda.MinSize);
+        skyboxMat.SetFloat("_SecundaMaxSize", skyboxSetting.Secunda.MaxSize);
+        skyboxMat.SetVector("_SecundaOrbitAngle", skyboxSetting.Secunda.OrbitAngle);
+        skyboxMat.SetFloat("_SecundaOrbitOffset", skyboxSetting.Secunda.OrbitOffset);
+        skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
+        skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
+        skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
+        skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
+        skyboxMat.SetVector("_SecundaPhase", skyboxSetting.Secunda.Phase);
+        skyboxMat.SetFloat("_SecundaSpinOption", skyboxSetting.Secunda.Spin);
+        skyboxMat.SetVector("_SecundaTidalAngle", skyboxSetting.Secunda.TidalAngle);
+        skyboxMat.SetVector("_SecundaSpinSpeed", skyboxSetting.Secunda.SpinSpeed);
+
         Debug.Log("BLB: Applied skybox settings");
 
         return true;
@@ -716,41 +765,76 @@ public class BLBSkybox : MonoBehaviour
 
     private static BLBSkyboxSetting ProcessSkyboxSetting(string data) {
         BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
+        skyboxSetting.TopClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.TopCloudsFlat);
+        Debug.Log("Tried to read top clouds settings");
+        skyboxSetting.BottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.BottomCloudsFlat);
+        Debug.Log("Tried to read bottom clouds settings");
+        skyboxSetting.Stars = JsonUtility.FromJson<BLBStarsSetting>(skyboxSetting.StarsFlat);
+        Debug.Log("Tried to read stars settings");
+        skyboxSetting.Masser = JsonUtility.FromJson<BLBMoonSetting>(skyboxSetting.MasserFlat);
+        Debug.Log("Tried to read masser settings");
+        skyboxSetting.Secunda = JsonUtility.FromJson<BLBMoonSetting>(skyboxSetting.SecundaFlat);
+        Debug.Log("Tried to read secunda settings");
 
-        skyboxSetting.topClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.topCloudsFlat);
-        skyboxSetting.bottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.bottomCloudsFlat);
-
-        Texture2D topCloudsTexture;
-        Texture2D topCloudsNormalTexture;
-
-        Texture2D bottomCloudsTexture;
-        Texture2D bottomCloudsNormalTexture;
+        Texture2D TopCloudsTexture;
+        Texture2D TopCloudsNormalTexture;
+        Texture2D BottomCloudsTexture;
+        Texture2D BottomCloudsNormalTexture;
+        Texture2D StarsTexture;
+        Texture2D TwinkleTexture;
+        Texture2D MoonTexture;
+        Texture2D SecundaTexture;
+        
         string[] guids;
         #if UNITY_EDITOR
-            guids = AssetDatabase.FindAssets(skyboxSetting.topClouds.cloudsTextureFile);
-            topCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+            guids = AssetDatabase.FindAssets(skyboxSetting.TopClouds.CloudsTextureFile);
+            TopCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
 
-            guids = AssetDatabase.FindAssets(skyboxSetting.topClouds.cloudsNormalTextureFile);
-            topCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+            guids = AssetDatabase.FindAssets(skyboxSetting.TopClouds.CloudsNormalTextureFile);
+            TopCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
 
-            guids = AssetDatabase.FindAssets(skyboxSetting.bottomClouds.cloudsTextureFile);
-            bottomCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+            guids = AssetDatabase.FindAssets(skyboxSetting.BottomClouds.CloudsTextureFile);
+            BottomCloudsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
 
-            guids = AssetDatabase.FindAssets(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
-            bottomCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+            guids = AssetDatabase.FindAssets(skyboxSetting.BottomClouds.CloudsNormalTextureFile);
+            BottomCloudsNormalTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.Stars.StarsTextureFile);
+            StarsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.Stars.TwinkleTextureFile);
+            TwinkleTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.Masser.MoonTextureFile);
+            MoonTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
+            guids = AssetDatabase.FindAssets(skyboxSetting.Secunda.MoonTextureFile);
+            SecundaTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
         #else
-            topCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsTextureFile);
-            topCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.topClouds.cloudsNormalTextureFile);
+            TopCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.TopClouds.CloudsTextureFile);
+            TopCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.TopClouds.CloudsNormalTextureFile);
             
-            bottomCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsTextureFile);
-            bottomCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.bottomClouds.cloudsNormalTextureFile);
+            BottomCloudsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.BottomClouds.CloudsTextureFile);
+            BottomCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.BottomClouds.CloudsNormalTextureFile);
+
+            StarsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Stars.StarsTextureFile);
+            TwinkleTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Stars.TwinkleTextureFile);
+
+            MoonTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Masser.MoonTextureFile);
+            SecundaTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Secunda.MoonTextureFile);
         #endif
         
-        skyboxSetting.topClouds.cloudsTexture = topCloudsTexture;
-        skyboxSetting.topClouds.cloudsNormalTexture = topCloudsNormalTexture;
+        skyboxSetting.TopClouds.CloudsTexture = TopCloudsTexture;
+        skyboxSetting.TopClouds.CloudsNormalTexture = TopCloudsNormalTexture;
 
-        skyboxSetting.bottomClouds.cloudsTexture = bottomCloudsTexture;
-        skyboxSetting.bottomClouds.cloudsNormalTexture = bottomCloudsNormalTexture;
+        skyboxSetting.BottomClouds.CloudsTexture = BottomCloudsTexture;
+        skyboxSetting.BottomClouds.CloudsNormalTexture = BottomCloudsNormalTexture;
+
+        skyboxSetting.Stars.StarsTexture = StarsTexture;
+        skyboxSetting.Stars.TwinkleTexture = TwinkleTexture;
+
+        skyboxSetting.Masser.MoonTexture = MoonTexture;
+        skyboxSetting.Secunda.MoonTexture = SecundaTexture;
 
         return skyboxSetting;
     }
@@ -782,8 +866,9 @@ public class BLBSkybox : MonoBehaviour
         string path = EditorUtility.SaveFilePanel("Choose save folder", "", "", "json");
 
         BLBSkyboxSetting skyboxSetting = new BLBSkyboxSetting();
-        BLBCloudsSetting topClouds = new BLBCloudsSetting();
-        BLBCloudsSetting bottomClouds = new BLBCloudsSetting();
+        BLBCloudsSetting TopClouds = new BLBCloudsSetting();
+        BLBCloudsSetting BottomClouds = new BLBCloudsSetting();
+        BLBStarsSetting Stars = new BLBStarsSetting();
 
         skyboxSetting.SunSize = skyboxMat.GetFloat("_SunSize");
         skyboxSetting.SunSizeConvergence = skyboxMat.GetInt("_SunSizeConvergence");
@@ -797,48 +882,98 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.SkyEndStart = skyboxMat.GetFloat("_SkyFadeEnd");
         skyboxSetting.FogDistance = skyboxMat.GetFloat("_FogDistance");
         
-        topClouds.cloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopDiffuse")));
-        topClouds.cloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopNormal")));
-        topClouds.TilingX = skyboxMat.GetTextureScale("_CloudTopDiffuse").x;
-        topClouds.TilingY = skyboxMat.GetTextureScale("_CloudTopDiffuse").y;
-        topClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudTopDiffuse").x;
-        topClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudTopDiffuse").y;
-        topClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopColor"));
-        topClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopNightColor"));
-        topClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudTopAlphaCutoff");
-        topClouds.AlphaMax = skyboxMat.GetFloat("_CloudTopAlphaMax");
-        topClouds.ColorBoost = skyboxMat.GetFloat("_CloudTopColorBoost");
-        topClouds.NormalEffect = skyboxMat.GetFloat("_CloudTopNormalEffect");
-        topClouds.Opacity = skyboxMat.GetFloat("_CloudTopOpacity");
-        topClouds.Bending = skyboxMat.GetFloat("_CloudTopBending");
+        TopClouds.CloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopDiffuse")));
+        TopClouds.CloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopNormal")));
+        TopClouds.TilingX = skyboxMat.GetTextureScale("_CloudTopDiffuse").x;
+        TopClouds.TilingY = skyboxMat.GetTextureScale("_CloudTopDiffuse").y;
+        TopClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudTopDiffuse").x;
+        TopClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudTopDiffuse").y;
+        TopClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopColor"));
+        TopClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopNightColor"));
+        TopClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudTopAlphaCutoff");
+        TopClouds.AlphaMax = skyboxMat.GetFloat("_CloudTopAlphaMax");
+        TopClouds.ColorBoost = skyboxMat.GetFloat("_CloudTopColorBoost");
+        TopClouds.NormalEffect = skyboxMat.GetFloat("_CloudTopNormalEffect");
+        TopClouds.Opacity = skyboxMat.GetFloat("_CloudTopOpacity");
+        TopClouds.Bending = skyboxMat.GetFloat("_CloudTopBending");
 
-        skyboxSetting.topCloudsFlat = JsonUtility.ToJson(topClouds);
+        skyboxSetting.TopCloudsFlat = JsonUtility.ToJson(TopClouds);
 
-        bottomClouds.cloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudDiffuse")));
-        bottomClouds.cloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudNormal")));
-        bottomClouds.TilingX = skyboxMat.GetTextureScale("_CloudDiffuse").x;
-        bottomClouds.TilingY = skyboxMat.GetTextureScale("_CloudDiffuse").y;
-        bottomClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudDiffuse").x;
-        bottomClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudDiffuse").y;
-        bottomClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudColor"));
-        bottomClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudNightColor"));
-        bottomClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudAlphaCutoff");
-        bottomClouds.AlphaMax = skyboxMat.GetFloat("_CloudAlphaMax");
-        bottomClouds.ColorBoost = skyboxMat.GetFloat("_CloudColorBoost");
-        bottomClouds.NormalEffect = skyboxMat.GetFloat("_CloudNormalEffect");
-        bottomClouds.Opacity = skyboxMat.GetFloat("_CloudOpacity");
-        bottomClouds.Bending = skyboxMat.GetFloat("_CloudBending");
+        BottomClouds.CloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudDiffuse")));
+        BottomClouds.CloudsNormalTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudNormal")));
+        BottomClouds.TilingX = skyboxMat.GetTextureScale("_CloudDiffuse").x;
+        BottomClouds.TilingY = skyboxMat.GetTextureScale("_CloudDiffuse").y;
+        BottomClouds.OffsetX = skyboxMat.GetTextureOffset("_CloudDiffuse").x;
+        BottomClouds.OffsetY = skyboxMat.GetTextureOffset("_CloudDiffuse").y;
+        BottomClouds.DayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudColor"));
+        BottomClouds.NightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudNightColor"));
+        BottomClouds.AlphaTreshold = skyboxMat.GetFloat("_CloudAlphaCutoff");
+        BottomClouds.AlphaMax = skyboxMat.GetFloat("_CloudAlphaMax");
+        BottomClouds.ColorBoost = skyboxMat.GetFloat("_CloudColorBoost");
+        BottomClouds.NormalEffect = skyboxMat.GetFloat("_CloudNormalEffect");
+        BottomClouds.Opacity = skyboxMat.GetFloat("_CloudOpacity");
+        BottomClouds.Bending = skyboxMat.GetFloat("_CloudBending");
 
-        skyboxSetting.bottomCloudsFlat = JsonUtility.ToJson(bottomClouds);
+        skyboxSetting.BottomCloudsFlat = JsonUtility.ToJson(BottomClouds);
+
+        Stars.StarsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_StarTex")));
+        Stars.StarsTilingX = skyboxMat.GetTextureOffset("_StarTex").x;
+        Stars.StarsTilingY = skyboxMat.GetTextureOffset("_StarTex").y;
+        Stars.StarsOffsetX = skyboxMat.GetTextureOffset("_StarTex").x;
+        Stars.StarsOffsetY = skyboxMat.GetTextureOffset("_StarTex").y;
+        Stars.StarBending = skyboxMat.GetFloat("_StarBending");
+        Stars.StarBrightness = skyboxMat.GetFloat("_StarBrightness");
+
+        Stars.TwinkleTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_TwinkleTex")));
+        Stars.TwinkleTilingX = skyboxMat.GetTextureOffset("_TwinkleTex").x;
+        Stars.TwinkleTilingY = skyboxMat.GetTextureOffset("_TwinkleTex").y;
+        Stars.TwinkleOffsetX = skyboxMat.GetTextureOffset("_TwinkleTex").x;
+        Stars.TwinkleOffsetY = skyboxMat.GetTextureOffset("_TwinkleTex").y;
+        Stars.TwinkleBoost = skyboxMat.GetFloat("_TwinkleBoost");
+        Stars.TwinkleSpeed = skyboxMat.GetFloat("_TwinkleSpeed");
+
+        skyboxSetting.StarsFlat = JsonUtility.ToJson(Stars);
+
+        BLBMoonSetting Masser = new BLBMoonSetting();
+        Masser.MoonColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_MoonColor"));
+        Masser.MoonTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_MoonTex")));
+        Masser.MinSize = skyboxMat.GetFloat("_MoonMinSize");
+        Masser.MaxSize = skyboxMat.GetFloat("_MoonMaxSize");
+        Masser.OrbitAngle = skyboxMat.GetVector("_MoonOrbitAngle");
+        Masser.OrbitOffset = skyboxMat.GetFloat("_MoonOrbitOffset");
+        Masser.OrbitSpeed = skyboxMat.GetFloat("_MoonOrbitSpeed");
+        Masser.SemiMinAxis = skyboxMat.GetFloat("_MoonSemiMinAxis");
+        Masser.SemiMajAxis = skyboxMat.GetFloat("_MoonSemiMajAxis");
+        Masser.AutoPhase = skyboxMat.GetFloat("_MoonPhaseOption");
+        Masser.Phase = skyboxMat.GetVector("_MoonPhase");
+        Masser.Spin = skyboxMat.GetFloat("_MoonSpinOption");
+        Masser.TidalAngle = skyboxMat.GetVector("_MoonTidalAngle");
+        Masser.SpinSpeed = skyboxMat.GetVector("_MoonSpinSpeed");
+
+        skyboxSetting.MasserFlat = JsonUtility.ToJson(Masser);
+
+        BLBMoonSetting Secunda = new BLBMoonSetting();
+        Secunda.MoonColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_SecundaColor"));
+        Secunda.MoonTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_SecundaTex")));
+        Secunda.MinSize = skyboxMat.GetFloat("_SecundaMinSize");
+        Secunda.MaxSize = skyboxMat.GetFloat("_SecundaMaxSize");
+        Secunda.OrbitAngle = skyboxMat.GetVector("_SecundaOrbitAngle");
+        Secunda.OrbitOffset = skyboxMat.GetFloat("_SecundaOrbitOffset");
+        Secunda.OrbitSpeed = skyboxMat.GetFloat("_SecundaOrbitSpeed");
+        Secunda.SemiMinAxis = skyboxMat.GetFloat("_SecundaSemiMinAxis");
+        Secunda.SemiMajAxis = skyboxMat.GetFloat("_SecundaSemiMajAxis");
+        Secunda.AutoPhase = skyboxMat.GetFloat("_SecundaPhaseOption");
+        Secunda.Phase = skyboxMat.GetVector("_SecundaPhase");
+        Secunda.Spin = skyboxMat.GetFloat("_SecundaSpinOption");
+        Secunda.TidalAngle = skyboxMat.GetVector("_SecundaTidalAngle");
+        Secunda.SpinSpeed = skyboxMat.GetVector("_SecundaSpinSpeed");
+
+        skyboxSetting.SecundaFlat = JsonUtility.ToJson(Secunda);
 
         string data = JsonUtility.ToJson(skyboxSetting, true);
-        
         File.WriteAllText(path, data);
 
         EditorUtility.DisplayDialog("Success","Skybox settings have been saved to: \n" + path, "Ok","");
-        
-        //File.WriteAllBytes(path, pngData);
-
     }
     [MenuItem("BLB/Export skybox settings", true)]
     static bool ValidateExportSkyboxSettings()

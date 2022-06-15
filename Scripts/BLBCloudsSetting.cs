@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public struct BLBCloudsSetting
 {
     [NonSerialized]
-    public Texture2D cloudsTexture;
-    public string cloudsTextureFile;
+    public Texture2D CloudsTexture;
+    public string CloudsTextureFile;
     [NonSerialized]
-    public Texture2D cloudsNormalTexture;
-    public string cloudsNormalTextureFile;
+    public Texture2D CloudsNormalTexture;
+    public string CloudsNormalTextureFile;
     public float TilingX;
     public float TilingY;
     public float OffsetX;
