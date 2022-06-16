@@ -917,16 +917,16 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.BottomCloudsFlat = JsonUtility.ToJson(BottomClouds);
 
         Stars.StarsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_StarTex")));
-        Stars.StarsTilingX = skyboxMat.GetTextureOffset("_StarTex").x;
-        Stars.StarsTilingY = skyboxMat.GetTextureOffset("_StarTex").y;
+        Stars.StarsTilingX = skyboxMat.GetTextureScale("_StarTex").x;
+        Stars.StarsTilingY = skyboxMat.GetTextureScale("_StarTex").y;
         Stars.StarsOffsetX = skyboxMat.GetTextureOffset("_StarTex").x;
         Stars.StarsOffsetY = skyboxMat.GetTextureOffset("_StarTex").y;
         Stars.StarBending = skyboxMat.GetFloat("_StarBending");
         Stars.StarBrightness = skyboxMat.GetFloat("_StarBrightness");
 
         Stars.TwinkleTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_TwinkleTex")));
-        Stars.TwinkleTilingX = skyboxMat.GetTextureOffset("_TwinkleTex").x;
-        Stars.TwinkleTilingY = skyboxMat.GetTextureOffset("_TwinkleTex").y;
+        Stars.TwinkleTilingX = skyboxMat.GetTextureScale("_TwinkleTex").x;
+        Stars.TwinkleTilingY = skyboxMat.GetTextureScale("_TwinkleTex").y;
         Stars.TwinkleOffsetX = skyboxMat.GetTextureOffset("_TwinkleTex").x;
         Stars.TwinkleOffsetY = skyboxMat.GetTextureOffset("_TwinkleTex").y;
         Stars.TwinkleBoost = skyboxMat.GetFloat("_TwinkleBoost");
