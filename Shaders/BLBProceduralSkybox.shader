@@ -664,7 +664,8 @@
 
     //Stars
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
-                float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
+                //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
+                float4 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw);
                 //invert the voronoi
                 //stars = 1 - stars;
                 //and then raise the value to a power to adjust the brightness falloff of the stars
