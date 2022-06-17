@@ -665,16 +665,21 @@
     //Stars
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
                 //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
-                float4 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw);
+                float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
+                float starsAlpha = round(tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).a);
                 //invert the voronoi
                 //stars = 1 - stars;
                 //and then raise the value to a power to adjust the brightness falloff of the stars
                 //stars = pow(stars, _StarBrightness);
-
+                //starsAlpha = round(0.5);
                 //we also sample a basic noise texture, this allows us to modulate the star brightness, this creates a twinkle effect
                 float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
+                twinkle = twinkle * starsAlpha;
+                //twinkle = max(0, twinkle * starsAlpha);
+                //twinkle *= round(1 - starsAlpha);
+
                 //modulate the twinkle value
-                twinkle *= _TwinkleBoost;
+                //twinkle *= _TwinkleBoost;
                 
                 //then adjust the final color
                 stars -= twinkle;
