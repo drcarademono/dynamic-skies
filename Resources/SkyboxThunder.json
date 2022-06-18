@@ -1,18 +1,18 @@
 {
-    "SunSize": 0.08,
-    "SunSizeConvergence": 6.0,
-    "AtmosphereThickness": 0.65,
+    "SunSize": 0.07999999821186066,
+    "SunSizeConvergence": 6,
+    "AtmosphereThickness": 0.6499999761581421,
     "SkyTint": "7E8494FF",
     "GroundColor": "4C4C4CFF",
     "Exposure": 0.0,
     "NightStartHeight": 1.0,
-    "NightEndHeight": 0.1,
+    "NightEndHeight": 0.10000000149011612,
     "SkyFadeStart": 0.25,
-    "SkyEndStart": -0.015,
+    "SkyEndStart": -0.014999999664723874,
     "FogDistance": 2048.0,
-    "TopCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"676777FF\",\"NightColor\":\"171512FF\",\"AlphaTreshold\":1.0,\"AlphaMax\":0.0,\"ColorBoost\":0.0,\"NormalEffect\":0.4,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.05}",
-    "BottomCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"C3CAD4FF\",\"NightColor\":\"141310FF\",\"AlphaTreshold\":0.15,\"AlphaMax\":0.0,\"ColorBoost\":0.65,\"NormalEffect\":0.6,\"NormalSpeed\":0.5,\"Opacity\":0.25,\"Bending\":0.2}",
-    "StarsFlat": "{\"StarsTextureFile\":\"2k_stars\",\"StarsTilingX\":1.0,\"StarsTilingY\":1.0,\"StarsOffsetX\":0.0,\"StarsOffsetY\":0.0,\"StarBending\":1.0,\"StarBrightness\":100.0,\"TwinkleTextureFile\":\"starsHighlight\",\"TwinkleTilingX\":1.0,\"TwinkleTilingY\":1.0,\"TwinkleOffsetX\":0.0,\"TwinkleOffsetY\":0.0,\"TwinkleBoost\":0.02500000037252903,\"TwinkleSpeed\":0.0010000000474974514}",
-    "MasserFlat": "{\"MoonColor\":\"FFFFFFFF\",\"MoonTextureFile\":\"Mars_Map\",\"TilingX\":0.0,\"TilingY\":0.0,\"OffsetX\":0.0,\"OffsetY\":0.0,\"MinSize\":0.33399999141693118,\"MaxSize\":0.33399999141693118,\"OrbitAngle\":{\"x\":0.0,\"y\":0.0,\"z\":45.0,\"w\":0.0},\"OrbitOffset\":0.0,\"OrbitSpeed\":0.0010000000474974514,\"SemiMinAxis\":1.0,\"SemiMajAxis\":1.0,\"AutoPhase\":1.0,\"Phase\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"Spin\":0.0,\"TidalAngle\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"SpinSpeed\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0}}",
-    "SecundaFlat": "{\"MoonColor\":\"FFFFFFFF\",\"MoonTextureFile\":\"Enceladus\",\"TilingX\":0.0,\"TilingY\":0.0,\"OffsetX\":0.0,\"OffsetY\":0.0,\"MinSize\":0.19499999284744264,\"MaxSize\":0.19499999284744264,\"OrbitAngle\":{\"x\":0.0,\"y\":0.0,\"z\":45.0,\"w\":0.0},\"OrbitOffset\":10.0,\"OrbitSpeed\":0.0010000000474974514,\"SemiMinAxis\":0.8999999761581421,\"SemiMajAxis\":0.6000000238418579,\"AutoPhase\":1.0,\"Phase\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"Spin\":0.0,\"TidalAngle\":{\"x\":90.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"SpinSpeed\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0}}"
+    "TopCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"676777FF\",\"NightColor\":\"171512FF\",\"AlphaTreshold\":1.0,\"AlphaMax\":0.0,\"ColorBoost\":0.0,\"NormalEffect\":0.4000000059604645,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.05000000074505806}",
+    "BottomCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"C3CAD4FF\",\"NightColor\":\"141310FF\",\"AlphaTreshold\":0.15000000596046449,\"AlphaMax\":0.0,\"ColorBoost\":0.6499999761581421,\"NormalEffect\":0.6000000238418579,\"NormalSpeed\":0.0,\"Opacity\":0.25,\"Bending\":0.20000000298023225}",
+    "StarsFlat": "{\"StarsTextureFile\":\"DefaultStars\",\"StarsTilingX\":1.0,\"StarsTilingY\":1.0,\"StarsOffsetX\":0.0,\"StarsOffsetY\":0.0,\"StarBending\":1.0,\"StarsTwinkleTextureFile\":\"DefaultStarsTwinkleMask\",\"TwinkleTextureFile\":\"DefaultStarsTwinkleNoise\",\"TwinkleTilingX\":1.0,\"TwinkleTilingY\":1.0,\"TwinkleOffsetX\":0.0,\"TwinkleOffsetY\":0.0,\"TwinkleBoost\":0.02500000037252903,\"TwinkleSpeed\":0.0010000000474974514}",
+    "MasserFlat": "{\"MoonColor\":\"FFFFFFFF\",\"MoonTextureFile\":\"DefaultMars\",\"TilingX\":0.0,\"TilingY\":0.0,\"OffsetX\":0.0,\"OffsetY\":0.0,\"MinSize\":0.33399999141693118,\"MaxSize\":0.33399999141693118,\"OrbitAngle\":{\"x\":0.0,\"y\":0.0,\"z\":45.0,\"w\":0.0},\"OrbitOffset\":0.0,\"OrbitSpeed\":0.0010000000474974514,\"SemiMinAxis\":1.0,\"SemiMajAxis\":1.0,\"AutoPhase\":1.0,\"Phase\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"Spin\":0.0,\"TidalAngle\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"SpinSpeed\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0}}",
+    "SecundaFlat": "{\"MoonColor\":\"FFFFFFFF\",\"MoonTextureFile\":\"DefaultEnceladus\",\"TilingX\":0.0,\"TilingY\":0.0,\"OffsetX\":0.0,\"OffsetY\":0.0,\"MinSize\":0.19499999284744264,\"MaxSize\":0.19499999284744264,\"OrbitAngle\":{\"x\":0.0,\"y\":0.0,\"z\":45.0,\"w\":0.0},\"OrbitOffset\":10.0,\"OrbitSpeed\":0.0010000000474974514,\"SemiMinAxis\":0.8999999761581421,\"SemiMajAxis\":0.6000000238418579,\"AutoPhase\":1.0,\"Phase\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"Spin\":0.0,\"TidalAngle\":{\"x\":90.0,\"y\":0.0,\"z\":0.0,\"w\":0.0},\"SpinSpeed\":{\"x\":0.0,\"y\":0.0,\"z\":0.0,\"w\":0.0}}"
 }

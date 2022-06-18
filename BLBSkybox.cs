@@ -159,6 +159,8 @@ public class BLBSkybox : MonoBehaviour
             //0:00 - 05:00
             currentDayPart = DayParts.Night;
             setFogColor(false);
+            forceWeatherUpdate = true;
+            OnWeatherChange(currentWeather);
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
             }
@@ -185,6 +187,8 @@ public class BLBSkybox : MonoBehaviour
             //20:00 - 0:00
             currentDayPart = DayParts.Evening;
             setFogColor(false);
+            forceWeatherUpdate = true;
+            OnWeatherChange(currentWeather);
         }
         //ApplyPendingWeatherSettings();
     }
@@ -350,6 +354,13 @@ public class BLBSkybox : MonoBehaviour
     #endregion
 
     #region Weather
+    private int getWeatherIndex() {
+        int index = 0;
+        if(currentDayPart == DayParts.Evening || currentDayPart == DayParts.Night) {
+            index = 1;
+        }
+        return index;
+    }
     private bool pendingWeather = false; //Indicates if a weather change is pending - need to figure out best way to handle this during a sun / cloud color lerp
     private float pendingWindDirection; //The new wind direction
 
@@ -362,8 +373,10 @@ public class BLBSkybox : MonoBehaviour
             forceWeatherUpdate = false;
             currentWeather = weather;
 
+            int index = getWeatherIndex();//TODO: Get correct index based on time
+
             pendingWindDirection = getWindDirection(); //Get new random wind direction
-            pendingSkyboxSettings = SkyboxSettings[weather];
+            pendingSkyboxSettings = SkyboxSettings[weather][index];
 
             Debug.Log("Pending weather = " + weather.ToString());
             Debug.Log("Pending weather settings: " + JsonUtility.ToJson(pendingSkyboxSettings));
@@ -443,7 +456,7 @@ public class BLBSkybox : MonoBehaviour
     #region Skybox settings
     private float cloudSpeed = 0.001f / 12; //Default cloud speed in realtime (timescale = 1)    
     //Dictionaries to store skybox settings
-    private Dictionary<WeatherType, BLBSkyboxSetting> SkyboxSettings;
+    private Dictionary<WeatherType, BLBSkyboxSetting[]> SkyboxSettings;
 
     private void FindPresetMod()
     {
@@ -480,32 +493,82 @@ public class BLBSkybox : MonoBehaviour
         Debug.Log("BLB Skybox - set mod instance as default preset, looking for preset mods");
         FindPresetMod();
 
-        SkyboxSettings = new Dictionary<WeatherType, BLBSkyboxSetting>();
+        SkyboxSettings = new Dictionary<WeatherType, BLBSkyboxSetting[]>();
 
         string data = presetMod.GetAsset<TextAsset>("SkyboxSunny.json", false).text;
-        loadSkyboxSettings(WeatherType.Sunny, data);
+        loadSkyboxSettings(WeatherType.Sunny, data, 0);
+
+        TextAsset night = presetMod.GetAsset<TextAsset>("SkyboxSunnyNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Sunny, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxCloudy.json", false).text;
-        loadSkyboxSettings(WeatherType.Cloudy, data);
+        loadSkyboxSettings(WeatherType.Cloudy, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxCloudyNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Cloudy, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxOvercast.json", false).text;
-        loadSkyboxSettings(WeatherType.Overcast, data);
+        loadSkyboxSettings(WeatherType.Overcast, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxOvercastNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Overcast, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxFog.json", false).text;
-        loadSkyboxSettings(WeatherType.Fog, data);
+        loadSkyboxSettings(WeatherType.Fog, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxFogNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Fog, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxRain.json", false).text;
-        loadSkyboxSettings(WeatherType.Rain, data);
+        loadSkyboxSettings(WeatherType.Rain, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxRainNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Rain, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxThunder.json", false).text;
-        loadSkyboxSettings(WeatherType.Thunder, data);
+        loadSkyboxSettings(WeatherType.Thunder, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxThunderNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Thunder, data, 1);
+        }
 
         data = presetMod.GetAsset<TextAsset>("SkyboxSnow.json", false).text;
-        loadSkyboxSettings(WeatherType.Snow, data);
+        loadSkyboxSettings(WeatherType.Snow, data, 0);
+
+        night = presetMod.GetAsset<TextAsset>("SkyboxSnowNight.json", false);
+        if(night) {
+            data = night.text;
+            loadSkyboxSettings(WeatherType.Snow, data, 1);
+        }
     }
-    private void loadSkyboxSettings(WeatherType weatherType, string data) {
+    private void loadSkyboxSettings(WeatherType weatherType, string data, int index = 0) {
         BLBSkyboxSetting skyboxSetting = BLBSkybox.ProcessSkyboxSetting(data);
-        SkyboxSettings.Add(weatherType, skyboxSetting);
+        if(!SkyboxSettings.ContainsKey(weatherType)) {
+            //SkyboxSettings.Add(weatherType, skyboxSetting);
+            SkyboxSettings.Add(weatherType, new BLBSkyboxSetting[2]);
+        }
+        SkyboxSettings[weatherType][index] = skyboxSetting;
+        //Set the day weather as default, night settings are loaded afterwards with index 1 so they will overwrite if present
+        if(index == 0) {
+            SkyboxSettings[weatherType][1] = skyboxSetting;
+        }
     }
     #endregion
 
@@ -543,7 +606,7 @@ public class BLBSkybox : MonoBehaviour
     #endregion
 
     #region Stars
-    private float starsTwinkleSpeed = 0.001f / 12; //Default star twinkle speed in realtime (timescale = 1)
+    private float starsTwinkleSpeed = 0.012f / 12; //Default star twinkle speed in realtime (timescale = 1)
     #endregion
 
     #region Fog
@@ -713,7 +776,11 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetTextureScale("_StarTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
         skyboxMat.SetTextureOffset("_StarTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
         skyboxMat.SetFloat("_StarBending", skyboxSetting.Stars.StarBending);
-        skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
+        skyboxMat.SetTexture("_StarTwinkleTex", skyboxSetting.Stars.StarsTwinkleTexture);
+        //skyboxMat.SetTextureScale("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
+        //skyboxMat.SetTextureOffset("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
+
+        //skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
         skyboxMat.SetTexture("_TwinkleTex", skyboxSetting.Stars.TwinkleTexture);
         skyboxMat.SetTextureScale("_TwinkleTex", new Vector2(skyboxSetting.Stars.TwinkleTilingX, skyboxSetting.Stars.TwinkleTilingY));
         skyboxMat.SetTextureOffset("_TwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));
@@ -781,6 +848,7 @@ public class BLBSkybox : MonoBehaviour
         Texture2D BottomCloudsTexture;
         Texture2D BottomCloudsNormalTexture;
         Texture2D StarsTexture;
+        Texture2D StarsTwinkleTexture;
         Texture2D TwinkleTexture;
         Texture2D MoonTexture;
         Texture2D SecundaTexture;
@@ -802,6 +870,9 @@ public class BLBSkybox : MonoBehaviour
             guids = AssetDatabase.FindAssets(skyboxSetting.Stars.StarsTextureFile);
             StarsTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
 
+            guids = AssetDatabase.FindAssets(skyboxSetting.Stars.StarsTwinkleTextureFile);
+            StarsTwinkleTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
+
             guids = AssetDatabase.FindAssets(skyboxSetting.Stars.TwinkleTextureFile);
             TwinkleTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[0]), typeof(Texture2D));
 
@@ -818,6 +889,7 @@ public class BLBSkybox : MonoBehaviour
             BottomCloudsNormalTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.BottomClouds.CloudsNormalTextureFile);
 
             StarsTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Stars.StarsTextureFile);
+            StarsTwinkleTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Stars.StarsTwinkleTextureFile);
             TwinkleTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Stars.TwinkleTextureFile);
 
             MoonTexture = Instance.presetMod.GetAsset<Texture2D>(skyboxSetting.Masser.MoonTextureFile);
@@ -831,6 +903,7 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.BottomClouds.CloudsNormalTexture = BottomCloudsNormalTexture;
 
         skyboxSetting.Stars.StarsTexture = StarsTexture;
+        skyboxSetting.Stars.StarsTwinkleTexture = StarsTwinkleTexture;
         skyboxSetting.Stars.TwinkleTexture = TwinkleTexture;
 
         skyboxSetting.Masser.MoonTexture = MoonTexture;
@@ -922,7 +995,9 @@ public class BLBSkybox : MonoBehaviour
         Stars.StarsOffsetX = skyboxMat.GetTextureOffset("_StarTex").x;
         Stars.StarsOffsetY = skyboxMat.GetTextureOffset("_StarTex").y;
         Stars.StarBending = skyboxMat.GetFloat("_StarBending");
-        Stars.StarBrightness = skyboxMat.GetFloat("_StarBrightness");
+        //Stars.StarBrightness = skyboxMat.GetFloat("_StarBrightness");
+
+        Stars.StarsTwinkleTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_StarTwinkleTex")));
 
         Stars.TwinkleTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_TwinkleTex")));
         Stars.TwinkleTilingX = skyboxMat.GetTextureScale("_TwinkleTex").x;

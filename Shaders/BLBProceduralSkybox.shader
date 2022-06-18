@@ -53,7 +53,9 @@
         [Header (Stars)]
         _StarTex("Star Tex", 2D) = "black" {}
         _StarBending("Star Bending", Range(0, 1)) = 1
-        _StarBrightness("Star Brightness", Range(0, 100)) = 8.5
+        //_StarBrightness("Star Brightness", Range(0, 100)) = 8.5
+        [NoScaleOffset]
+        _StarTwinkleTex("Star Twinkle Tex", 2D) = "black" {}
         _TwinkleTex ("Twinkle Noise Tex", 2D) = "black" {}
         _TwinkleBoost("Twinkle Boost", Range(0, 1)) = .25
         _TwinkleSpeed("Twinkle Speed", Range(0, 1)) = .1
@@ -139,9 +141,10 @@
             uniform float _CloudBending;
             uniform float _CloudDirection, _CloudBlendScale, _CloudBlendLB, _CloudBlendUB, _CloudNormalSpeed;
 
-            uniform sampler2D _StarTex, _TwinkleTex;
-            uniform float4 _StarTex_ST, _TwinkleTex_ST;
-            uniform float _StarBending, _StarBrightness;
+            uniform sampler2D _StarTex, _StarTwinkleTex, _TwinkleTex;
+            uniform float4 _StarTex_ST, _StarTwinkleTex_ST, _TwinkleTex_ST;
+            //uniform float _StarBending, _StarBrightness;
+            uniform float _StarBending;
             uniform float _TwinkleBoost, _TwinkleSpeed;
 
             uniform sampler2D _MoonTex;
@@ -666,7 +669,7 @@
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
                 //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
                 float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
-                float starsAlpha = round(tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).a);
+                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw));
                 //invert the voronoi
                 //stars = 1 - stars;
                 //and then raise the value to a power to adjust the brightness falloff of the stars
@@ -679,7 +682,7 @@
                 //twinkle *= round(1 - starsAlpha);
 
                 //modulate the twinkle value
-                //twinkle *= _TwinkleBoost;
+                twinkle *= _TwinkleBoost;
                 
                 //then adjust the final color
                 stars -= twinkle;

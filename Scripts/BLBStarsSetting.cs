@@ -12,7 +12,10 @@ public struct BLBStarsSetting
     public float StarsOffsetX;
     public float StarsOffsetY;
     public float StarBending;
-    public float StarBrightness;
+    [NonSerialized]
+    public Texture2D StarsTwinkleTexture;
+    public string StarsTwinkleTextureFile;
+    //public float StarBrightness;
     [NonSerialized]
     public Texture2D TwinkleTexture;
     public string TwinkleTextureFile;
