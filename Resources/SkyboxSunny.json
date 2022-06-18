@@ -4,6 +4,8 @@
     "AtmosphereThickness": 0.699999988079071,
     "SkyTint": "7B94FFFF",
     "GroundColor": "4C4C4CFF",
+    "AmbientColor": "030303FF",
+    "AmbientIntensity": 1.0,
     "Exposure": 4.0,
     "NightStartHeight": 1.0,
     "NightEndHeight": 0.10000000149011612,

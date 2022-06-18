@@ -8,6 +8,8 @@ public struct BLBSkyboxSetting
     public float AtmosphereThickness;
     public string SkyTint;
     public string GroundColor;
+    public string AmbientColor;
+    public float AmbientIntensity;
     public float Exposure;
     public float NightStartHeight;
     public float NightEndHeight;

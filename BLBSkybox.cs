@@ -731,6 +731,11 @@ public class BLBSkybox : MonoBehaviour
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.GroundColor, out tmpColor)) {
             skyboxMat.SetColor("_GroundColor", tmpColor);
         }
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.AmbientColor, out tmpColor)) {
+            UnityEngine.RenderSettings.ambientLight = tmpColor;
+        }
+        UnityEngine.RenderSettings.ambientIntensity = skyboxSetting.AmbientIntensity;
+
         skyboxMat.SetFloat("_Exposure", skyboxSetting.Exposure);
         skyboxMat.SetFloat("_NightStartHeight", skyboxSetting.NightStartHeight);
         skyboxMat.SetFloat("_NightEndHeight", skyboxSetting.NightEndHeight);
@@ -948,6 +953,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.AtmosphereThickness = skyboxMat.GetFloat("_AtmosphereThickness");
         skyboxSetting.SkyTint = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_SkyTint"));
         skyboxSetting.GroundColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_GroundColor"));
+        skyboxSetting.AmbientColor = ColorUtility.ToHtmlStringRGBA(UnityEngine.RenderSettings.ambientLight);
+        skyboxSetting.AmbientIntensity = UnityEngine.RenderSettings.ambientIntensity;
         skyboxSetting.Exposure = skyboxMat.GetFloat("_Exposure");
         skyboxSetting.NightStartHeight = skyboxMat.GetFloat("_NightStartHeight");
         skyboxSetting.NightEndHeight = skyboxMat.GetFloat("_NightEndHeight");
