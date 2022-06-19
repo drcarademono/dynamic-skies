@@ -175,10 +175,14 @@ public class BLBSkybox : MonoBehaviour
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
             }
+            forceWeatherUpdate = true;
+            OnWeatherChange(currentWeather);
         } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
             //12:00 - 17:00
             currentDayPart = DayParts.Midday;
             setFogColor(true);
+            forceWeatherUpdate = true;
+            OnWeatherChange(currentWeather);
         } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
             //17:00 - 19:00
             currentDayPart = DayParts.Dusk;

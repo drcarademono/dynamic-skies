@@ -1,7 +1,7 @@
 {
     "SunSize": 0.07999999821186066,
     "SunSizeConvergence": 6,
-    "AtmosphereThickness": 0.5,
+    "AtmosphereThickness": 0.1,
     "SkyTint": "F7FFFFFF",
     "GroundColor": "4C4C4CFF",
     "AmbientColor": "030303FF",

@@ -627,20 +627,6 @@
                                 acos(-moonFragNormal.y) / UNITY_PI
                 );   
 
-                clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
-
-                //if our sphere tracing returned a positive value we have a moon fragment
-                if(sphere >= 0.0){
-                    //so we grab the moon tex and multiple the color
-                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-
-                    //then we lerp to the color be how much of the moon is lit
-                    moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
-
-                    //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                    col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - clouds));
-                }
-
                 //get uv from the normal
                 float SecundaU = atan2(SecundaMoonFragNormal.z, SecundaMoonFragNormal.x) / UNITY_TWO_PI;
                 //to get around this we take the frac of this u value because these values are the same at the boundary but the frac value doesnt have the seam
@@ -651,7 +637,9 @@
                 float2 SecundaMoonUV = float2(
                                 fwidth(SecundaU) < fwidth(SecundaFracU) - 0.001 ? SecundaU : SecundaFracU,
                                 acos(-SecundaMoonFragNormal.y) / UNITY_PI
-                );   
+                );
+
+                clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
 
                 //if our sphere tracing returned a positive value we have a moon fragment
                 if(SecundaSphere >= 0.0){
@@ -663,7 +651,23 @@
 
                     //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
                     col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - clouds));
+                } else {
+                    //if our sphere tracing returned a positive value we have a moon fragment
+                    if(sphere >= 0.0){
+                        //so we grab the moon tex and multiple the color
+                        float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
+
+                        //then we lerp to the color be how much of the moon is lit
+                        moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
+
+                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
+                        col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - clouds));
+                    }
                 }
+
+
+
+
 
     //Stars
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
@@ -689,7 +693,7 @@
                 stars = saturate(stars);
 
                 //then lerp to the stars color masking out the horizon
-                col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, sphere)));
+                col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
 
 #ifdef REDUCE_COLOR
                 float stepSize = 0.02083333333333333333333333333333;

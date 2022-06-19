@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: BLBSkyboxMaterial
   m_Shader: {fileID: 4800000, guid: 86de95ef4a2cc4048b91b202864c9f94, type: 3}
-  m_ShaderKeywords: PHASE_LIGHT SECUNDA_PHASE_LIGHT _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
+  m_ShaderKeywords: _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
     _SECUNDASPINOPTION_TIDAL_LOCK _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -100,7 +100,7 @@ Material:
     - _AtmosphereThickness: 1
     - _BumpScale: 1
     - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.625
+    - _CloudAlphaMax: 0.658
     - _CloudBending: 0.33
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
@@ -108,12 +108,12 @@ Material:
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0
     - _CloudDirection: 217
-    - _CloudNormalEffect: 0.15
+    - _CloudNormalEffect: 0.48
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.997
     - _CloudSpeed: 0.02
     - _CloudTopAlphaCutoff: 0
-    - _CloudTopAlphaMax: 0.52
+    - _CloudTopAlphaMax: 0.935
     - _CloudTopBending: 0.33
     - _CloudTopColorBoost: 0
     - _CloudTopNormalEffect: 0.48
@@ -122,17 +122,17 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Exposure: 1
-    - _FogDistance: 768
+    - _FogDistance: 384
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _MoonMaxSize: 0.128
-    - _MoonMinSize: 0.128
+    - _MoonMaxSize: 0.334
+    - _MoonMinSize: 0.334
     - _MoonOrbitOffset: 0
     - _MoonOrbitSpeed: 0.001
-    - _MoonPhaseOption: 1
+    - _MoonPhaseOption: 0
     - _MoonSemiMajAxis: 1
     - _MoonSemiMinAxis: 1
     - _MoonSpinOption: 0
@@ -141,11 +141,11 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ReduceColor: 0
-    - _SecundaMaxSize: 0.064
-    - _SecundaMinSize: 0.064
-    - _SecundaOrbitOffset: 10
+    - _SecundaMaxSize: 0.195
+    - _SecundaMinSize: 0.195
+    - _SecundaOrbitOffset: 21.6
     - _SecundaOrbitSpeed: 0.001
-    - _SecundaPhaseOption: 1
+    - _SecundaPhaseOption: 0
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
     - _SecundaSpinOption: 0
@@ -164,10 +164,10 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CloudColor: {r: 0.77254903, g: 0.78431374, b: 0.78039217, a: 1}
-    - _CloudNightColor: {r: 0.4627451, g: 0.4627451, b: 0.4627451, a: 1}
-    - _CloudTopColor: {r: 0.89411765, g: 0.9529412, b: 0.9372549, a: 1}
-    - _CloudTopNightColor: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 1}
+    - _CloudColor: {r: 0.6313726, g: 0.6313726, b: 0.6313726, a: 1}
+    - _CloudNightColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
+    - _CloudTopColor: {r: 0.2901961, g: 0.3019608, b: 0.3019608, a: 1}
+    - _CloudTopNightColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
