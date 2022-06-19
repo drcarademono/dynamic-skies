@@ -708,7 +708,8 @@
 
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
-                col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
+                //col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
+                col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - (night * 0.5))));
 
                 /*
                 float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {   
