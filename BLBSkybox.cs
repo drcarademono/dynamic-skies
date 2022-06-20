@@ -59,7 +59,6 @@ public class BLBSkybox : MonoBehaviour
         //Prepare the cloud types, lunar phases and fog settings
         Instance.loadAllSkyboxSettings();
 
-        //Instance.setCloudTypes();
         Instance.setLunarPhases();
         //Instance.getVanillaFogSettings();
         Instance.setFogSettings(); //Overwrites vanilla fog with linear fog settings
@@ -168,6 +167,7 @@ public class BLBSkybox : MonoBehaviour
             }
         } else if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
             //05:00 - 07:00
+            setFogColor(true);
             currentDayPart = DayParts.Dawn;
             OnDawn();
         } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
@@ -188,6 +188,7 @@ public class BLBSkybox : MonoBehaviour
         } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
             //17:00 - 19:00
             currentDayPart = DayParts.Dusk;
+            setFogColor(true);
             OnDusk();
         } else if (isHourDayPart(hour, DayParts.Evening) && currentDayPart != DayParts.Evening) {
             //20:00 - 0:00
@@ -368,6 +369,7 @@ public class BLBSkybox : MonoBehaviour
         return index;
     }
     private bool pendingWeather = false; //Indicates if a weather change is pending - need to figure out best way to handle this during a sun / cloud color lerp
+    private WeatherType pendingWeatherType;
     private float pendingWindDirection; //The new wind direction
 
     private BLBSkyboxSetting pendingSkyboxSettings; //The new settings for the skybox
@@ -377,12 +379,13 @@ public class BLBSkybox : MonoBehaviour
         //Only change weather if it's not the same weather as the current weather
         if(weather != currentWeather || forceWeatherUpdate == true) {
             forceWeatherUpdate = false;
-            currentWeather = weather;
+            pendingWeatherType = weather;
+            //currentWeather = weather;
 
             int index = getWeatherIndex();//TODO: Get correct index based on time
 
             pendingWindDirection = getWindDirection(); //Get new random wind direction
-            pendingSkyboxSettings = SkyboxSettings[weather][index];
+            pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
             
             //Apply the pending weather settings
             ApplyPendingWeatherSettings();
@@ -391,9 +394,10 @@ public class BLBSkybox : MonoBehaviour
 
     private void ApplyPendingWeatherSettings() {
         //if(pendingWeather == true) {
-            BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings);
+            BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
             //Change exposure to match Daggerfall Unity's sunlight reduction - might be a better way
-            SetFogDistance(currentWeather);
+            SetFogDistance(pendingWeatherType);
+            currentWeather = pendingWeatherType;
             pendingWeather = false;
         //}
     }
@@ -611,13 +615,15 @@ public class BLBSkybox : MonoBehaviour
     private float fogNightDistance = 2048f;
     private void SetFogDefaults() {
         //Set up some default settings for the Unity renderer
-        UnityEngine.RenderSettings.fogColor = new Color(0.3f, 0.3f, 0.3f, 1.0f);
+        UnityEngine.RenderSettings.fogColor = fogDayColor;
         UnityEngine.RenderSettings.fogEndDistance = fogDayDistance;
     }
     private void setFogColor(bool day) {
         if(day) {
+            //wm.previousOutdoorFogColor = fogDayColor;
             UnityEngine.RenderSettings.fogColor = fogDayColor; //TODO: probably should be lerped
         } else {
+            //wm.previousOutdoorFogColor = fogNightColor;
             UnityEngine.RenderSettings.fogColor = fogNightColor; //TODO: probably should be lerped
         }
     }
@@ -634,14 +640,14 @@ public class BLBSkybox : MonoBehaviour
         //fogNightDistance = fogDayDistance / 2;
         fogNightDistance = fogSettings.endDistance;
         
-        Debug.Log("BLB: Weather type: " + weather.ToString() + " fogDistance = " + fogDistance.ToString());
+        //Debug.Log("BLB: Weather type: " + weather.ToString() + " fogDistance = " + fogDistance.ToString());
 
         UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
-        if(currentDayPart == DayParts.Night) {
-            skyboxMat.SetFloat("_FogDistance", fogNightDistance);
-        } else {
+        //if(currentDayPart == DayParts.Night) {
+            //skyboxMat.SetFloat("_FogDistance", fogNightDistance);
+        //} else {
             skyboxMat.SetFloat("_FogDistance", fogDistance);
-        }
+        //}
     }
     private Dictionary<WeatherType, WeatherManager.FogSettings> FogSettings;
     private void getVanillaFogSettings() {
@@ -657,13 +663,13 @@ public class BLBSkybox : MonoBehaviour
     }
     private void setFogSettings() {
         FogSettings = new Dictionary<WeatherType, WeatherManager.FogSettings>();
-        FogSettings.Add(WeatherType.Sunny, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 2048f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Cloudy, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1920f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Overcast, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1536f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Fog, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 128f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Rain, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1024f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Thunder, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 768f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Snow, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 512f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Sunny, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 3072f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Cloudy, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 2560f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Overcast, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 2048f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Fog, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 96f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Rain, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1536f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Thunder, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1024f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Snow, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 768f, excludeSkybox = true});
 
         //Overwrite the default fog settings
         WeatherManager wm = GameManager.Instance.WeatherManager;
@@ -710,7 +716,7 @@ public class BLBSkybox : MonoBehaviour
 
     #region Settings management
 
-    private static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting) {
+    private static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting, bool refreshTextures = true, bool updateMoons = true) {
         if(UnityEngine.RenderSettings.skybox == null) {
             Debug.Log("BLB: Skybox material not found");
             return false;
@@ -729,7 +735,9 @@ public class BLBSkybox : MonoBehaviour
             skyboxMat.SetColor("_GroundColor", tmpColor);
         }
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.AmbientColor, out tmpColor)) {
-            Instance.playerAmbientLight.ExteriorNightAmbientLight = tmpColor;
+            #if !UNITY_EDITOR
+                //Instance.playerAmbientLight.ExteriorNightAmbientLight = tmpColor;
+            #endif
         }
         //UnityEngine.RenderSettings.ambientIntensity = skyboxSetting.AmbientIntensity;
 
@@ -738,12 +746,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_NightEndHeight", skyboxSetting.NightEndHeight);
         skyboxMat.SetFloat("_SkyFadeStart", skyboxSetting.SkyFadeStart);
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
-        //skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
+        skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
 
-        skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
-        skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.TopClouds.CloudsNormalTexture);
-        skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.TilingX, skyboxSetting.TopClouds.TilingY));
-        skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.OffsetX, skyboxSetting.TopClouds.OffsetY));
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.DayColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudTopColor", tmpColor);
         }
@@ -757,10 +761,6 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.TopClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.TopClouds.Bending);
 
-        skyboxMat.SetTexture("_CloudDiffuse", skyboxSetting.BottomClouds.CloudsTexture);
-        skyboxMat.SetTexture("_CloudNormal", skyboxSetting.BottomClouds.CloudsNormalTexture);
-        skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.TilingX, skyboxSetting.BottomClouds.TilingY));
-        skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.OffsetX, skyboxSetting.BottomClouds.OffsetY));
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.DayColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudColor", tmpColor);
         }
@@ -774,58 +774,78 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
         
-        skyboxMat.SetTexture("_StarTex", skyboxSetting.Stars.StarsTexture);
-        skyboxMat.SetTextureScale("_StarTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
-        skyboxMat.SetTextureOffset("_StarTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
+        if(refreshTextures) {
+            skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
+            skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.TopClouds.CloudsNormalTexture);
+            skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.TilingX, skyboxSetting.TopClouds.TilingY));
+            skyboxMat.SetTextureOffset("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.OffsetX, skyboxSetting.TopClouds.OffsetY));            
+
+            skyboxMat.SetTexture("_CloudDiffuse", skyboxSetting.BottomClouds.CloudsTexture);
+            skyboxMat.SetTexture("_CloudNormal", skyboxSetting.BottomClouds.CloudsNormalTexture);
+            skyboxMat.SetTextureScale("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.TilingX, skyboxSetting.BottomClouds.TilingY));
+            skyboxMat.SetTextureOffset("_CloudDiffuse", new Vector2(skyboxSetting.BottomClouds.OffsetX, skyboxSetting.BottomClouds.OffsetY));
+
+            skyboxMat.SetTexture("_StarTex", skyboxSetting.Stars.StarsTexture);
+            skyboxMat.SetTextureScale("_StarTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
+            skyboxMat.SetTextureOffset("_StarTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
+
+            skyboxMat.SetTexture("_StarTwinkleTex", skyboxSetting.Stars.StarsTwinkleTexture);
+            skyboxMat.SetTextureScale("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
+            skyboxMat.SetTextureOffset("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
+
+            skyboxMat.SetTexture("_TwinkleTex", skyboxSetting.Stars.TwinkleTexture);
+            skyboxMat.SetTextureScale("_TwinkleTex", new Vector2(skyboxSetting.Stars.TwinkleTilingX, skyboxSetting.Stars.TwinkleTilingY));
+            skyboxMat.SetTextureOffset("_TwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));
+
+            skyboxMat.SetTexture("_MoonTex", skyboxSetting.Masser.MoonTexture);
+            skyboxMat.SetTextureScale("_MoonTex", new Vector2(skyboxSetting.Masser.TilingX, skyboxSetting.Masser.TilingY));
+            skyboxMat.SetTextureOffset("_MoonTex", new Vector2(skyboxSetting.Masser.OffsetX, skyboxSetting.Masser.OffsetY));
+
+            skyboxMat.SetTexture("_SecundaTex", skyboxSetting.Secunda.MoonTexture);
+            skyboxMat.SetTextureScale("_SecundaTex", new Vector2(skyboxSetting.Secunda.TilingX, skyboxSetting.Secunda.TilingY));
+            skyboxMat.SetTextureOffset("_SecundaTex", new Vector2(skyboxSetting.Secunda.OffsetX, skyboxSetting.Secunda.OffsetY));
+        }
+
         skyboxMat.SetFloat("_StarBending", skyboxSetting.Stars.StarBending);
-        skyboxMat.SetTexture("_StarTwinkleTex", skyboxSetting.Stars.StarsTwinkleTexture);
-        skyboxMat.SetTextureScale("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsTilingX, skyboxSetting.Stars.StarsTilingY));
-        skyboxMat.SetTextureOffset("_StarTwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));    
 
         //skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
-        skyboxMat.SetTexture("_TwinkleTex", skyboxSetting.Stars.TwinkleTexture);
-        skyboxMat.SetTextureScale("_TwinkleTex", new Vector2(skyboxSetting.Stars.TwinkleTilingX, skyboxSetting.Stars.TwinkleTilingY));
-        skyboxMat.SetTextureOffset("_TwinkleTex", new Vector2(skyboxSetting.Stars.StarsOffsetX, skyboxSetting.Stars.StarsOffsetY));
         skyboxMat.SetFloat("_TwinkleBoost", skyboxSetting.Stars.TwinkleBoost);
         skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed);
 
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
-            skyboxMat.SetColor("_MoonColor", tmpColor);
-        }
-        skyboxMat.SetTexture("_MoonTex", skyboxSetting.Masser.MoonTexture);
-        skyboxMat.SetTextureScale("_MoonTex", new Vector2(skyboxSetting.Masser.TilingX, skyboxSetting.Masser.TilingY));
-        skyboxMat.SetTextureOffset("_MoonTex", new Vector2(skyboxSetting.Masser.OffsetX, skyboxSetting.Masser.OffsetY));
-        skyboxMat.SetFloat("_MoonMinSize", skyboxSetting.Masser.MinSize);
-        skyboxMat.SetFloat("_MoonMaxSize", skyboxSetting.Masser.MaxSize);
-        skyboxMat.SetVector("_MoonOrbitAngle", skyboxSetting.Masser.OrbitAngle);
-        skyboxMat.SetFloat("_MoonOrbitOffset", skyboxSetting.Masser.OrbitOffset);
-        skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
-        skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
-        skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
-        skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
-        skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
-        skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
-        skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
-        skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed);
+        if(updateMoons) {
+            if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
+                skyboxMat.SetColor("_MoonColor", tmpColor);
+            }
+            skyboxMat.SetFloat("_MoonMinSize", skyboxSetting.Masser.MinSize);
+            skyboxMat.SetFloat("_MoonMaxSize", skyboxSetting.Masser.MaxSize);
+            skyboxMat.SetVector("_MoonOrbitAngle", skyboxSetting.Masser.OrbitAngle);
+            skyboxMat.SetFloat("_MoonOrbitOffset", skyboxSetting.Masser.OrbitOffset);
+            skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
+            skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
+            skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
+            skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
+            skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
+            skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
+            skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
+            skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed);
 
-        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Secunda.MoonColor, out tmpColor)) {
-            skyboxMat.SetColor("_SecundaColor", tmpColor);
+            if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Secunda.MoonColor, out tmpColor)) {
+                skyboxMat.SetColor("_SecundaColor", tmpColor);
+            }
+
+            skyboxMat.SetFloat("_SecundaMinSize", skyboxSetting.Secunda.MinSize);
+            skyboxMat.SetFloat("_SecundaMaxSize", skyboxSetting.Secunda.MaxSize);
+            skyboxMat.SetVector("_SecundaOrbitAngle", skyboxSetting.Secunda.OrbitAngle);
+            skyboxMat.SetFloat("_SecundaOrbitOffset", skyboxSetting.Secunda.OrbitOffset);
+            skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
+            skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
+            skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
+            skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
+            skyboxMat.SetVector("_SecundaPhase", skyboxSetting.Secunda.Phase);
+            skyboxMat.SetFloat("_SecundaSpinOption", skyboxSetting.Secunda.Spin);
+            skyboxMat.SetVector("_SecundaTidalAngle", skyboxSetting.Secunda.TidalAngle);
+            skyboxMat.SetVector("_SecundaSpinSpeed", skyboxSetting.Secunda.SpinSpeed);
         }
-        skyboxMat.SetTexture("_SecundaTex", skyboxSetting.Secunda.MoonTexture);
-        skyboxMat.SetTextureScale("_SecundaTex", new Vector2(skyboxSetting.Secunda.TilingX, skyboxSetting.Secunda.TilingY));
-        skyboxMat.SetTextureOffset("_SecundaTex", new Vector2(skyboxSetting.Secunda.OffsetX, skyboxSetting.Secunda.OffsetY));
-        skyboxMat.SetFloat("_SecundaMinSize", skyboxSetting.Secunda.MinSize);
-        skyboxMat.SetFloat("_SecundaMaxSize", skyboxSetting.Secunda.MaxSize);
-        skyboxMat.SetVector("_SecundaOrbitAngle", skyboxSetting.Secunda.OrbitAngle);
-        skyboxMat.SetFloat("_SecundaOrbitOffset", skyboxSetting.Secunda.OrbitOffset);
-        skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
-        skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
-        skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
-        skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
-        skyboxMat.SetVector("_SecundaPhase", skyboxSetting.Secunda.Phase);
-        skyboxMat.SetFloat("_SecundaSpinOption", skyboxSetting.Secunda.Spin);
-        skyboxMat.SetVector("_SecundaTidalAngle", skyboxSetting.Secunda.TidalAngle);
-        skyboxMat.SetVector("_SecundaSpinSpeed", skyboxSetting.Secunda.SpinSpeed);
 
         Debug.Log("BLB: Applied skybox settings");
 

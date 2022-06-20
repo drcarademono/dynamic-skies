@@ -696,20 +696,20 @@
                 col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
 
 #ifdef REDUCE_COLOR
-                float stepSize = 0.02083333333333333333333333333333;
+                float stepSize = 0.015625;
                 //col.r = floor(((col.r * 256) * 63) / 256) * stepSize;
                 //col.g = floor(((col.r * 256) * 63) / 256) * stepSize;
                 //col.b = floor(((col.r * 256) * 63) / 256) * stepSize;
-                col.r = (floor(col.r / stepSize) * stepSize);
-                col.g = (floor(col.g / stepSize) * stepSize);
-                col.b = (floor(col.b / stepSize) * stepSize);
+                col.r = (ceil(col.r / stepSize) * stepSize);
+                col.g = (ceil(col.g / stepSize) * stepSize);
+                col.b = (ceil(col.b / stepSize) * stepSize);
 #endif
                 //col = fixed4(GammaToLinearSpace(tex3D(_Lut, LinearToGammaSpace(col.rgb)).rgb), col.a);
 
                 //float viewDistance = 600;
-                UNITY_CALC_FOG_FACTOR_RAW(_FogDistance * 1);
+                UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
-                col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * (1 - (normWorldPos.y / 4)))));
+                col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.93875 - normWorldPos.y) )));
 
                 /*
                 float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {   
