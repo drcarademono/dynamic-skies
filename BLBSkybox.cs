@@ -19,6 +19,8 @@ public class BLBSkybox : MonoBehaviour
     }
     public static BLBSkybox Instance { get; private set; }
 
+    public static bool firstInit = true;
+
     #region General properties
     private static string skyboxMaterialName = "BLBSkyboxMaterial";
     private Mod presetMod = null;
@@ -60,8 +62,8 @@ public class BLBSkybox : MonoBehaviour
         Instance.loadAllSkyboxSettings();
 
         Instance.setLunarPhases();
-        //Instance.getVanillaFogSettings();
-        Instance.setFogSettings(); //Overwrites vanilla fog with linear fog settings
+        Instance.getVanillaFogSettings();
+        //Instance.setFogSettings(); //Overwrites vanilla fog with linear fog settings
 
         //Load the skybox material
         Instance.skyboxMat = Mod.GetAsset<Material>("Materials/" + skyboxMaterialName) as Material;
@@ -628,30 +630,21 @@ public class BLBSkybox : MonoBehaviour
         }
     }
     private void SetFogDistance(WeatherType weather) {
-        
-        float fogDistance;
+        BLBSkyboxSetting[] skyboxSetting = SkyboxSettings[weather];
+        float fogDistance = skyboxSetting[getWeatherIndex()].FogDistance;
         WeatherManager.FogSettings fogSettings = FogSettings[weather];
-        if(fogSettings.fogMode == FogMode.Linear) {
-            fogDistance = fogSettings.endDistance * 0.25f;
-        } else {
-            fogDistance = 1f / fogSettings.density;
-        }
-        fogDayDistance = fogSettings.endDistance;
-        //fogNightDistance = fogDayDistance / 2;
-        fogNightDistance = fogSettings.endDistance;
-        
-        //Debug.Log("BLB: Weather type: " + weather.ToString() + " fogDistance = " + fogDistance.ToString());
-
         UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
-        //if(currentDayPart == DayParts.Night) {
-            //skyboxMat.SetFloat("_FogDistance", fogNightDistance);
-        //} else {
-            skyboxMat.SetFloat("_FogDistance", fogDistance);
-        //}
+        skyboxMat.SetFloat("_FogDistance", fogDistance);
     }
     private Dictionary<WeatherType, WeatherManager.FogSettings> FogSettings;
     private void getVanillaFogSettings() {
         WeatherManager wm = GameManager.Instance.WeatherManager;
+        wm.SunnyFogSettings.excludeSkybox = true;
+        wm.OvercastFogSettings.excludeSkybox = true;
+        wm.HeavyFogSettings.excludeSkybox = false;
+        wm.RainyFogSettings.excludeSkybox = true;
+        wm.SnowyFogSettings.excludeSkybox = true;
+        
         FogSettings = new Dictionary<WeatherType, WeatherManager.FogSettings>();
         FogSettings.Add(WeatherType.Sunny, wm.SunnyFogSettings);
         FogSettings.Add(WeatherType.Cloudy, wm.SunnyFogSettings);
@@ -663,13 +656,13 @@ public class BLBSkybox : MonoBehaviour
     }
     private void setFogSettings() {
         FogSettings = new Dictionary<WeatherType, WeatherManager.FogSettings>();
-        FogSettings.Add(WeatherType.Sunny, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 3072f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Cloudy, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 2560f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Overcast, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 2048f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Fog, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 96f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Rain, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1536f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Thunder, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1024f, excludeSkybox = true});
-        FogSettings.Add(WeatherType.Snow, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 768f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Sunny, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1920f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Cloudy, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1600f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Overcast, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1440f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Fog, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 64f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Rain, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 1200f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Thunder, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 960f, excludeSkybox = true});
+        FogSettings.Add(WeatherType.Snow, new WeatherManager.FogSettings {fogMode = FogMode.Linear, density = 0.0f, startDistance = 0f, endDistance = 720f, excludeSkybox = true});
 
         //Overwrite the default fog settings
         WeatherManager wm = GameManager.Instance.WeatherManager;
@@ -714,6 +707,24 @@ public class BLBSkybox : MonoBehaviour
     }
     #endregion
 
+    /*
+    private bool skyboxLerpRunning = false;
+    IEnumerator SkyboxLerp()
+    {
+        //Animated the sun color
+        float timeElapsed = 0;
+        while (timeElapsed < sunFogLerpDuration)
+        {
+            //dfSunlight.color = Color.Lerp(sunStartColor, sunEndColor, timeElapsed / sunFogLerpDuration);
+            UnityEngine.RenderSettings.fogColor = Color.Lerp(fogStartColor, fogEndColor, timeElapsed / sunFogLerpDuration);
+            timeElapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        UnityEngine.RenderSettings.fogColor = fogEndColor;
+        //dfSunlight.color = sunEndColor;
+        skyboxLerpRunning = false;
+    }
+    */
     #region Settings management
 
     private static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting, bool refreshTextures = true, bool updateMoons = true) {
@@ -746,6 +757,7 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_NightEndHeight", skyboxSetting.NightEndHeight);
         skyboxMat.SetFloat("_SkyFadeStart", skyboxSetting.SkyFadeStart);
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
+
         skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
 
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.DayColor, out tmpColor)) {
@@ -774,7 +786,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
         
-        if(refreshTextures) {
+        if(refreshTextures || firstInit) {
+            firstInit = false;
             skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
             skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.TopClouds.CloudsNormalTexture);
             skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.TilingX, skyboxSetting.TopClouds.TilingY));

@@ -642,6 +642,18 @@
                 clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
 
                 //if our sphere tracing returned a positive value we have a moon fragment
+                if(sphere >= 0.0){
+                    //so we grab the moon tex and multiple the color
+                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
+
+                    //then we lerp to the color be how much of the moon is lit
+                    moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
+
+                    //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
+                    col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - clouds));
+                }
+
+                //if our sphere tracing returned a positive value we have a moon fragment
                 if(SecundaSphere >= 0.0){
                     //so we grab the moon tex and multiple the color
                     float3 SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
@@ -651,23 +663,7 @@
 
                     //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
                     col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - clouds));
-                } else {
-                    //if our sphere tracing returned a positive value we have a moon fragment
-                    if(sphere >= 0.0){
-                        //so we grab the moon tex and multiple the color
-                        float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-
-                        //then we lerp to the color be how much of the moon is lit
-                        moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
-
-                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                        col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - clouds));
-                    }
                 }
-
-
-
-
 
     //Stars
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
@@ -710,6 +706,7 @@
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
                 col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.93875 - normWorldPos.y) )));
+                //col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor )));
 
                 /*
                 float4 main(float2 texCoord : TEXCOORD0) : COLOR0 {   
