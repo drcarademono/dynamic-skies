@@ -1,14 +1,14 @@
-#BadLuckBurt's skybox shader
+# BadLuckBurt's skybox shader
 
 This shader serves as a replacement for Daggerfall Unity's classic sky. It is an extended version of the shader from this tutorial [https://feralpug.github.io/OtherPages/Code/Pages/ExtendingUnitySkybox/ExtendingSkybox.html](https://feralpug.github.io/OtherPages/Code/Pages/ExtendingUnitySkybox/ExtendingSkybox.html "Feral Pug's Skybox tutorial") courtesy of Feral Pug who should get most of the credit in my opinion. This shader wouldn't exist without him. 
 
 I suggest reading through the tutorial at least once to get a basic idea of how the shader works internally.
 
-##Changes to the shader
+## Changes to the shader
 
 I have added a second cloud layer, a second moon and changed the stars to use a diffuse texture and a black-and-white image mask to control the stars twinkle without affecting the surrounding sky.
 
-#Setting up the shader in the editor
+# Setting up the shader in the editor
 After you have cloned the shader repository and added it to the DFU project under **Assets/Game/Mods**, you will need to assign the skybox material and the directional Sunlight from the scene.
 
 To do this, go to **Window > Rendering > Lighting Settings** in the menu bar, a new window will appear with global settings for the Unity renderer. You can dock this window if you like, just drag it next to the Inspector tab and Unity should dock it there.
@@ -24,7 +24,7 @@ Next, select the Sunlight in the scene hierarchy and drag it into the Sun Source
 
 At this point you should see the skybox being rendered in the Scene view and are ready to go do the fun stuff.
 
-##Import / export settings
+## Import / export settings
 In the menu bar you will see a new entry, **BLB**. If you click on that, a submenu will show with two options: 
 
 1. Import skybox settings
@@ -32,12 +32,12 @@ In the menu bar you will see a new entry, **BLB**. If you click on that, a subme
 
 You can use this to load and save particular skybox settings that you want to work on.
 
-##The skybox material
+## The skybox material
 To change the skybox settings, navigate to the BLBSkyboxMaterial in the Project Explorer and select the material. 
 
 The exposed properties of the material will be shown in the Inspector, the scene will update automatically when you change settings.
 
-#Material settings
+# Material settings
 
 **Retro**
 
