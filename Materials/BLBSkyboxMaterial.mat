@@ -122,7 +122,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Exposure: 1
-    - _FogDistance: 480
+    - _FogDistance: 720
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -170,6 +170,8 @@ Material:
     - _CloudTopNightColor: {r: 0.36078432, g: 0.36862746, b: 0.36862746, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FogDayColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    - _FogNightColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _MoonColor: {r: 1, g: 1, b: 1, a: 1}
     - _MoonOrbitAngle: {r: 0, g: 0, b: 45, a: 0}

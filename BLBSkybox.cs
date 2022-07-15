@@ -758,6 +758,12 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_SkyFadeStart", skyboxSetting.SkyFadeStart);
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
 
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.FogDayColor, out tmpColor)) {
+            skyboxMat.SetColor("_FogDayColor", tmpColor);
+        }
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.FogNightColor, out tmpColor)) {
+            skyboxMat.SetColor("_FogNightColor", tmpColor);
+        }
         skyboxMat.SetFloat("_FogDistance", skyboxSetting.FogDistance);
 
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.DayColor, out tmpColor)) {
@@ -990,6 +996,8 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.NightEndHeight = skyboxMat.GetFloat("_NightEndHeight");
         skyboxSetting.SkyFadeStart = skyboxMat.GetFloat("_SkyFadeStart");
         skyboxSetting.SkyEndStart = skyboxMat.GetFloat("_SkyFadeEnd");
+        skyboxSetting.FogDayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_FogDayColor"));
+        skyboxSetting.FogNightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_FogNightColor"));
         skyboxSetting.FogDistance = skyboxMat.GetFloat("_FogDistance");
         
         TopClouds.CloudsTextureFile = Path.GetFileNameWithoutExtension(UnityEditor.AssetDatabase.GetAssetPath(skyboxMat.GetTexture("_CloudTopDiffuse")));

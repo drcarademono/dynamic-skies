@@ -17,6 +17,9 @@
         _NightEndHeight("Night End Height", Range(-1, 1)) = -.2
         _SkyFadeStart("Sky Fade Start", Range(-1, 1)) = .05
         _SkyFadeEnd("Sky End Start", Range(-1, 1)) = -.05
+
+        _FogDayColor ("Fog Day Color", Color) = (.5, .5, .5, 1)
+        _FogNightColor ("Fog Night Color", Color) = (.1, .1, .1, 1)
         _FogDistance("Fog distance", float) = 2048.0
 
         [Header(CloudsTop)]
@@ -123,6 +126,8 @@
             uniform half _AtmosphereThickness;
             uniform half _NightStartHeight, _NightEndHeight;
             uniform half _SkyFadeStart, _SkyFadeEnd;
+            uniform float3 _FogDayColor;
+            uniform float3 _FogNightColor;
             uniform float _FogDistance;
 
             uniform sampler2D _CloudTopDiffuse, _CloudTopNormal;
@@ -704,8 +709,12 @@
 
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
+                float3 fogColor = lerp(_FogDayColor, _FogNightColor, night);
+                col.rgb = lerp(col.rgb, fogColor.rgb, (saturate( unityFogFactor * (0.75 - normWorldPos.y) )));
+                //col.rgb = lerp(col.rgb, _FogDayColor.rgb, (saturate( unityFogFactor )));
+
+                //col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.75 - normWorldPos.y) )));
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb * 1, (saturate(unityFogFactor * 0.75) * (1 - night)));
-                col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.93875 - normWorldPos.y) )));
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor )));
 
                 /*

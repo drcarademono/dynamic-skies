@@ -11,6 +11,8 @@
     "NightEndHeight": 0.10000000149011612,
     "SkyFadeStart": 0.25,
     "SkyEndStart": -0.014999999664723874,
+    "FogDayColor": "808080",
+    "FogNightColor": "141414",
     "FogDistance": 384.0,
     "TopCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.125,\"TilingY\":0.125,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"676777FF\",\"NightColor\":\"171512FF\",\"AlphaTreshold\":1.0,\"AlphaMax\":0.0,\"ColorBoost\":0.0,\"NormalEffect\":0.4000000059604645,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.05000000074505806}",
     "BottomCloudsFlat": "{\"CloudsTextureFile\":\"CdMClouds\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.25,\"TilingY\":0.25,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"C3CAD4FF\",\"NightColor\":\"141310FF\",\"AlphaTreshold\":0.15000000596046449,\"AlphaMax\":0.0,\"ColorBoost\":0.6499999761581421,\"NormalEffect\":0.6000000238418579,\"NormalSpeed\":0.0,\"Opacity\":0.25,\"Bending\":0.20000000298023225}",
