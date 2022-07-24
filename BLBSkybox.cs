@@ -50,6 +50,12 @@ public class BLBSkybox : MonoBehaviour
     private float skyFadeStart = -0.01f;
     private float skyFadeEnd = -0.04f;
     private Camera stackedCam;
+    //Snow settings
+    public static Material SnowMaterial;
+    public static float minParticleSize = 0.002f;
+    public static float maxParticleSize = 0.0025f;
+    public static int maxParticles = 17500;
+
     #endregion
 
     [Invoke(StateManager.StateTypes.Start, 0)]
@@ -66,6 +72,7 @@ public class BLBSkybox : MonoBehaviour
         //Prepare the cloud types, lunar phases and fog settings. 
         Instance.loadAllSkyboxSettings();
         Instance.loadFogSettings();
+        Instance.InitSnow();
 
         Instance.setLunarPhases();
 
@@ -706,6 +713,53 @@ public class BLBSkybox : MonoBehaviour
         wm.RainyFogSettings = FogSettings[WeatherType.Rain];
         wm.SnowyFogSettings = FogSettings[WeatherType.Snow];
         //Debug.Log("Applied new fog settings to WeatherManager");
+    }
+    #endregion
+
+    #region Snow
+    private void InitSnow() {
+        var settings = Mod.GetSettings();
+
+        int minPS = settings.GetValue<int>("SnowSize","minParticleSize");
+        int maxPS = settings.GetValue<int>("SnowSize","maxParticleSize");
+        int maxP = settings.GetValue<int>("MaxParticles", "MaxParticles");
+        
+        minParticleSize = (minPS / 100000f);
+        maxParticleSize = (maxPS / 100000f);
+        maxParticles = (int) (maxP * 1000);
+
+        Debug.Log("Min particle size: " + minParticleSize.ToString());
+        Debug.Log("Max particle size: " + maxParticleSize.ToString());
+        Debug.Log("Max particles: " + maxParticles.ToString());
+
+        SnowMaterial = Mod.GetAsset<Material>("Materials/BLBSnowMaterial") as Material;
+        GameObject playerAdvanced = GameObject.Find("PlayerAdvanced");
+        if(playerAdvanced != null) {
+            //Debug.Log("BLB: PlayerAdvanced found");
+            GameObject smoothFollower = playerAdvanced.transform.Find("SmoothFollower").gameObject;
+            if(smoothFollower != null) {
+                //Debug.Log("BLB: SmoothFollower found");
+                GameObject snowParticles = smoothFollower.transform.Find("Snow_Particles").gameObject;
+                if(snowParticles != null) {
+                    //Debug.Log("BLB: SnowParticles found");
+                    ParticleSystem ps = snowParticles.GetComponent<ParticleSystem>();
+                    if(ps != null) {
+                        //Debug.Log("BLB: Particle system found");
+                        ParticleSystem.MainModule main = ps.main;
+                        main.startRotation = 0;
+
+                        ParticleSystem.RotationOverLifetimeModule psROL = ps.rotationOverLifetime;
+                        psROL.enabled = false;
+
+                        ParticleSystemRenderer psr = ps.GetComponent<ParticleSystemRenderer>();
+                        psr.material = SnowMaterial;
+                        psr.minParticleSize = minParticleSize;
+                        psr.maxParticleSize = maxParticleSize;
+                    }
+                }
+            }
+        }
+        Debug.Log("blb-pixel-snow initialized");
     }
     #endregion
 

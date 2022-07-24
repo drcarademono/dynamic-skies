@@ -1,0 +1,48 @@
+{
+    "Version": "1",
+    "Sections": [
+        {
+            "Name": "SnowSize",
+            "Description": "Set the minimum and max snow flake particle size",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Min": 200,
+                    "Max": 800,
+                    "Value": 300,
+                    "Name": "minParticleSize",
+                    "Description": "Minimum snow particle size",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 200,
+                    "Max": 800,
+                    "Value": 400,
+                    "Name": "maxParticleSize",
+                    "Description": "Maximum snow particle size",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                }
+            ],
+            "$version": "v1"
+        },
+        {
+            "Name": "MaxParticles",
+            "Description": "Maximum number of snow flake particles",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Min": 15,
+                    "Max": 20,
+                    "Value": 20,
+                    "Name": "MaxParticles",
+                    "Description": "Maximum number of snow flake particles (multiplied by 1000)",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                }
+            ],
+            "$version": "v1"
+        }
+    ]
+}

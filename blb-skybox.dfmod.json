@@ -49,6 +49,9 @@
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMCloudsNormal.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/NLstarsHighlight.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/DefaultStarsTwinkleMask.png",
-        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json"
+        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/PixelSnow.png",
+        "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSnowMaterial.mat",
+        "Assets/Game/Mods/blb-skybox-shader/modsettings.json"
     ]
 }
