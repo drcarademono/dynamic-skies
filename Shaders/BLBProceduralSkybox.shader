@@ -455,14 +455,19 @@
 
                 //then remap the dot product to be between our desired value, this reduces the effect of the normal
                 cloudTopColor = cloudTopColor * Remap(NdotUpTop, float2(-1, 1), float2(1 -_CloudTopNormalEffect, 1));
-            
                 //then divide by the color boost to brighten the clouds
                 cloudTopColor = saturate(cloudTopColor / (1 - _CloudTopColorBoost));
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudTopColor, cloudsTop * _CloudTopOpacity);
-
-
-
+                //col.rgb += IN.sunColor * (0.5 * (1 - step(y, 0)));
+                #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
+                    if(y < 0.0) {
+                        //cloudTopColor += IN.sunColor * (((sunPos.y - y) / 4) * saturate((0.125 - cloudsTop) * night));
+                        //col.rgb = lerp(col.rgb, IN.sunColor, (((smoothstep(0, 1, y)) * saturate((1 - cloudsTop))) * 8));
+                        //col.rgb = lerp(col.rgb, IN.sunColor, 1 - cloudsTop);
+                        //col.rgb = lerp(col.rgb, IN.sunColor, smoothstep(0, 1, saturate(0.375 - cloudsTop)));
+                    }
+                #endif
 
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudUV = normWorldPos.xz / (normWorldPos.y + _CloudBending);
@@ -494,17 +499,32 @@
 
                 //adjust the color for night
                 float3 cloudColor = lerp(_CloudColor, _CloudNightColor, night);
-                //float3 cloudColor = _CloudColor;
 
                 //then remap the dot product to be between our desired value, this reduces the effect of the normal
                 cloudColor = cloudColor * Remap(NdotUp, float2(-1, 1), float2(1 -_CloudNormalEffect, 1));
             
                 //then divide by the color boost to brighten the clouds
                 cloudColor = saturate(cloudColor / (1 - _CloudColorBoost));
+
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
                 
+                #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
+                    if(y < 0.0) {
 
+                        
+                        //float cloudThinness = 1 - ((cloudsTop + clouds) / 2);
+                        //cloudThinness = smoothstep(0.75, 1, cloudThinness);
+                        //col.rgb += IN.sunColor * ((cloudsTop + clouds) / 1);
+                        //col.rgb += IN.sunColor * ((-y) * ((cloudsTop + clouds) / 2));
+                        //if(cloudThinness > 0) {
+                            //col.rgb = lerp(col.rgb, IN.sunColor, cloudThinness);
+                        //}
+                        //col.rgb += IN.sunColor * (max(0.875 - ((cloudsTop + clouds) / 2), 0.5) * 1);
+                        //cloudTopColor += IN.sunColor * (((sunPos.y - y) / 4) * saturate((0.125 - cloudsTop) * night));
+                        //cloudColor = lerp(cloudColor, IN.sunColor, saturate(0.5 - cloudsTop) * 1 - saturate(abs(y)));
+                    }
+                #endif
 
     //Moon
                 float orbitAngle = _Time.y * _MoonOrbitSpeed;
