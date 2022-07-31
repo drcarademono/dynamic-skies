@@ -47,7 +47,7 @@
     #define MIE_G (-0.990)
     #define MIE_G2 0.9801
 
-    #define SKY_GROUND_THRESHOLD 0.02
+    #define SKY_GROUND_THRESHOLD 0.01 //was 0.02
 
             // fine tuning of performance. You can override defines here if you want some specific setup
             // or keep as is and allow later code to set it according to target api

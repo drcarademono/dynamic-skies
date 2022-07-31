@@ -33,6 +33,9 @@
         _CloudTopNormalEffect("Cloud Top Normal Effect", Range(0, 1)) = .37
         _CloudTopOpacity("Cloud Top Opacity", Range(0,1)) = 1.0
         _CloudTopBending("Cloud Top Bending", Range(0, 1)) = .25
+        _CloudTopSunScale("Cloud Top Sun Scale", float) = 0.125
+        _CloudTopSunLerpScale("Cloud Top Sun Lerp Scale", Range(0, 1)) = 0.5
+        _CloudTopSunColor("Cloud Top Sun Color", COLOR) = (0.9647059,0.9803922,0.8039216)
 
         [Header(Clouds)]
         _CloudDiffuse("Cloud Diffuse", 2D) = "black" {}
@@ -52,6 +55,9 @@
         _CloudBlendScale("Cloud Blend Scale", float) = 1
         _CloudBlendLB("Cloud Blend LB", Range(0, 1)) = .17
         _CloudBlendUB("Cloud Blend UB", Range(0, 1)) = .32
+        _CloudSunScale("Cloud Sun Scale", float) = 0.125
+        _CloudSunLerpScale("Cloud Sun Lerp Scale", Range(0, 1)) = 0.5
+        _CloudSunColor("Cloud Sun Color", COLOR) = (0.9647059,0.9803922,0.8039216)
 
         [Header (Stars)]
         _StarTex("Star Tex", 2D) = "black" {}
@@ -135,7 +141,8 @@
             uniform float3 _CloudTopColorBoost, _CloudTopColor, _CloudTopNightColor;
             uniform float _CloudTopNormalScale, _CloudTopNormalEffect, _CloudTopOpacity;
             uniform float _CloudTopAlphaMax, _CloudTopAlphaCutoff;
-            uniform float _CloudTopBending;
+            uniform float _CloudTopBending, _CloudTopSunScale, _CloudTopSunLerpScale;
+            uniform float3 _CloudTopSunColor;
 
             uniform sampler2D _CloudDiffuse, _CloudNormal;
             uniform float4 _CloudDiffuse_ST, _CloudNormal_ST;
@@ -145,6 +152,8 @@
             uniform float _CloudAlphaMax, _CloudAlphaCutoff;
             uniform float _CloudBending;
             uniform float _CloudDirection, _CloudBlendScale, _CloudBlendLB, _CloudBlendUB, _CloudNormalSpeed;
+            uniform float _CloudSunScale, _CloudSunLerpScale;
+            uniform float3 _CloudSunColor;
 
             uniform sampler2D _StarTex, _StarTwinkleTex, _TwinkleTex;
             uniform float4 _StarTex_ST, _StarTwinkleTex_ST, _TwinkleTex_ST;
@@ -385,7 +394,7 @@
 
                 //grab the sun position
                 float3 sunPos = _WorldSpaceLightPos0.xyz;
-
+                float3 normSunWorldPos = normalize(sunPos);
                 //and then do a similar method as the horizon to figure out when things should transistion to the night colors
                 float sunDotUp = dot(sunPos, float3(0, 1, 0));
                 float night = saturate(Remap(sunDotUp, float2(_NightStartHeight, _NightEndHeight), float2(0, 1)));
@@ -407,10 +416,12 @@
                     // if we did precalculate color in vprog: just do lerp between them
                     col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
 
+                half sunAttenuation = 0;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     if(y < 0.0)
                     {
-                        col.rgb += IN.sunColor * calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
+                        sunAttenuation = calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
+                        col.rgb += IN.sunColor * sunAttenuation;
                     }
                 #endif
 
@@ -453,21 +464,25 @@
                 //adjust the color for night
                 float3 cloudTopColor = lerp(_CloudTopColor, _CloudTopNightColor, night);
 
-                //then remap the dot product to be between our desired value, this reduces the effect of the normal
-                cloudTopColor = cloudTopColor * Remap(NdotUpTop, float2(-1, 1), float2(1 -_CloudTopNormalEffect, 1));
                 //then divide by the color boost to brighten the clouds
                 cloudTopColor = saturate(cloudTopColor / (1 - _CloudTopColorBoost));
-                //finally lerp to the cloud color base on the cloud value
-                col.rgb = lerp(col.rgb, cloudTopColor, cloudsTop * _CloudTopOpacity);
-                //col.rgb += IN.sunColor * (0.5 * (1 - step(y, 0)));
+
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
+                    //if(normWorldPos.y < 0.5) {
                     if(y < 0.0) {
-                        //cloudTopColor += IN.sunColor * (((sunPos.y - y) / 4) * saturate((0.125 - cloudsTop) * night));
-                        //col.rgb = lerp(col.rgb, IN.sunColor, (((smoothstep(0, 1, y)) * saturate((1 - cloudsTop))) * 8));
-                        //col.rgb = lerp(col.rgb, IN.sunColor, 1 - cloudsTop);
-                        //col.rgb = lerp(col.rgb, IN.sunColor, smoothstep(0, 1, saturate(0.375 - cloudsTop)));
+                        float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
+                        float pos = max(0, 1 - abs(normSunWorldPos.y));
+                        float cloudLerpValue = max(0, (cloudThickness * min(pos, 1)));
+                        cloudTopColor = lerp(cloudTopColor, _CloudTopSunColor * _CloudTopSunScale, cloudLerpValue * _CloudTopSunLerpScale);
                     }
                 #endif
+
+                //then remap the dot product to be between our desired value, this reduces the effect of the normal
+                cloudTopColor = cloudTopColor * Remap(NdotUpTop, float2(-1, 1), float2(1 -_CloudTopNormalEffect, 1));
+
+                //finally lerp to the cloud color base on the cloud value
+                col.rgb = lerp(col.rgb, cloudTopColor, cloudsTop * _CloudTopOpacity);
+                
 
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudUV = normWorldPos.xz / (normWorldPos.y + _CloudBending);
@@ -481,8 +496,6 @@
 
                 //subtract cloud2 from cloud1, this is how we blend them. We could also mulitple them but I like the result of this better
                 float clouds = cloud1 - cloud2;
-                //float clouds = mul(cloud2, cloud1);
-                //float clouds = min(1.0, (cloud1 + cloud2) / 2);
 
                 //then we smoothstep the clouds at desired values, this allows us control the brightness and the edge of the clouds
                 clouds = smoothstep(_CloudAlphaCutoff, _CloudAlphaMax, clouds);
@@ -499,33 +512,26 @@
 
                 //adjust the color for night
                 float3 cloudColor = lerp(_CloudColor, _CloudNightColor, night);
-
-                //then remap the dot product to be between our desired value, this reduces the effect of the normal
-                cloudColor = cloudColor * Remap(NdotUp, float2(-1, 1), float2(1 -_CloudNormalEffect, 1));
             
                 //then divide by the color boost to brighten the clouds
                 cloudColor = saturate(cloudColor / (1 - _CloudColorBoost));
 
-                //finally lerp to the cloud color base on the cloud value
-                col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
-                
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     if(y < 0.0) {
-
-                        
-                        //float cloudThinness = 1 - ((cloudsTop + clouds) / 2);
-                        //cloudThinness = smoothstep(0.75, 1, cloudThinness);
-                        //col.rgb += IN.sunColor * ((cloudsTop + clouds) / 1);
-                        //col.rgb += IN.sunColor * ((-y) * ((cloudsTop + clouds) / 2));
-                        //if(cloudThinness > 0) {
-                            //col.rgb = lerp(col.rgb, IN.sunColor, cloudThinness);
-                        //}
-                        //col.rgb += IN.sunColor * (max(0.875 - ((cloudsTop + clouds) / 2), 0.5) * 1);
-                        //cloudTopColor += IN.sunColor * (((sunPos.y - y) / 4) * saturate((0.125 - cloudsTop) * night));
-                        //cloudColor = lerp(cloudColor, IN.sunColor, saturate(0.5 - cloudsTop) * 1 - saturate(abs(y)));
+                        float cloudThickness = abs(1 - abs(clouds / 2)) * (1 - night);
+                        float pos = max(0, 1 - abs(sunPos.y));
+                        float cloudLerpValue = max(0, (cloudThickness * min(1, pos)) * _CloudSunScale);
+                        cloudColor = lerp(cloudColor, _CloudSunColor, cloudLerpValue * _CloudSunLerpScale);
+                        //cloudTopcolor
+                        //cloudTopColor += (IN.sunColor.rgb * 0.75) * abs(1 - ((-y * cloudsTop) / 16));
                     }
                 #endif
 
+                //then remap the dot product to be between our desired value, this reduces the effect of the normal
+                cloudColor = cloudColor * Remap(NdotUp, float2(-1, 1), float2(1 -_CloudNormalEffect, 1));
+
+                //finally lerp to the cloud color base on the cloud value
+                col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
     //Moon
                 float orbitAngle = _Time.y * _MoonOrbitSpeed;
                 float SecundaOrbitAngle = _Time.y * _SecundaOrbitSpeed;
@@ -717,7 +723,7 @@
                 col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
 
 #ifdef REDUCE_COLOR
-                float stepSize = 0.015625;
+                float stepSize = 0.03125;
                 //col.r = floor(((col.r * 256) * 63) / 256) * stepSize;
                 //col.g = floor(((col.r * 256) * 63) / 256) * stepSize;
                 //col.b = floor(((col.r * 256) * 63) / 256) * stepSize;
