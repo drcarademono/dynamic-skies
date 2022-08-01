@@ -668,30 +668,32 @@
                                 acos(-SecundaMoonFragNormal.y) / UNITY_PI
                 );
 
-                clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
+                //clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
 
                 //if our sphere tracing returned a positive value we have a moon fragment
                 if(sphere >= 0.0){
-                    //so we grab the moon tex and multiple the color
-                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
+                    if(SecundaSphere < 0.0) {
+                        //so we grab the moon tex and multiple the color
+                        float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
 
-                    //then we lerp to the color be how much of the moon is lit
-                    moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
+                        //then we lerp to the color be how much of the moon is lit
+                        moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
 
-                    //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                    col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - clouds));
+                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
+                        col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - max(cloudsTop, clouds)));
+                    }
                 }
 
                 //if our sphere tracing returned a positive value we have a moon fragment
                 if(SecundaSphere >= 0.0){
                     //so we grab the moon tex and multiple the color
-                    float3 SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
+                    float3 SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb; //* _SecundaColor.rgb;
 
                     //then we lerp to the color be how much of the moon is lit
                     SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL));
 
                     //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                    col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - clouds));
+                    col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - max(cloudsTop, clouds)));
                 }
 
     //Stars
@@ -718,7 +720,7 @@
                 stars = saturate(stars);
 
                 //then lerp to the stars color masking out the horizon
-                col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - clouds)), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
+                col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - max(cloudsTop, clouds))), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
 
 #ifdef REDUCE_COLOR
                 float stepSize = 0.03125;
@@ -734,7 +736,7 @@
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
                 float3 fogColor = lerp(_FogDayColor, _FogNightColor, night);
-                col.rgb = lerp(col.rgb, fogColor.rgb, (saturate( unityFogFactor * (0.75 - normWorldPos.y) )));
+                col.rgb = lerp(col.rgb, fogColor.rgb, (saturate( unityFogFactor * (0.5 - normWorldPos.y) )));
                 //col.rgb = lerp(col.rgb, _FogDayColor.rgb, (saturate( unityFogFactor )));
 
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.75 - normWorldPos.y) )));

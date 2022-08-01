@@ -99,8 +99,8 @@ Material:
     m_Floats:
     - _AtmosphereThickness: 0.72
     - _BumpScale: 1
-    - _CloudAlphaCutoff: 0.048
-    - _CloudAlphaMax: 0.48
+    - _CloudAlphaCutoff: 0
+    - _CloudAlphaMax: 1
     - _CloudBending: 0.24
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
@@ -114,8 +114,8 @@ Material:
     - _CloudSpeed: 0.02
     - _CloudSunLerpScale: 1
     - _CloudSunScale: 0.75
-    - _CloudTopAlphaCutoff: 0.032
-    - _CloudTopAlphaMax: 0.32
+    - _CloudTopAlphaCutoff: 0
+    - _CloudTopAlphaMax: 1
     - _CloudTopBending: 0.24
     - _CloudTopColorBoost: 0
     - _CloudTopNormalEffect: 0.48
@@ -132,9 +132,9 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _MoonMaxSize: 0.08
-    - _MoonMinSize: 0.072
-    - _MoonOrbitOffset: 0
+    - _MoonMaxSize: 0.16
+    - _MoonMinSize: 0.16
+    - _MoonOrbitOffset: 6.1
     - _MoonOrbitSpeed: 0.001
     - _MoonPhaseOption: 0
     - _MoonSemiMajAxis: 1
@@ -145,9 +145,9 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ReduceColor: 0
-    - _SecundaMaxSize: 0.04
-    - _SecundaMinSize: 0.032
-    - _SecundaOrbitOffset: 10
+    - _SecundaMaxSize: 0.08
+    - _SecundaMinSize: 0.08
+    - _SecundaOrbitOffset: 28.4
     - _SecundaOrbitSpeed: 0.001
     - _SecundaPhaseOption: 0
     - _SecundaSemiMajAxis: 0.6
@@ -188,5 +188,5 @@ Material:
     - _SecundaOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
     - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _SecundaTidalAngle: {r: 90, g: 0, b: 0, a: 0}
+    - _SecundaTidalAngle: {r: 81.26, g: 14.5, b: 128.48, a: 0}
     - _SkyTint: {r: 1, g: 0.96862745, b: 0.99215686, a: 1}
