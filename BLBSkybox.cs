@@ -68,14 +68,6 @@ public class BLBSkybox : MonoBehaviour
         Debug.Log("BLB Skybox - set mod instance as default preset, looking for preset mods");
         Instance.FindPresetMod();
 
-        Instance.SubscribeToEvents();
-        //Prepare the cloud types, lunar phases and fog settings. 
-        Instance.loadAllSkyboxSettings();
-        Instance.loadFogSettings();
-        Instance.InitSnow();
-
-        Instance.setLunarPhases();
-
         //Load the skybox material
         Instance.skyboxMat = Mod.GetAsset<Material>("Materials/" + skyboxMaterialName) as Material;
 
@@ -110,13 +102,19 @@ public class BLBSkybox : MonoBehaviour
 
         //Turn on the skybox
         Instance.ToggleSkybox(true);
-        
+        Instance.SubscribeToEvents();
+        //Prepare the cloud types, lunar phases and fog settings. 
+        Instance.loadAllSkyboxSettings();
+        Instance.loadFogSettings();
+        Instance.InitSnow();
+
+        Instance.setLunarPhases();
+        Instance.updateSpeeds();
+
         Instance.currentWeather = WeatherType.None;
         Instance.forceWeatherUpdate = true;
         Instance.OnWeatherChange(Instance.currentWeather);
         Instance.SetFogDistance(Instance.currentWeather);
-
-        Instance.updateSpeeds();
 
         GameObject distantTerrain = GameObject.Find("DistantTerrain");
         if(distantTerrain == null) {
@@ -386,6 +384,7 @@ public class BLBSkybox : MonoBehaviour
             int index = getWeatherIndex();//TODO: Get correct index based on time
 
             pendingWindDirection = getWindDirection(); //Get new random wind direction
+            Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
             
             //Apply the pending weather settings
@@ -396,8 +395,8 @@ public class BLBSkybox : MonoBehaviour
     private void ApplyPendingWeatherSettings() {
         //if(pendingWeather == true) {
             BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
-            SetFogDistance(pendingWeatherType);
             currentWeather = pendingWeatherType;
+            SetFogDistance(pendingWeatherType);
             pendingWeather = false;
         //}
     }
@@ -602,42 +601,58 @@ public class BLBSkybox : MonoBehaviour
 
     #region Fog
     private void setFogColor(bool day) {
-        BLBSkyboxSetting[] skyboxSetting = SkyboxSettings[currentWeather];
-        string fogDayColor = skyboxSetting[getWeatherIndex()].FogDayColor;
-        string fogNightColor = skyboxSetting[getWeatherIndex()].FogNightColor;
+        BLBSkyboxSetting[] skyboxSetting;
+        if(SkyboxSettings.TryGetValue(currentWeather, out skyboxSetting)) {
+            int weatherIndex = getWeatherIndex();
+            Debug.Log("BLB: Getting fog color for weather " + currentWeather.ToString() + " with index " + weatherIndex.ToString());
+            string fogDayColor = skyboxSetting[weatherIndex].FogDayColor;
+            string fogNightColor = skyboxSetting[weatherIndex].FogNightColor;
 
-        Color tmpColor;
-        if(ColorUtility.TryParseHtmlString("#" + fogDayColor, out tmpColor)) {
-            skyboxMat.SetColor("_FogDayColor", tmpColor);
-            if(day) {
-                UnityEngine.RenderSettings.fogColor = tmpColor;
+            Color tmpColor;
+            if(ColorUtility.TryParseHtmlString("#" + fogDayColor, out tmpColor)) {
+                skyboxMat.SetColor("_FogDayColor", tmpColor);
+                if(day) {
+                    UnityEngine.RenderSettings.fogColor = tmpColor;
+                }
             }
-        }
-        if(ColorUtility.TryParseHtmlString("#" + fogNightColor, out tmpColor)) {
-            skyboxMat.SetColor("_FogNightColor", tmpColor);
-            if(!day) {
-                UnityEngine.RenderSettings.fogColor = tmpColor;
+            if(ColorUtility.TryParseHtmlString("#" + fogNightColor, out tmpColor)) {
+                skyboxMat.SetColor("_FogNightColor", tmpColor);
+                if(!day) {
+                    UnityEngine.RenderSettings.fogColor = tmpColor;
+                }
             }
+        } else {
+            Debug.Log("BLB: Could not find Fog Color for weather " + currentWeather.ToString());
         }
     }
     private void SetFogDistance(WeatherType weather) {
         BLBSkyboxSetting[] skyboxSetting = SkyboxSettings[weather];
-        float fogDistance = skyboxSetting[getWeatherIndex()].FogDistance;
-        WeatherManager.FogSettings fogSettings = FogSettings[weather];
-        UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
-        skyboxMat.SetFloat("_FogDistance", fogDistance);
+        if(skyboxSetting != null) {
+            //BLBSkyboxSetting singleSetting;
+            int weatherIndex = getWeatherIndex();
+            Debug.Log("BLB: Getting fog distance for weather " + weather.ToString() + " with index " + weatherIndex.ToString());
+            float fogDistance = skyboxSetting[weatherIndex].FogDistance;
+            skyboxMat.SetFloat("_FogDistance", fogDistance);
+            WeatherManager.FogSettings fogSettings;
+            if(FogSettings.TryGetValue(weather, out fogSettings)) {
+                UnityEngine.RenderSettings.fogEndDistance = fogSettings.endDistance;
+            } else {
+                Debug.Log("BLB: Unable to find Unity Fog Settings for weather " + weather.ToString());
+            }
+        } else {
+            Debug.Log("BLB: Unable to find Skybox Fog Settings for weather " + weather.ToString());
+        }
     }
     private Dictionary<WeatherType, WeatherManager.FogSettings> FogSettings;
     private void loadFogSettings() {
         string[] fogTypes = new string[]{"FogSunny","FogOvercast","FogHeavyFog","FogRainy","FogSnowy"};
-        WeatherManager wm = GameManager.Instance.WeatherManager;
         string data;
         for(int i = 0; i < fogTypes.Length; i++) {
             data = presetMod.GetAsset<TextAsset>(fogTypes[i] + ".json", false).text;
-            ProcessFogSetting(wm, fogTypes[i], data);
+            BLBSkybox.ProcessFogSetting(wm, fogTypes[i], data);
         }
         FogSettings = new Dictionary<WeatherType, WeatherManager.FogSettings>();
-        FogSettings.Add(WeatherType.Sunny, wm.SunnyFogSettings);
+        FogSettings.Add(WeatherType.None, wm.SunnyFogSettings);
         FogSettings.Add(WeatherType.Cloudy, wm.SunnyFogSettings);
         FogSettings.Add(WeatherType.Overcast, wm.OvercastFogSettings);
         FogSettings.Add(WeatherType.Fog, wm.HeavyFogSettings);
