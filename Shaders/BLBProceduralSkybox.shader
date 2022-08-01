@@ -469,7 +469,7 @@
 
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     //if(normWorldPos.y < 0.5) {
-                    if(y < 0.0) {
+                    if(y < 0.125) {
                         float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
                         float pos = max(0, 1 - abs(normSunWorldPos.y));
                         float cloudLerpValue = max(0, (cloudThickness * min(pos, 1)));
@@ -522,8 +522,6 @@
                         float pos = max(0, 1 - abs(sunPos.y));
                         float cloudLerpValue = max(0, (cloudThickness * min(1, pos)) * _CloudSunScale);
                         cloudColor = lerp(cloudColor, _CloudSunColor, cloudLerpValue * _CloudSunLerpScale);
-                        //cloudTopcolor
-                        //cloudTopColor += (IN.sunColor.rgb * 0.75) * abs(1 - ((-y * cloudsTop) / 16));
                     }
                 #endif
 

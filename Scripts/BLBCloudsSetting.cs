@@ -23,4 +23,8 @@ public struct BLBCloudsSetting
     public float NormalSpeed;
     public float Opacity;
     public float Bending;
+    public float SunColorScale;
+    public float SunColorLerpScale;
+    public string SunColor;
+
 }

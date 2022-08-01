@@ -866,6 +866,11 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudTopOpacity", skyboxSetting.TopClouds.Opacity);
         skyboxMat.SetFloat("_CloudTopNormalEffect", skyboxSetting.TopClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudTopBending", skyboxSetting.TopClouds.Bending);
+        skyboxMat.SetFloat("_CloudTopSunScale", skyboxSetting.TopClouds.SunColorScale);
+        skyboxMat.SetFloat("_CloudTopSunLerpScale", skyboxSetting.TopClouds.SunColorLerpScale);
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.TopClouds.SunColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudTopSunColor", tmpColor);
+        }
 
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.DayColor, out tmpColor)) {
             skyboxMat.SetColor("_CloudColor", tmpColor);
@@ -879,7 +884,12 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
-        
+        skyboxMat.SetFloat("_CloudSunScale", skyboxSetting.TopClouds.SunColorScale);
+        skyboxMat.SetFloat("_CloudSunLerpScale", skyboxSetting.BottomClouds.SunColorLerpScale);
+        if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.SunColor, out tmpColor)) {
+            skyboxMat.SetColor("_CloudSunColor", tmpColor);
+        }
+
         if(refreshTextures || firstInit) {
             firstInit = false;
             skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
@@ -1100,6 +1110,9 @@ public class BLBSkybox : MonoBehaviour
         TopClouds.NormalEffect = skyboxMat.GetFloat("_CloudTopNormalEffect");
         TopClouds.Opacity = skyboxMat.GetFloat("_CloudTopOpacity");
         TopClouds.Bending = skyboxMat.GetFloat("_CloudTopBending");
+        TopClouds.SunColorScale = skyboxMat.GetFloat("_CloudTopSunScale");
+        TopClouds.SunColorLerpScale = skyboxMat.GetFloat("_CloudTopSunLerpScale");
+        TopClouds.SunColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudTopSunColor"));
 
         skyboxSetting.TopCloudsFlat = JsonUtility.ToJson(TopClouds);
 
@@ -1117,6 +1130,9 @@ public class BLBSkybox : MonoBehaviour
         BottomClouds.NormalEffect = skyboxMat.GetFloat("_CloudNormalEffect");
         BottomClouds.Opacity = skyboxMat.GetFloat("_CloudOpacity");
         BottomClouds.Bending = skyboxMat.GetFloat("_CloudBending");
+        BottomClouds.SunColorScale = skyboxMat.GetFloat("_CloudSunScale");
+        BottomClouds.SunColorLerpScale = skyboxMat.GetFloat("_CloudSunLerpScale");
+        BottomClouds.SunColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudSunColor"));
 
         skyboxSetting.BottomCloudsFlat = JsonUtility.ToJson(BottomClouds);
 
