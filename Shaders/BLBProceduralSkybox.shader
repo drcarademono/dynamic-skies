@@ -399,6 +399,37 @@
                 float sunDotUp = dot(sunPos, float3(0, 1, 0));
                 float night = saturate(Remap(sunDotUp, float2(_NightStartHeight, _NightEndHeight), float2(0, 1)));
 
+                //Get the moon positions
+                //Moon
+                float orbitAngle = _Time.y * _MoonOrbitSpeed;
+                float SecundaOrbitAngle = _Time.y * _SecundaOrbitSpeed;
+            
+                //we also need to grab the half radius of the ellipse at the major and minor Axis
+                //these are used in the ellipse equation.
+                float2 MajMinAxis = float2(_MoonSemiMajAxis, _MoonSemiMinAxis);
+                float2 SecundaMajMinAxis = float2(_SecundaSemiMajAxis, _SecundaSemiMinAxis);
+
+                //this equation takes these values along with the _MoonOrbitAngle to figure out the position in the moons orbit
+                float3 currentMoonPos = GetOrbitPosition(_MoonOrbitAngle, MajMinAxis, orbitAngle);
+                float3 SecundaCurrentMoonPos = GetOrbitPosition(_SecundaOrbitAngle, SecundaMajMinAxis, SecundaOrbitAngle);
+
+                //we need to know which direction is up from the orbit plane, We do this by getting a different position and crossing the two positions
+                float3 prevMoonPos = GetOrbitPosition(_MoonOrbitAngle, MajMinAxis, orbitAngle - 1);  
+                float3 moonUp = normalize(cross(currentMoonPos, prevMoonPos)); 
+                float3 SecundaPrevMoonPos = GetOrbitPosition(_SecundaOrbitAngle, SecundaMajMinAxis, SecundaOrbitAngle - 1);  
+                float3 SecundaMoonUp = normalize(cross(SecundaCurrentMoonPos, SecundaPrevMoonPos)); 
+
+                //Then we can offset the position around the orbit. This allows us to change where in the orbit the planet should be largest or smallest         
+                currentMoonPos = RotateArbitraryAxis(currentMoonPos, _MoonOrbitOffset, moonUp);
+                SecundaCurrentMoonPos = RotateArbitraryAxis(SecundaCurrentMoonPos, _SecundaOrbitOffset, SecundaMoonUp);
+
+                //float radius = _MoonRadius;
+                float radius = GetMoonDistance(_MoonMinSize, _MoonMaxSize, MajMinAxis, orbitAngle);
+                float sphere = SphereIntersect(float3(0, 0, 0), normWorldPos, currentMoonPos, radius);
+                float SecundaRadius = GetMoonDistance(_SecundaMinSize, _SecundaMaxSize, SecundaMajMinAxis, SecundaOrbitAngle);
+                float SecundaSphere = SphereIntersect(float3(0, 0, 0), normWorldPos, SecundaCurrentMoonPos, SecundaRadius);
+                float moonBlocking = max(sphere, SecundaSphere);
+
     //Start of Unity code
                 // if y > 1 [eyeRay.y < -SKY_GROUND_THRESHOLD] - ground
                 // if y >= 0 and < 1 [eyeRay.y <= 0 and > -SKY_GROUND_THRESHOLD] - horizon
@@ -421,7 +452,9 @@
                     if(y < 0.0)
                     {
                         sunAttenuation = calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
-                        col.rgb += IN.sunColor * sunAttenuation;
+                        if(moonBlocking < 0.0) {
+                            col.rgb += IN.sunColor * sunAttenuation;
+                        }
                     }
                 #endif
 
@@ -483,7 +516,6 @@
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudTopColor, cloudsTop * _CloudTopOpacity);
                 
-
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudUV = normWorldPos.xz / (normWorldPos.y + _CloudBending);
 
@@ -530,34 +562,8 @@
 
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
-    //Moon
-                float orbitAngle = _Time.y * _MoonOrbitSpeed;
-                float SecundaOrbitAngle = _Time.y * _SecundaOrbitSpeed;
-            
-                //we also need to grab the half radius of the ellipse at the major and minor Axis
-                //these are used in the ellipse equation.
-                float2 MajMinAxis = float2(_MoonSemiMajAxis, _MoonSemiMinAxis);
-                float2 SecundaMajMinAxis = float2(_SecundaSemiMajAxis, _SecundaSemiMinAxis);
 
-                //this equation takes these values along with the _MoonOrbitAngle to figure out the position in the moons orbit
-                float3 currentMoonPos = GetOrbitPosition(_MoonOrbitAngle, MajMinAxis, orbitAngle);
-                float3 SecundaCurrentMoonPos = GetOrbitPosition(_SecundaOrbitAngle, SecundaMajMinAxis, SecundaOrbitAngle);
-
-                //we need to know which direction is up from the orbit plane, We do this by getting a different position and crossing the two positions
-                float3 prevMoonPos = GetOrbitPosition(_MoonOrbitAngle, MajMinAxis, orbitAngle - 1);  
-                float3 moonUp = normalize(cross(currentMoonPos, prevMoonPos)); 
-                float3 SecundaPrevMoonPos = GetOrbitPosition(_SecundaOrbitAngle, SecundaMajMinAxis, SecundaOrbitAngle - 1);  
-                float3 SecundaMoonUp = normalize(cross(SecundaCurrentMoonPos, SecundaPrevMoonPos)); 
-
-                //Then we can offset the position around the orbit. This allows us to change where in the orbit the planet should be largest or smallest         
-                currentMoonPos = RotateArbitraryAxis(currentMoonPos, _MoonOrbitOffset, moonUp);
-                SecundaCurrentMoonPos = RotateArbitraryAxis(SecundaCurrentMoonPos, _SecundaOrbitOffset, SecundaMoonUp);
-
-                //float radius = _MoonRadius;
-                float radius = GetMoonDistance(_MoonMinSize, _MoonMaxSize, MajMinAxis, orbitAngle);
-                float sphere = SphereIntersect(float3(0, 0, 0), normWorldPos, currentMoonPos, radius);
-                float SecundaRadius = GetMoonDistance(_SecundaMinSize, _SecundaMaxSize, SecundaMajMinAxis, SecundaOrbitAngle);
-                float SecundaSphere = SphereIntersect(float3(0, 0, 0), normWorldPos, SecundaCurrentMoonPos, SecundaRadius);
+                //Moved moon position code so the sun can be blocked when behind the moons
 
                 //get the position on the sphere and use that to get the normal for the sphere
                 float3 moonFragPos = normWorldPos * sphere + float3(0, 0, 0);
@@ -669,28 +675,36 @@
                 );
 
                 //clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
-
                 //if our sphere tracing returned a positive value we have a moon fragment
+                float3 SecundaMoonTex;
+                float3 tmpCol;
+                float NDotScale = 3;
                 if(sphere >= 0.0){
-                    if(SecundaSphere < 0.0) {
-                        //so we grab the moon tex and multiple the color
-                        float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-
-                        //then we lerp to the color be how much of the moon is lit
-                        moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL));
-
-                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                        col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - max(cloudsTop, clouds)));
-                    }
-                }
-
-                //if our sphere tracing returned a positive value we have a moon fragment
-                if(SecundaSphere >= 0.0){
                     //so we grab the moon tex and multiple the color
-                    float3 SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb; //* _SecundaColor.rgb;
+                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
 
                     //then we lerp to the color be how much of the moon is lit
-                    SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL));
+                    moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL * NDotScale));
+
+                    if(SecundaSphere < 0.0) {
+                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
+                        col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - max(cloudsTop, clouds)));
+                    } else {
+                        SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
+                        tmpCol = lerp(moonTex, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
+                        //tmpCol = SecundaMoonTex * saturate(SecundaNDotL);
+
+                        //col.rgb = moonTex;                        
+                        //col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - SecundaSphere));
+                        col.rgb = lerp(col.rgb, tmpCol, horizonValue * (1 - max(cloudsTop, clouds)));
+                    }
+                } else if(SecundaSphere >= 0.0){
+                    //so we grab the moon tex and multiple the color
+                    SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
+
+                    //then we lerp to the color be how much of the moon is lit
+                    SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
+                    //SecundaMoonTex = SecundaMoonTex * saturate(SecundaNDotL);
 
                     //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
                     col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - max(cloudsTop, clouds)));

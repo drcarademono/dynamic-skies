@@ -134,7 +134,7 @@ Material:
     - _Mode: 0
     - _MoonMaxSize: 0.16
     - _MoonMinSize: 0.16
-    - _MoonOrbitOffset: 6.1
+    - _MoonOrbitOffset: 0
     - _MoonOrbitSpeed: 0.001
     - _MoonPhaseOption: 0
     - _MoonSemiMajAxis: 1
@@ -147,11 +147,11 @@ Material:
     - _ReduceColor: 0
     - _SecundaMaxSize: 0.08
     - _SecundaMinSize: 0.08
-    - _SecundaOrbitOffset: 28.4
+    - _SecundaOrbitOffset: 15.7
     - _SecundaOrbitSpeed: 0.001
     - _SecundaPhaseOption: 0
     - _SecundaSemiMajAxis: 0.6
-    - _SecundaSemiMinAxis: 0.9
+    - _SecundaSemiMinAxis: 0.83
     - _SecundaSpinOption: 0
     - _SkyFadeEnd: -0.032
     - _SkyFadeStart: 0.032
@@ -179,14 +179,14 @@ Material:
     - _FogDayColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - _FogNightColor: {r: 0.08, g: 0.08, b: 0.08, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
-    - _MoonColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MoonColor: {r: 0.8301887, g: 0.69312924, b: 0.69312924, a: 1}
     - _MoonOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
     - _MoonPhase: {r: 0, g: 0, b: 0, a: 0}
     - _MoonSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _MoonTidalAngle: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SecundaOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
+    - _SecundaOrbitAngle: {r: 0, g: 0, b: 37.39, a: 0}
     - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaSpinSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _SecundaTidalAngle: {r: 81.26, g: 14.5, b: 128.48, a: 0}
+    - _SecundaTidalAngle: {r: 0, g: 0, b: 0, a: 0}
     - _SkyTint: {r: 1, g: 0.96862745, b: 0.99215686, a: 1}
