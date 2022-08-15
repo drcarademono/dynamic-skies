@@ -677,14 +677,15 @@
                 //clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
                 //if our sphere tracing returned a positive value we have a moon fragment
                 float3 SecundaMoonTex;
-                float3 tmpCol;
+                float3 tmpCol = (0.25, 0.25, 0.25);
                 float NDotScale = 3;
                 if(sphere >= 0.0){
                     //so we grab the moon tex and multiple the color
                     float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-
+                    tmpCol *= col.rgb;
                     //then we lerp to the color be how much of the moon is lit
-                    moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL * NDotScale));
+                    //moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL * NDotScale));
+                    moonTex = lerp(moonTex * tmpCol, moonTex * NDotL, saturate(NDotL * NDotScale));
 
                     if(SecundaSphere < 0.0) {
                         //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
@@ -701,9 +702,10 @@
                 } else if(SecundaSphere >= 0.0){
                     //so we grab the moon tex and multiple the color
                     SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
-
+                    tmpCol *= col.rgb;
                     //then we lerp to the color be how much of the moon is lit
-                    SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
+                    //SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
+                    SecundaMoonTex = lerp(SecundaMoonTex * tmpCol, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
                     //SecundaMoonTex = SecundaMoonTex * saturate(SecundaNDotL);
 
                     //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
