@@ -612,16 +612,10 @@
                 if(SecundaSphere >= 0.0) {
                     SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
                     SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
-                    //SecundaMoonTex = SecundaMoonTex * SecundaNDotL;
-                    //tmpCol *= col.rgb;
-                    //col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue);
                     col.rgb = SecundaMoonTex;
                 } else if(sphere >= 0.0) {
                     float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
                     moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
-                    //moonTex = moonTex * NDotL;
-                    //tmpCol *= col.rgb;
-                    //col.rgb = lerp(col.rgb, moonTex, horizonValue);
                     col.rgb = moonTex;
                 }
                 //End of moons
@@ -664,13 +658,16 @@
 
                 NdotUpTop = Remap(NdotUpTop, float2(-1, 1), float2(1 -_CloudTopNormalEffect, 1));
 
+                float cloudThickness;
+                float pos;
+                float cloudLerpValue;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     if(normWorldPos.y > _SkyFadeEnd) {
                     //if(y < 0.125) {
                         //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
-                        float cloudThickness = cloudsTop * (1 - night);
-                        float pos = saturate(1 - normSunWorldPos.y);
-                        float cloudLerpValue = cloudThickness * pos;
+                        cloudThickness = cloudsTop * (1 - night);
+                        pos = saturate(1 - normSunWorldPos.y);
+                        cloudLerpValue = cloudThickness * pos;
                         //Unity's calculated sun color
                         cloudTopColor = lerp(cloudTopColor, (IN.sunColor + _CloudTopSunColor) * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Unity's defined sun color in Lighting Settings
@@ -719,11 +716,18 @@
                 cloudColor = saturate(cloudColor / (1 - _CloudColorBoost));
 
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
-                    if(y < 0.0) {
-                        float cloudThickness = abs(1 - abs(clouds / 2)) * (1 - night);
-                        float pos = max(0, 1 - abs(sunPos.y));
-                        float cloudLerpValue = max(0, (cloudThickness * min(1, pos)) * _CloudSunScale);
-                        cloudColor = lerp(cloudColor, _CloudSunColor, cloudLerpValue * _CloudSunLerpScale);
+                    if(normWorldPos.y > _SkyFadeEnd) {
+                    //if(y < 0.125) {
+                        //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
+                        cloudThickness = clouds * (1 - night);
+                        pos = saturate(1 - normSunWorldPos.y);
+                        cloudLerpValue = cloudThickness * pos;
+                        //Unity's calculated sun color
+                        cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUpTop), cloudLerpValue * _CloudSunLerpScale);
+                        //Unity's defined sun color in Lighting Settings
+                        //cloudTopColor = lerp(cloudTopColor, _LightColor0 * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                        //Sun color from material settings
+                        //cloudTopColor = lerp(cloudTopColor, _CloudTopSunColor * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                     }
                 #endif
 
@@ -732,45 +736,6 @@
 
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
-
-                //Moved moon position code so the sun can be blocked when behind the moons
-
-                //clouds = min(1, (cloudsTop * _CloudTopOpacity) + (clouds * _CloudOpacity));
-/*
-                if(sphere >= 0.0){
-                    //so we grab the moon tex and multiple the color
-                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-                    tmpCol *= col.rgb;
-                    //then we lerp to the color be how much of the moon is lit
-                    //moonTex = lerp(col.rgb, moonTex * NDotL, saturate(NDotL * NDotScale));
-                    moonTex = lerp(moonTex * tmpCol, moonTex * NDotL, saturate(NDotL * NDotScale));
-
-                    if(SecundaSphere < 0.0) {
-                        //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                        //col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - max(cloudsTop, clouds)));
-                    } else {
-                        SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
-                        //tmpCol = lerp(moonTex, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
-                        tmpCol = SecundaMoonTex * SecundaNDotL;
-                        //tmpCol = SecundaMoonTex * saturate(SecundaNDotL);
-
-                        //col.rgb = moonTex;                        
-                        //col.rgb = lerp(col.rgb, moonTex, horizonValue * (1 - SecundaSphere));
-                        //col.rgb = lerp(col.rgb, tmpCol, horizonValue * (1 - max(cloudsTop, clouds)));
-                    }
-                } else if(SecundaSphere >= 0.0){
-                    //so we grab the moon tex and multiple the color
-                    SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
-                    tmpCol *= col.rgb;
-                    //then we lerp to the color be how much of the moon is lit
-                    //SecundaMoonTex = lerp(col.rgb, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
-                    SecundaMoonTex = lerp(SecundaMoonTex * tmpCol, SecundaMoonTex * SecundaNDotL, saturate(SecundaNDotL * NDotScale));
-                    //SecundaMoonTex = SecundaMoonTex * saturate(SecundaNDotL);
-
-                    //then lerp to the final color masking out anything uner the horizon and anywhere there is clouds as they should be infron of the moon
-                    //col.rgb = lerp(col.rgb, SecundaMoonTex, horizonValue * (1 - max(cloudsTop, clouds)));
-                }
-*/
 
 #ifdef REDUCE_COLOR
                 float stepSize = 0.03125;
