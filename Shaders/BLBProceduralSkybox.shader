@@ -16,7 +16,7 @@
         _NightStartHeight("Night Start Height", Range(-1, 1)) = -.1
         _NightEndHeight("Night End Height", Range(-1, 1)) = -.2
         _SkyFadeStart("Sky Fade Start", Range(-1, 1)) = .05
-        _SkyFadeEnd("Sky End Start", Range(-1, 1)) = -.05
+        _SkyFadeEnd("Sky End Start", Range(-1, 1)) = -.01
 
         _FogDayColor ("Fog Day Color", Color) = (.5, .5, .5, 1)
         _FogNightColor ("Fog Night Color", Color) = (.1, .1, .1, 1)
@@ -345,7 +345,8 @@
                 // 1. in case of linear: multiply by _Exposure in here (even in case of lerp it will be common multiplier, so we can skip mul in fshader)
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
-                OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
+                //OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
+                OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
@@ -609,14 +610,16 @@
                 float3 tmpCol = (0.25, 0.25, 0.25);
                 float NDotScale = 2;
 
-                if(SecundaSphere >= 0.0) {
-                    SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
-                    SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
-                    col.rgb = SecundaMoonTex;
-                } else if(sphere >= 0.0) {
-                    float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-                    moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
-                    col.rgb = moonTex;
+                if(normWorldPos.y > _SkyFadeEnd) {
+                    if(SecundaSphere >= 0.0) {
+                        SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
+                        SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
+                        col.rgb = SecundaMoonTex;
+                    } else if(sphere >= 0.0) {
+                        float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
+                        moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
+                        col.rgb = moonTex;
+                    }
                 }
                 //End of moons
 
