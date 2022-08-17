@@ -708,7 +708,7 @@
 
                 //we blend the normal with the up vector. This dot product with up gives the final color the effect the clouds are fluffy
                 float NdotUp = dot(cloudNormal, float3(0, 1, 0));
-
+                NdotUp = Remap(NdotUp, float2(-1, 1), float2(1 -_CloudNormalEffect, 1));
                 //adjust the color for night
                 float3 cloudColor = lerp(_CloudColor, _CloudNightColor, night);
             
@@ -723,7 +723,7 @@
                         pos = saturate(1 - normSunWorldPos.y);
                         cloudLerpValue = cloudThickness * pos;
                         //Unity's calculated sun color
-                        cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUpTop), cloudLerpValue * _CloudSunLerpScale);
+                        cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
                         //Unity's defined sun color in Lighting Settings
                         //cloudTopColor = lerp(cloudTopColor, _LightColor0 * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Sun color from material settings
@@ -732,7 +732,7 @@
                 #endif
 
                 //then remap the dot product to be between our desired value, this reduces the effect of the normal
-                cloudColor = cloudColor * Remap(NdotUp, float2(-1, 1), float2(1 -_CloudNormalEffect, 1));
+                cloudColor = cloudColor * NdotUp;
 
                 //finally lerp to the cloud color base on the cloud value
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
