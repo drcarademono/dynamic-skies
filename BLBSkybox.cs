@@ -171,7 +171,7 @@ public class BLBSkybox : MonoBehaviour
             }
         } else if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
             //05:00 - 07:00
-            setFogColor(true);
+            setFogColor(false);
             currentDayPart = DayParts.Dawn;
             OnDawn();
         } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
