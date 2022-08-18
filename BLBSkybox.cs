@@ -310,22 +310,22 @@ public class BLBSkybox : MonoBehaviour
     //Determines if an hour of the day falls in a certain day part
     private bool isHourDayPart(int hour, DayParts dayPart) {
         //00:00 - 04:00
-        if ((hour >= 0 && hour < 5) && dayPart == DayParts.Night) {
+        if ((hour >= 0 && hour < 4) && dayPart == DayParts.Night) {
             return true;
-        //04:00 - 08:00
-        } else if (hour >= 5 && hour < 7 && dayPart == DayParts.Dawn) {
+        //04:00 - 05:00
+        } else if (hour >= 4 && hour < 6 && dayPart == DayParts.Dawn) {
             return true;
-        //08:00 - 12:00
-        } else if (hour >= 7 && hour < 12 && dayPart == DayParts.Morning) {
+        //06:00 - 12:00
+        } else if (hour >= 6 && hour < 12 && dayPart == DayParts.Morning) {
             return true;
         //12:00 - 16:00
         } else if (hour >= 12 && hour < 17 && dayPart == DayParts.Midday) {
             return true;
-        //17:00 - 19:00
-        } else if (hour >= 17 && hour < 20 && dayPart == DayParts.Dusk) {
+        //16:00 - 18:00
+        } else if (hour >= 16 && hour < 18 && dayPart == DayParts.Dusk) {
             return true;
-        //20:00 - 23:00
-        } else if (hour >= 20 && dayPart == DayParts.Evening) {
+        //18:00 - 23:00
+        } else if (hour >= 18 && dayPart == DayParts.Evening) {
             return true;
         }
         return false;

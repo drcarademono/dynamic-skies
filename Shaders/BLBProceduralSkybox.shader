@@ -446,7 +446,9 @@
                 #endif
 
                     // if we did precalculate color in vprog: just do lerp between them
-                    col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    //col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
+                    col.rgb = lerp(IN.skyColor, tmp, saturate(y));
 
                 half sunAttenuation = 0;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
@@ -470,7 +472,7 @@
                 float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
                 //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
                 float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
-                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw));
+                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw).r);
                 //invert the voronoi
                 //stars = 1 - stars;
                 //and then raise the value to a power to adjust the brightness falloff of the stars
@@ -610,6 +612,7 @@
                 float3 tmpCol = (0.25, 0.25, 0.25);
                 float NDotScale = 2;
 
+                //Stops the moons from being rendered underneath the horizon
                 if(normWorldPos.y > _SkyFadeEnd) {
                     if(SecundaSphere >= 0.0) {
                         SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
