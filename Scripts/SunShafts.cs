@@ -22,7 +22,7 @@ public class SunShafts : PostEffectsBase {
 	public SunShaftsResolution resolution = SunShaftsResolution.Normal;
 	public ShaftsScreenBlendMode screenBlendMode = ShaftsScreenBlendMode.Screen;
 	
-	public Transform sunTransform;
+	public GameObject sun;
 	public int radialBlurIterations = 2;
 	public Color sunColor = Color.white;
 	public Color sunThreshold = new Color(0.87f,0.74f,0.65f);
@@ -68,11 +68,10 @@ public class SunShafts : PostEffectsBase {
             divider = 1;
             
 		Vector3 v = Vector3.one * 0.5f;
-        Light sun = UnityEngine.RenderSettings.sun;
-        sunTransform = sun.transform;
+        
 		if (sun) {
 			//v = GetComponent<Camera>().WorldToViewportPoint (sunTransform.position);
-            v = GetComponent<Camera>().WorldToViewportPoint (sunTransform.position);
+            v = GetComponent<Camera>().WorldToViewportPoint(transform.position - sun.transform.forward);
             //v = sunTransform.position;
             //Debug.Log(v.ToString());
         } else {
