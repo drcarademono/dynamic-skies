@@ -350,8 +350,8 @@
                 // 1. in case of linear: multiply by _Exposure in here (even in case of lerp it will be common multiplier, so we can skip mul in fshader)
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
-                //OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
-                OUT.groundColor = _GroundColor;
+                OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
+                //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
@@ -494,9 +494,9 @@
                 #endif
 
                     // if we did precalculate color in vprog: just do lerp between them
-                    //col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
-                    float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
-                    col.rgb = lerp(IN.skyColor, tmp, saturate(y));
+                    col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    //float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
+                    //col.rgb = lerp(IN.skyColor, tmp, saturate(y));
 
                 half sunAttenuation = 0;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
