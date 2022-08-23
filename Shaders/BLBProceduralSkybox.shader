@@ -22,6 +22,9 @@
         _FogNightColor ("Fog Night Color", Color) = (.1, .1, .1, 1)
         _FogDistance("Fog distance", float) = 2048.0
 
+        [Header(CloudsGeneral)]
+        _CloudFadeHeight("Cloud fade height", Range(0,5)) = 0.0
+
         [Header(CloudsTop)]
         _CloudTopDiffuse("Cloud Top Diffuse", 2D) = "black" {}
         [NoScaleOffset]_CloudTopNormal("Cloud Top Normal", 2D) = "bump" {}
@@ -135,6 +138,8 @@
             uniform float3 _FogDayColor;
             uniform float3 _FogNightColor;
             uniform float _FogDistance;
+
+            uniform float _CloudFadeHeight;
 
             uniform sampler2D _CloudTopDiffuse, _CloudTopNormal;
             uniform float4 _CloudTopDiffuse_ST, _CloudTopNormal_ST;
@@ -390,8 +395,8 @@
 
                 //this sets up where things will start to fade out along the horizon. The values allow us to give it some range so it fades out
                 //we have to do 1 minus because the start fade value is actauly higher then the end. You could do the dot with down but I like this better
-                float horizonValue = dot(normWorldPos, float3(0, 1, 0));
-                horizonValue = 1 - saturate(Remap(horizonValue, float2(_SkyFadeStart, _SkyFadeEnd), float2(0, 1)));
+                float dotWorldPos = dot(normWorldPos, float3(0, 1, 0));
+                float horizonValue = 1 - saturate(Remap(dotWorldPos, float2(_SkyFadeStart, _SkyFadeEnd), float2(0, 1)));
 
                 //grab the sun position
                 float3 sunPos = _WorldSpaceLightPos0.xyz;
@@ -429,73 +434,6 @@
                 float sphere = SphereIntersect(float3(0, 0, 0), normWorldPos, currentMoonPos, radius);
                 float SecundaRadius = GetMoonDistance(_SecundaMinSize, _SecundaMaxSize, SecundaMajMinAxis, SecundaOrbitAngle);
                 float SecundaSphere = SphereIntersect(float3(0, 0, 0), normWorldPos, SecundaCurrentMoonPos, SecundaRadius);
-                float moonBlocking = max(sphere, SecundaSphere);
-
-    //Start of Unity code
-                // if y > 1 [eyeRay.y < -SKY_GROUND_THRESHOLD] - ground
-                // if y >= 0 and < 1 [eyeRay.y <= 0 and > -SKY_GROUND_THRESHOLD] - horizon
-                // if y < 0 [eyeRay.y > 0] - sky
-                #if SKYBOX_SUNDISK == SKYBOX_SUNDISK_HQ
-                    half3 ray = normalize(IN.vertex.xyz);
-                    half y = ray.y / SKY_GROUND_THRESHOLD;
-                #elif SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
-                    half3 ray = IN.rayDir.xyz;
-                    half y = ray.y / SKY_GROUND_THRESHOLD;
-                #else
-                    half y = IN.skyGroundFactor;
-                #endif
-
-                    // if we did precalculate color in vprog: just do lerp between them
-                    //col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
-                    float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
-                    col.rgb = lerp(IN.skyColor, tmp, saturate(y));
-
-                half sunAttenuation = 0;
-                #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
-                    if(y < 0.0)
-                    {
-                        sunAttenuation = calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
-                        if(moonBlocking < 0.0) {
-                            col.rgb += IN.sunColor * sunAttenuation;
-                        }
-                    }
-                #endif
-
-                #if defined(UNITY_COLORSPACE_GAMMA) && !SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
-                    col.rgb = LINEAR_2_OUTPUT(col);
-                #endif
-    //End of Unity Code
-
-                //Stars
-
-    //Stars
-                float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
-                //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
-                float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
-                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw).r);
-                //invert the voronoi
-                //stars = 1 - stars;
-                //and then raise the value to a power to adjust the brightness falloff of the stars
-                //stars = pow(stars, _StarBrightness);
-                //starsAlpha = round(0.5);
-                //we also sample a basic noise texture, this allows us to modulate the star brightness, this creates a twinkle effect
-                float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
-                twinkle = twinkle * starsAlpha;
-                //twinkle = max(0, twinkle * starsAlpha);
-                //twinkle *= round(1 - starsAlpha);
-
-                //modulate the twinkle value
-                twinkle *= _TwinkleBoost;
-                
-                //then adjust the final color
-                stars -= twinkle;
-                stars = saturate(stars);
-
-                //then lerp to the stars color masking out the horizon
-                //col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - max(cloudsTop, clouds))), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
-                col.rgb = lerp(col.rgb, stars, night * horizonValue);
-
-                //End of Stars
 
                 //Moons
 //get the position on the sphere and use that to get the normal for the sphere
@@ -538,6 +476,74 @@
                 float SecundaNDotL = dot(sunPos, SecundaMoonFragNormal);
 
 #endif
+
+                float moonBlocking = max(sphere * saturate(NDotL), SecundaSphere * saturate(SecundaNDotL));
+
+    //Start of Unity code
+                // if y > 1 [eyeRay.y < -SKY_GROUND_THRESHOLD] - ground
+                // if y >= 0 and < 1 [eyeRay.y <= 0 and > -SKY_GROUND_THRESHOLD] - horizon
+                // if y < 0 [eyeRay.y > 0] - sky
+                #if SKYBOX_SUNDISK == SKYBOX_SUNDISK_HQ
+                    half3 ray = normalize(IN.vertex.xyz);
+                    half y = ray.y / SKY_GROUND_THRESHOLD;
+                #elif SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
+                    half3 ray = IN.rayDir.xyz;
+                    half y = ray.y / SKY_GROUND_THRESHOLD;
+                #else
+                    half y = IN.skyGroundFactor;
+                #endif
+
+                    // if we did precalculate color in vprog: just do lerp between them
+                    col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    //float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
+                    //col.rgb = lerp(IN.skyColor, tmp, saturate(y));
+
+                half sunAttenuation = 0;
+                #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
+                    if(y < 0.0)
+                    {
+                        sunAttenuation = calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
+                        if(moonBlocking <= 0.0) {
+                            col.rgb += IN.sunColor * sunAttenuation;
+                        }
+                    }
+                #endif
+
+                #if defined(UNITY_COLORSPACE_GAMMA) && !SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
+                    col.rgb = LINEAR_2_OUTPUT(col);
+                #endif
+    //End of Unity Code
+
+    //Stars
+                float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
+                //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
+                float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
+                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw).r);
+                //invert the voronoi
+                //stars = 1 - stars;
+                //and then raise the value to a power to adjust the brightness falloff of the stars
+                //stars = pow(stars, _StarBrightness);
+                //starsAlpha = round(0.5);
+                //we also sample a basic noise texture, this allows us to modulate the star brightness, this creates a twinkle effect
+                float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
+                twinkle = twinkle * starsAlpha;
+                //twinkle = max(0, twinkle * starsAlpha);
+                //twinkle *= round(1 - starsAlpha);
+
+                //modulate the twinkle value
+                twinkle *= _TwinkleBoost;
+                
+                //then adjust the final color
+                stars -= twinkle;
+                stars = saturate(stars);
+
+                //then lerp to the stars color masking out the horizon
+                //col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - max(cloudsTop, clouds))), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
+                col.rgb = lerp(col.rgb, stars, night * horizonValue);
+
+                //End of Stars
+
+
 
 //if we want tidal locking, i.e. the same face always looks at the viewer
 #ifdef _MOONSPINOPTION_TIDAL_LOCK         
@@ -609,21 +615,23 @@
 
                 //if our sphere tracing returned a positive value we have a moon fragment
                 float3 SecundaMoonTex;
-                float3 tmpCol = (0.25, 0.25, 0.25);
-                float NDotScale = 2;
+                float3 tmpCol = (0.00625, 0.00625, 0.00625);
+                float NDotScale = 1;
 
                 //Stops the moons from being rendered underneath the horizon
-                if(normWorldPos.y > _SkyFadeEnd) {
+                //if(normWorldPos.y > _SkyFadeEnd) {
                     if(SecundaSphere >= 0.0) {
                         SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
-                        SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
+                        //SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
+                        SecundaMoonTex = lerp(col.rgb - tmpCol, SecundaMoonTex, max(0, saturate(SecundaNDotL * NDotScale) - 0));
                         col.rgb = SecundaMoonTex;
                     } else if(sphere >= 0.0) {
                         float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-                        moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
+                        //moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
+                        moonTex = lerp(col.rgb - tmpCol, moonTex, max(0, saturate(NDotL * NDotScale) - 0));
                         col.rgb = moonTex;
                     }
-                }
+                //}
                 //End of moons
 
     //Clouds             
@@ -634,10 +642,14 @@
 
                 float cloudSpeedMultiplier = 0.75;
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
-                float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);                
+                float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);
+                //float cloudFadeHeight = saturate(normWorldPos.y - _CloudFadeHeight);
+                float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(_CloudFadeHeight, 0), float2(0, 1)));
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
-                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
-                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
+                //float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
+                //float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
+                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * cloudFadeHeight;
+                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
 
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
                 cloudTop2 = Remap(cloudTop2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
@@ -669,17 +681,19 @@
                 float cloudLerpValue;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     if(normWorldPos.y > _SkyFadeEnd) {
+                        if(cloudsTop > 0.0) {
                     //if(y < 0.125) {
                         //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
-                        cloudThickness = cloudsTop * (1 - night);
-                        pos = saturate(1 - normSunWorldPos.y);
-                        cloudLerpValue = cloudThickness * pos;
-                        //Unity's calculated sun color
-                        cloudTopColor = lerp(cloudTopColor, (IN.sunColor + _CloudTopSunColor) * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                            cloudThickness = cloudsTop * (1 - night);
+                            pos = saturate(1 - normSunWorldPos.y);
+                            cloudLerpValue = cloudThickness * pos;
+                            //Unity's calculated sun color
+                            cloudTopColor = lerp(cloudTopColor, (IN.sunColor + _CloudTopSunColor) * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Unity's defined sun color in Lighting Settings
                         //cloudTopColor = lerp(cloudTopColor, _LightColor0 * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Sun color from material settings
                         //cloudTopColor = lerp(cloudTopColor, _CloudTopSunColor * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                        }
                     }
                 #endif
 
@@ -693,8 +707,10 @@
                 float2 cloudUV = normWorldPos.xz / (normWorldPos.y + _CloudBending);
 
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
-                float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir).x * horizonValue;
-                float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
+                //float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir).x * horizonValue;
+                //float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
+                float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir).x * cloudFadeHeight;
+                float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
         
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
                 cloud2 = Remap(cloud2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
@@ -756,8 +772,8 @@
 
                 //float viewDistance = 600;
                 UNITY_CALC_FOG_FACTOR_RAW(_FogDistance);
-                float3 fogColor = lerp(_FogDayColor, _FogNightColor, night);
-                col.rgb = lerp(col.rgb, fogColor.rgb, (saturate( unityFogFactor * (0.5 - normWorldPos.y) )));
+                //float3 fogColor = lerp(_FogDayColor, _FogNightColor, night);
+                //col.rgb = lerp(col.rgb, fogColor.rgb, (saturate( unityFogFactor * (0.5 - normWorldPos.y) )));
                 //col.rgb = lerp(col.rgb, _FogDayColor.rgb, (saturate( unityFogFactor )));
 
                 //col.rgb = lerp(col.rgb, unity_FogColor.rgb, (saturate( unityFogFactor * (0.75 - normWorldPos.y) )));
