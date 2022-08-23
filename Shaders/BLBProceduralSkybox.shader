@@ -619,7 +619,7 @@
                 float NDotScale = 1;
 
                 //Stops the moons from being rendered underneath the horizon
-                //if(normWorldPos.y > _SkyFadeEnd) {
+                if(normWorldPos.y > 0.0) {
                     if(SecundaSphere >= 0.0) {
                         SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
                         //SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
@@ -631,7 +631,7 @@
                         moonTex = lerp(col.rgb - tmpCol, moonTex, max(0, saturate(NDotL * NDotScale) - 0));
                         col.rgb = moonTex;
                     }
-                //}
+                }
                 //End of moons
 
     //Clouds             
