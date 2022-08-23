@@ -494,13 +494,13 @@
                 #endif
 
                     // if we did precalculate color in vprog: just do lerp between them
-                    col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
-                    //float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
-                    //col.rgb = lerp(IN.skyColor, tmp, saturate(y));
+                    //col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
+                    col.rgb = lerp(IN.skyColor, tmp, saturate(y));
 
                 half sunAttenuation = 0;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
-                    if(y < 0.0)
+                    if(y <= 1)
                     {
                         sunAttenuation = calcSunAttenuation(sunPos, -ray, _SunSize, _SunSizeConvergence);
                         if(moonBlocking <= 0.0) {
@@ -644,7 +644,7 @@
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);
                 //float cloudFadeHeight = saturate(normWorldPos.y - _CloudFadeHeight);
-                float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(_CloudFadeHeight, 0), float2(0, 1)));
+                float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(_CloudFadeHeight, _SkyFadeEnd), float2(0, 1)));
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
                 //float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
                 //float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;

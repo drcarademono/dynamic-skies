@@ -285,12 +285,21 @@ public class BLBSkybox : MonoBehaviour
     //Handles starting the lerp for the sun and skybox
     private void HandleDawnDusk(DayParts dayPart) {
         if(dayPart == DayParts.Dawn) {
+            atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            atmosphereValue2 = atmosphereValue1 + 0.3f;
             sunStartColor = getSunColor(4);
             sunEndColor = getSunColor(12);
         } else if(dayPart == DayParts.Dusk) {
             sunStartColor = getSunColor(18);
             sunEndColor = getSunColor(2);
+            atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            atmosphereValue1 = atmosphereValue2 + 0.3f;
         }
+        atmosphereLerpDuration = calculateScaledLerpDuration(2);
+        Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
+        StopCoroutine("AtmosphereLerp");
+        atmosphereLerpRunning = true;
+        StartCoroutine("AtmosphereLerp");
         sunFogLerpDuration = calculateScaledLerpDuration(2);
         //StopCoroutine("SunFogLerp");
         //sunFogLerpRunning = true;
@@ -338,6 +347,22 @@ public class BLBSkybox : MonoBehaviour
     Color sunStartColor; //Start value for sun color lerp
     Color sunEndColor; //End value for the sun color lerp
 
+    bool atmosphereLerpRunning = false;
+    float atmosphereLerpDuration = 0.0f;
+    float atmosphereValue1 = 0.0f;
+    float atmosphereValue2 = 0.0f;
+    IEnumerator AtmosphereLerp()
+    {
+        float timeElapsed = 0;
+        while(timeElapsed < atmosphereLerpDuration) {
+            //skyboxMat.SetFloat("_AtmosphereThickness", )
+            skyboxMat.SetFloat("_AtmosphereThickness", Mathf.Lerp(atmosphereValue1, atmosphereValue2, timeElapsed / atmosphereLerpDuration));
+            timeElapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        skyboxMat.SetFloat("_AtmosphereThickness", atmosphereValue2);
+        atmosphereLerpRunning = false;
+    }
     IEnumerator SunFogLerp()
     {
         //Animated the sun color
@@ -565,6 +590,7 @@ public class BLBSkybox : MonoBehaviour
     #region Moons
     private float moonOrbitSpeed = 0.00024f / 12; //Default moon orbit speed in realtime
     private void ChangeLunarPhases() {
+        return;
         currentLunarPhase = worldTime.Now.MassarLunarPhase;
         Vector4 lunarPhase = new Vector4(LunarPhaseStates[currentLunarPhase].X, LunarPhaseStates[currentLunarPhase].Y, 0, 0);
         skyboxMat.SetVector("_MoonPhase", lunarPhase);
