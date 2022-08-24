@@ -289,8 +289,10 @@ public class BLBSkybox : MonoBehaviour
             return;
         }
         if(dayPart == DayParts.Dawn) {
-            atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            atmosphereValue2 = atmosphereValue1 + 0.3f;
+            //atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            //atmosphereValue2 = atmosphereValue1 + 0.3f;
+            atmosphereValue1 = 0.0f;
+            atmosphereValue2 = 1.0f;
             //sunStartColor = getSunColor(4);
             //sunEndColor = getSunColor(12);
         } else if(dayPart == DayParts.Dusk) {
@@ -298,8 +300,10 @@ public class BLBSkybox : MonoBehaviour
             //sunEndColor = getSunColor(2);
             //atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
             //atmosphereValue1 = atmosphereValue2 + 0.3f;
-            atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            atmosphereValue2 = atmosphereValue1 + 0.3f;
+            //atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            //atmosphereValue2 = atmosphereValue1 + 0.3f;
+            atmosphereValue1 = 0.0f;
+            atmosphereValue2 = 1.0f;
         }
         atmosphereLerpDuration = calculateScaledLerpDuration(1);
         Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
