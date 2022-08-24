@@ -108,7 +108,7 @@ Material:
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0
     - _CloudDirection: 217
-    - _CloudFadeHeight: 0.03
+    - _CloudFadeHeight: 0.28
     - _CloudNormalEffect: 0.64
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.997
@@ -141,7 +141,7 @@ Material:
     - _MoonSemiMajAxis: 1
     - _MoonSemiMinAxis: 1
     - _MoonSpinOption: 0
-    - _NightEndHeight: -1
+    - _NightEndHeight: -0.5
     - _NightStartHeight: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -154,7 +154,7 @@ Material:
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
     - _SecundaSpinOption: 0
-    - _SkyFadeEnd: 0
+    - _SkyFadeEnd: -0.5
     - _SkyFadeStart: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -179,7 +179,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FogDayColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
     - _FogNightColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 1}
-    - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _MoonColor: {r: 1, g: 1, b: 1, a: 1}
     - _MoonOrbitAngle: {r: 0, g: 0, b: 45, a: 0}
     - _MoonPhase: {r: 0, g: 0, b: 0, a: 0}

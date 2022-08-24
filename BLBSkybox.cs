@@ -284,23 +284,31 @@ public class BLBSkybox : MonoBehaviour
 
     //Handles starting the lerp for the sun and skybox
     private void HandleDawnDusk(DayParts dayPart) {
+        if(atmosphereLerpRunning > 0) {
+            Debug.Log("BLB: Running atmosphereLerp - aborting HandleDawnDusk");
+            return;
+        }
         if(dayPart == DayParts.Dawn) {
             atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
             atmosphereValue2 = atmosphereValue1 + 0.3f;
-            sunStartColor = getSunColor(4);
-            sunEndColor = getSunColor(12);
+            //sunStartColor = getSunColor(4);
+            //sunEndColor = getSunColor(12);
         } else if(dayPart == DayParts.Dusk) {
-            sunStartColor = getSunColor(18);
-            sunEndColor = getSunColor(2);
-            atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            atmosphereValue1 = atmosphereValue2 + 0.3f;
+            //sunStartColor = getSunColor(18);
+            //sunEndColor = getSunColor(2);
+            //atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            //atmosphereValue1 = atmosphereValue2 + 0.3f;
+            atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+            atmosphereValue2 = atmosphereValue1 + 0.3f;
         }
         atmosphereLerpDuration = calculateScaledLerpDuration(2);
         Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
+        Debug.Log("BLB: Stopping running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
-        atmosphereLerpRunning = true;
+        atmosphereLerpRunning = 1;
+        Debug.Log("BLB: Starting atmosphere lerp with " + atmosphereValue1.ToString() + " to " + atmosphereValue2.ToString());
         StartCoroutine("AtmosphereLerp");
-        sunFogLerpDuration = calculateScaledLerpDuration(2);
+        //sunFogLerpDuration = calculateScaledLerpDuration(2);
         //StopCoroutine("SunFogLerp");
         //sunFogLerpRunning = true;
         //StartCoroutine("SunFogLerp");
@@ -347,21 +355,32 @@ public class BLBSkybox : MonoBehaviour
     Color sunStartColor; //Start value for sun color lerp
     Color sunEndColor; //End value for the sun color lerp
 
-    bool atmosphereLerpRunning = false;
+    int atmosphereLerpRunning = 0;
     float atmosphereLerpDuration = 0.0f;
     float atmosphereValue1 = 0.0f;
     float atmosphereValue2 = 0.0f;
     IEnumerator AtmosphereLerp()
     {
         float timeElapsed = 0;
+        Debug.Log("BLB: Atmosphere lerp starting. Duration: " + atmosphereLerpDuration.ToString());
         while(timeElapsed < atmosphereLerpDuration) {
             //skyboxMat.SetFloat("_AtmosphereThickness", )
             skyboxMat.SetFloat("_AtmosphereThickness", Mathf.Lerp(atmosphereValue1, atmosphereValue2, timeElapsed / atmosphereLerpDuration));
             timeElapsed += Time.unscaledDeltaTime;
             yield return null;
         }
+        Debug.Log("BLB: Atmosphere lerp finished.");
         skyboxMat.SetFloat("_AtmosphereThickness", atmosphereValue2);
-        atmosphereLerpRunning = false;
+        if(atmosphereLerpRunning == 1) {
+            float tmp = atmosphereValue1;
+            atmosphereValue1 = atmosphereValue2;
+            atmosphereValue2 = tmp;
+            Debug.Log("BLB: Atmosphere lerp reversal.");
+            StartCoroutine("AtmosphereLerp");
+            atmosphereLerpRunning = 2;
+        } else if(atmosphereLerpRunning == 2) {
+            atmosphereLerpRunning = 0;
+        }
     }
     IEnumerator SunFogLerp()
     {
@@ -380,7 +399,7 @@ public class BLBSkybox : MonoBehaviour
     }
     //Calculates the duration of the lerp in seconds scaled to the TimeScale to have proper sun rise / set
     private float calculateScaledLerpDuration(float targetDurationHours) {
-        float lerpTime = (DaggerfallDateTime.SecondsPerHour / worldTime.TimeScale) * targetDurationHours;
+        float lerpTime = (DaggerfallDateTime.SecondsPerHour * targetDurationHours) / worldTime.TimeScale;
         return Mathf.Max(1.0f, lerpTime);
     }
     #endregion

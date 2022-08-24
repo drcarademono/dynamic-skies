@@ -211,6 +211,7 @@
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     half3   sunColor        : TEXCOORD4;
                 #endif
+                    half3   fogColor        : TEXCOORD6;
                 UNITY_FOG_COORDS(5)
                 UNITY_VERTEX_OUTPUT_STEREO
             };
@@ -351,6 +352,7 @@
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
                 OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
+                OUT.fogColor = _Exposure * (cIn + COLOR_2_LINEAR(_FogDayColor) * cOut);
                 //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
@@ -368,6 +370,7 @@
                 #endif
 
                 #if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
+                    OUT.fogColor = sqrt(OUT.fogColor);
                     OUT.groundColor = sqrt(OUT.groundColor);
                     OUT.skyColor    = sqrt(OUT.skyColor);
                     #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
@@ -494,9 +497,9 @@
                 #endif
 
                     // if we did precalculate color in vprog: just do lerp between them
-                    col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
-                    //float3 tmp = lerp(_FogDayColor, _FogNightColor, night);
-                    //col.rgb = lerp(IN.skyColor, tmp, saturate(y));
+                    //col.rgb = lerp(IN.skyColor, IN.groundColor, saturate(y));
+                    float3 tmp = lerp(IN.fogColor, _FogNightColor, night);
+                    col.rgb = lerp(IN.skyColor, tmp, saturate(y));
 
                 half sunAttenuation = 0;
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
