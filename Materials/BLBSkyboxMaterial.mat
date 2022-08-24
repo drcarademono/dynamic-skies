@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: BLBSkyboxMaterial
   m_Shader: {fileID: 4800000, guid: 86de95ef4a2cc4048b91b202864c9f94, type: 3}
-  m_ShaderKeywords: PHASE_LIGHT _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
+  m_ShaderKeywords: _MOONSPINOPTION_TIDAL_LOCK _SECUNDASPINOPTION_SECUNDATIDAL_LOCK
     _SECUNDASPINOPTION_TIDAL_LOCK _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -99,30 +99,30 @@ Material:
     m_Floats:
     - _AtmosphereThickness: 0.64
     - _BumpScale: 1
-    - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.4
-    - _CloudBending: 0.2
+    - _CloudAlphaCutoff: 1
+    - _CloudAlphaMax: 1
+    - _CloudBending: 0.25
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0
     - _CloudDirection: 217
-    - _CloudFadeHeight: 0.28
-    - _CloudNormalEffect: 0.64
+    - _CloudFadeHeight: 0.1
+    - _CloudNormalEffect: 0.48
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.997
     - _CloudSpeed: 0.02
     - _CloudSunLerpScale: 1
-    - _CloudSunScale: 4
-    - _CloudTopAlphaCutoff: 0
-    - _CloudTopAlphaMax: 0.4
-    - _CloudTopBending: 0.2
+    - _CloudSunScale: 8
+    - _CloudTopAlphaCutoff: 1
+    - _CloudTopAlphaMax: 1
+    - _CloudTopBending: 0.25
     - _CloudTopColorBoost: 0
-    - _CloudTopNormalEffect: 0.64
+    - _CloudTopNormalEffect: 0.48
     - _CloudTopOpacity: 0.998
     - _CloudTopSunLerpScale: 1
-    - _CloudTopSunScale: 4
+    - _CloudTopSunScale: 8
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -136,10 +136,10 @@ Material:
     - _MoonMaxSize: 0.08
     - _MoonMinSize: 0.08
     - _MoonOrbitOffset: 0
-    - _MoonOrbitSpeed: 0.001
-    - _MoonPhaseOption: 1
-    - _MoonSemiMajAxis: 1
-    - _MoonSemiMinAxis: 1
+    - _MoonOrbitSpeed: 0.005
+    - _MoonPhaseOption: 0
+    - _MoonSemiMajAxis: 2
+    - _MoonSemiMinAxis: 2
     - _MoonSpinOption: 0
     - _NightEndHeight: -0.5
     - _NightStartHeight: 1
@@ -148,8 +148,8 @@ Material:
     - _ReduceColor: 0
     - _SecundaMaxSize: 0.04
     - _SecundaMinSize: 0.04
-    - _SecundaOrbitOffset: 0
-    - _SecundaOrbitSpeed: 0.001
+    - _SecundaOrbitOffset: 8.9
+    - _SecundaOrbitSpeed: 0
     - _SecundaPhaseOption: 1
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
@@ -169,12 +169,12 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _CloudColor: {r: 0.6392157, g: 0.6392157, b: 0.6392157, a: 1}
-    - _CloudNightColor: {r: 0.2784314, g: 0.2784314, b: 0.2784314, a: 1}
-    - _CloudSunColor: {r: 0.46666667, g: 0.24705882, b: 0.24705882, a: 1}
-    - _CloudTopColor: {r: 0.72156864, g: 0.72156864, b: 0.72156864, a: 1}
-    - _CloudTopNightColor: {r: 0.32156864, g: 0.32156864, b: 0.32156864, a: 1}
-    - _CloudTopSunColor: {r: 0.46666667, g: 0.24705882, b: 0.24705882, a: 1}
+    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudNightColor: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+    - _CloudSunColor: {r: 0.5803922, g: 0.29803923, b: 0.29803923, a: 1}
+    - _CloudTopColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudTopNightColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+    - _CloudTopSunColor: {r: 0.5803922, g: 0.29803923, b: 0.29803923, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FogDayColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}

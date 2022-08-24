@@ -301,7 +301,7 @@ public class BLBSkybox : MonoBehaviour
             atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
             atmosphereValue2 = atmosphereValue1 + 0.3f;
         }
-        atmosphereLerpDuration = calculateScaledLerpDuration(2);
+        atmosphereLerpDuration = calculateScaledLerpDuration(1);
         Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
         Debug.Log("BLB: Stopping running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
@@ -327,10 +327,10 @@ public class BLBSkybox : MonoBehaviour
     //Determines if an hour of the day falls in a certain day part
     private bool isHourDayPart(int hour, DayParts dayPart) {
         //00:00 - 04:00
-        if ((hour >= 0 && hour < 4) && dayPart == DayParts.Night) {
+        if ((hour >= 0 && hour < 5) && dayPart == DayParts.Night) {
             return true;
-        //04:00 - 05:00
-        } else if (hour >= 4 && hour < 6 && dayPart == DayParts.Dawn) {
+        //05:00 - 06:00
+        } else if (hour == 5 && dayPart == DayParts.Dawn) {
             return true;
         //06:00 - 12:00
         } else if (hour >= 6 && hour < 12 && dayPart == DayParts.Morning) {
@@ -338,8 +338,8 @@ public class BLBSkybox : MonoBehaviour
         //12:00 - 16:00
         } else if (hour >= 12 && hour < 17 && dayPart == DayParts.Midday) {
             return true;
-        //16:00 - 18:00
-        } else if (hour >= 16 && hour < 18 && dayPart == DayParts.Dusk) {
+        //17:00 - 18:00
+        } else if (hour == 17 && dayPart == DayParts.Dusk) {
             return true;
         //18:00 - 23:00
         } else if (hour >= 18 && dayPart == DayParts.Evening) {
