@@ -87,7 +87,9 @@ public class BLBSkybox : MonoBehaviour
 
         //Set wind direction on material
         
-        Instance.skyboxMat.SetFloat("_AtmosphereThickness", Instance.atmosphere);
+        Instance.skyboxMat.SetFloat("_AtmosphereNormalThickness", Instance.atmosphere);
+        Instance.skyboxMat.SetFloat("_AtmosphereDawnDuskThickness", Instance.atmosphere);
+        Instance.skyboxMat.SetFloat("_AtmosphereLerp", 0.0f);        
         Instance.skyboxMat.SetColor("_SkyTint", Instance.skyTint);
         Instance.skyboxMat.SetFloat("_SunSize", Instance.sunSize);
         Instance.skyboxMat.SetFloat("_SunSizeConvergence", Instance.sunConvergence);
@@ -295,23 +297,25 @@ public class BLBSkybox : MonoBehaviour
         switch(dayPart) {
             case DayParts.Dawn:
             case DayParts.Dusk:
-                atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-                atmosphereValue2 = atmosphereValue1 + 0.5f;
+                atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereNormalThickness;
+                atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereDawnDuskThickness;
+                reverseLerp = 0;
                 break;
             case DayParts.DawnEnd:
             case DayParts.DuskEnd:
-                atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-                atmosphereValue1 = atmosphereValue2 + 0.5f;
+                atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereNormalThickness;
+                atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereDawnDuskThickness;
+                reverseLerp = 1;
                 break;
             default:
                 return;
         }
         atmosphereLerpRunning = 1;
-        atmosphereLerpDuration = calculateScaledLerpDuration(1);
-        Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
-        Debug.Log("BLB: Stopping any running atmosphereLerp");
+        atmosphereLerpDuration = calculateScaledLerpDuration(0.5f);
+        //Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
+        //Debug.Log("BLB: Stopping any running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
-        Debug.Log("BLB: Starting atmosphere lerp with " + atmosphereValue1.ToString() + " to " + atmosphereValue2.ToString());
+        //Debug.Log("BLB: Starting atmosphere lerp with " + atmosphereValue1.ToString() + " to " + atmosphereValue2.ToString());
         StartCoroutine("AtmosphereLerp");
     }
 
@@ -338,8 +342,8 @@ public class BLBSkybox : MonoBehaviour
         //This only exists to check for the end of dawn and start a lerp
         } else if (hour == 6  && dayPart == DayParts.DawnEnd) {
             return true;
-        //06:00 - 12:00
-        } else if (hour >= 6 && hour < 12 && dayPart == DayParts.Morning) {
+        //07:00 - 12:00
+        } else if (hour >= 7 && hour < 12 && dayPart == DayParts.Morning) {
             return true;
         //12:00 - 16:00
         } else if (hour >= 12 && hour < 16 && dayPart == DayParts.Midday) {
@@ -347,10 +351,11 @@ public class BLBSkybox : MonoBehaviour
         //17:00 - 18:00
         } else if (hour >= 16 && hour < 18 && dayPart == DayParts.Dusk) {
             return true;
+        //This only exists to check for the end of dawn and start a lerp
         } else if (hour == 18 && dayPart == DayParts.DuskEnd) {
             return true;
-        //18:00 - 23:00
-        } else if (hour >= 18 && dayPart == DayParts.Evening) {
+        //19:00 - 23:00
+        } else if (hour >= 19 && dayPart == DayParts.Evening) {
             return true;
         }
         return false;
@@ -367,18 +372,22 @@ public class BLBSkybox : MonoBehaviour
     float atmosphereLerpDuration = 0.0f;
     float atmosphereValue1 = 0.0f;
     float atmosphereValue2 = 0.0f;
+    float reverseLerp = 0.0f;
     IEnumerator AtmosphereLerp()
     {
         float timeElapsed = 0;
-        Debug.Log("BLB: Atmosphere lerp starting. Duration: " + atmosphereLerpDuration.ToString());
+        float endLerpValue = 0;
+        //Debug.Log("BLB: Atmosphere lerp starting. Duration: " + atmosphereLerpDuration.ToString());
         while(timeElapsed < atmosphereLerpDuration) {
             //skyboxMat.SetFloat("_AtmosphereThickness", )
-            skyboxMat.SetFloat("_AtmosphereThickness", Mathf.Lerp(atmosphereValue1, atmosphereValue2, timeElapsed / atmosphereLerpDuration));
+            //skyboxMat.SetFloat("_AtmosphereThickness", Mathf.Lerp(atmosphereValue1, atmosphereValue2, timeElapsed / atmosphereLerpDuration));
+            endLerpValue = Mathf.Abs(reverseLerp - (timeElapsed / atmosphereLerpDuration));
+            skyboxMat.SetFloat("_AtmosphereLerp", endLerpValue);
             timeElapsed += Time.unscaledDeltaTime;
             yield return null;
         }
-        Debug.Log("BLB: Atmosphere lerp finished.");
-        skyboxMat.SetFloat("_AtmosphereThickness", atmosphereValue2);
+        //Debug.Log("BLB: Atmosphere lerp finished.");
+        skyboxMat.SetFloat("_AtmosphereLerp", endLerpValue);
         atmosphereLerpRunning = 0;
     }
     IEnumerator SunFogLerp()
@@ -435,7 +444,7 @@ public class BLBSkybox : MonoBehaviour
     }
 
     private void ApplyPendingWeatherSettings() {
-        if(pendingWeather == true && atmosphereLerpRunning == 0) {
+        if(pendingWeather == true) {
             BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
             currentWeather = pendingWeatherType;
             SetFogDistance(pendingWeatherType);
@@ -607,11 +616,11 @@ public class BLBSkybox : MonoBehaviour
     #region Moons
     private float moonOrbitSpeed = 0.00024f / 12; //Default moon orbit speed in realtime
     private void ChangeLunarPhases() {
+        //currentLunarPhase = worldTime.Now.MassarLunarPhase;
+        //Vector4 lunarPhase = new Vector4(LunarPhaseStates[currentLunarPhase].X, LunarPhaseStates[currentLunarPhase].Y, 0, 0);
+        //skyboxMat.SetVector("_MoonPhase", lunarPhase);
+        //skyboxMat.SetVector("_SecundaPhase", lunarPhase);
         return;
-        currentLunarPhase = worldTime.Now.MassarLunarPhase;
-        Vector4 lunarPhase = new Vector4(LunarPhaseStates[currentLunarPhase].X, LunarPhaseStates[currentLunarPhase].Y, 0, 0);
-        skyboxMat.SetVector("_MoonPhase", lunarPhase);
-        skyboxMat.SetVector("_SecundaPhase", lunarPhase);
     }
     private LunarPhases currentLunarPhase = LunarPhases.None; //Reference to the current lunar phase (both moons)
     private bool pendingLunarPhase = false;
@@ -882,7 +891,8 @@ public class BLBSkybox : MonoBehaviour
 
         skyboxMat.SetFloat("_SunSize", skyboxSetting.SunSize);
         skyboxMat.SetInt("_SunSizeConvergence", skyboxSetting.SunSizeConvergence);
-        skyboxMat.SetFloat("_AtmosphereThickness", skyboxSetting.AtmosphereThickness);
+        skyboxMat.SetFloat("_AtmosphereNormalThickness", skyboxSetting.AtmosphereNormalThickness);
+        skyboxMat.SetFloat("_AtmosphereDawnDuskThickness", skyboxSetting.AtmosphereDawnDuskThickness);
 
         Color tmpColor;
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.SkyTint, out tmpColor)) {
@@ -1141,7 +1151,8 @@ public class BLBSkybox : MonoBehaviour
 
         skyboxSetting.SunSize = skyboxMat.GetFloat("_SunSize");
         skyboxSetting.SunSizeConvergence = skyboxMat.GetInt("_SunSizeConvergence");
-        skyboxSetting.AtmosphereThickness = skyboxMat.GetFloat("_AtmosphereThickness");
+        skyboxSetting.AtmosphereNormalThickness = skyboxMat.GetFloat("_AtmosphereNormalThickness");
+        skyboxSetting.AtmosphereDawnDuskThickness = skyboxMat.GetFloat("_AtmosphereDawnDuskThickness");
         skyboxSetting.SkyTint = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_SkyTint"));
         skyboxSetting.GroundColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_GroundColor"));
         skyboxSetting.AmbientColor = ColorUtility.ToHtmlStringRGBA(UnityEngine.RenderSettings.ambientLight);
