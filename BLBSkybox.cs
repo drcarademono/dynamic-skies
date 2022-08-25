@@ -160,20 +160,30 @@ public class BLBSkybox : MonoBehaviour
         //Determine part of the day
         //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
         //currentDayPart is set to prevent the lerp from firing again
-        if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
+        if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn && atmosphereLerpRunning == 0) {
+            //04:00 - 06:00
+            setFogColor(false);
+            currentDayPart = DayParts.Dawn;
+            OnDawn();
+        } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd && atmosphereLerpRunning == 0) {
+            currentDayPart = DayParts.DawnEnd;
+            OnDawnEnd();
+        } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk && atmosphereLerpRunning == 0) {
+            //16:00 - 18:00
+            currentDayPart = DayParts.Dusk;
+            setFogColor(true);
+            OnDusk();
+        } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd && atmosphereLerpRunning == 0) {
+            currentDayPart = DayParts.DuskEnd;
+            OnDuskEnd();
+        } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
             //0:00 - 05:00
             currentDayPart = DayParts.Night;
             setFogColor(false);
-            forceWeatherUpdate = true;
             OnWeatherChange(currentWeather);
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
             }
-        } else if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
-            //05:00 - 07:00
-            setFogColor(false);
-            currentDayPart = DayParts.Dawn;
-            OnDawn();
         } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
             //07:00 - 12:00
             currentDayPart = DayParts.Morning;
@@ -181,27 +191,19 @@ public class BLBSkybox : MonoBehaviour
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
             }
-            forceWeatherUpdate = true;
             OnWeatherChange(currentWeather);
         } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
             //12:00 - 17:00
             currentDayPart = DayParts.Midday;
             setFogColor(true);
-            forceWeatherUpdate = true;
             OnWeatherChange(currentWeather);
-        } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
-            //17:00 - 19:00
-            currentDayPart = DayParts.Dusk;
-            setFogColor(true);
-            OnDusk();
         } else if (isHourDayPart(hour, DayParts.Evening) && currentDayPart != DayParts.Evening) {
             //20:00 - 0:00
             currentDayPart = DayParts.Evening;
             setFogColor(false);
-            forceWeatherUpdate = true;
             OnWeatherChange(currentWeather);
         }
-        //ApplyPendingWeatherSettings();
+        ApplyPendingWeatherSettings();
     }
 
     void onEnable()
@@ -272,6 +274,9 @@ public class BLBSkybox : MonoBehaviour
     private void OnDawn() {
         HandleDawnDusk(DayParts.Dawn);
     }
+    private void OnDawnEnd() {
+        HandleDawnDusk(DayParts.DawnEnd);
+    }
 
     private void OnMidday() {
         //Not used atm
@@ -281,69 +286,68 @@ public class BLBSkybox : MonoBehaviour
     private void OnDusk() {
         HandleDawnDusk(DayParts.Dusk);
     }
+    private void OnDuskEnd() {
+        HandleDawnDusk(DayParts.DuskEnd);
+    }
 
     //Handles starting the lerp for the sun and skybox
     private void HandleDawnDusk(DayParts dayPart) {
-        if(atmosphereLerpRunning > 0) {
-            Debug.Log("BLB: Running atmosphereLerp - aborting HandleDawnDusk");
-            return;
+        switch(dayPart) {
+            case DayParts.Dawn:
+            case DayParts.Dusk:
+                atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+                atmosphereValue2 = atmosphereValue1 + 0.5f;
+                break;
+            case DayParts.DawnEnd:
+            case DayParts.DuskEnd:
+                atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
+                atmosphereValue1 = atmosphereValue2 + 0.5f;
+                break;
+            default:
+                return;
         }
-        if(dayPart == DayParts.Dawn) {
-            //atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            //atmosphereValue2 = atmosphereValue1 + 0.3f;
-            atmosphereValue1 = 0.0f;
-            atmosphereValue2 = 1.0f;
-            //sunStartColor = getSunColor(4);
-            //sunEndColor = getSunColor(12);
-        } else if(dayPart == DayParts.Dusk) {
-            //sunStartColor = getSunColor(18);
-            //sunEndColor = getSunColor(2);
-            //atmosphereValue2 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            //atmosphereValue1 = atmosphereValue2 + 0.3f;
-            //atmosphereValue1 = SkyboxSettings[currentWeather][0].AtmosphereThickness;
-            //atmosphereValue2 = atmosphereValue1 + 0.3f;
-            atmosphereValue1 = 0.0f;
-            atmosphereValue2 = 1.0f;
-        }
+        atmosphereLerpRunning = 1;
         atmosphereLerpDuration = calculateScaledLerpDuration(1);
         Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
-        Debug.Log("BLB: Stopping running atmosphereLerp");
+        Debug.Log("BLB: Stopping any running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
-        atmosphereLerpRunning = 1;
         Debug.Log("BLB: Starting atmosphere lerp with " + atmosphereValue1.ToString() + " to " + atmosphereValue2.ToString());
         StartCoroutine("AtmosphereLerp");
-        //sunFogLerpDuration = calculateScaledLerpDuration(2);
-        //StopCoroutine("SunFogLerp");
-        //sunFogLerpRunning = true;
-        //StartCoroutine("SunFogLerp");
     }
 
     //The different day parts we can identify in isHourDayPart
     private enum DayParts {
         None,
         Dawn,
+        DawnEnd,
         Morning,
         Midday,
         Dusk,
+        DuskEnd,
         Evening,
         Night
     }
     //Determines if an hour of the day falls in a certain day part
     private bool isHourDayPart(int hour, DayParts dayPart) {
         //00:00 - 04:00
-        if ((hour >= 0 && hour < 5) && dayPart == DayParts.Night) {
+        if ((hour >= 0 && hour < 4) && dayPart == DayParts.Night) {
             return true;
         //05:00 - 06:00
-        } else if (hour == 5 && dayPart == DayParts.Dawn) {
+        } else if (hour >= 4 && hour < 6 && dayPart == DayParts.Dawn) {
+            return true;
+        //This only exists to check for the end of dawn and start a lerp
+        } else if (hour == 6  && dayPart == DayParts.DawnEnd) {
             return true;
         //06:00 - 12:00
         } else if (hour >= 6 && hour < 12 && dayPart == DayParts.Morning) {
             return true;
         //12:00 - 16:00
-        } else if (hour >= 12 && hour < 17 && dayPart == DayParts.Midday) {
+        } else if (hour >= 12 && hour < 16 && dayPart == DayParts.Midday) {
             return true;
         //17:00 - 18:00
-        } else if (hour == 17 && dayPart == DayParts.Dusk) {
+        } else if (hour >= 16 && hour < 18 && dayPart == DayParts.Dusk) {
+            return true;
+        } else if (hour == 18 && dayPart == DayParts.DuskEnd) {
             return true;
         //18:00 - 23:00
         } else if (hour >= 18 && dayPart == DayParts.Evening) {
@@ -375,16 +379,7 @@ public class BLBSkybox : MonoBehaviour
         }
         Debug.Log("BLB: Atmosphere lerp finished.");
         skyboxMat.SetFloat("_AtmosphereThickness", atmosphereValue2);
-        if(atmosphereLerpRunning == 1) {
-            float tmp = atmosphereValue1;
-            atmosphereValue1 = atmosphereValue2;
-            atmosphereValue2 = tmp;
-            Debug.Log("BLB: Atmosphere lerp reversal.");
-            StartCoroutine("AtmosphereLerp");
-            atmosphereLerpRunning = 2;
-        } else if(atmosphereLerpRunning == 2) {
-            atmosphereLerpRunning = 0;
-        }
+        atmosphereLerpRunning = 0;
     }
     IEnumerator SunFogLerp()
     {
@@ -435,18 +430,17 @@ public class BLBSkybox : MonoBehaviour
             Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
             
-            //Apply the pending weather settings
-            ApplyPendingWeatherSettings();
+            pendingWeather = true;
         }
     }
 
     private void ApplyPendingWeatherSettings() {
-        //if(pendingWeather == true) {
+        if(pendingWeather == true && atmosphereLerpRunning == 0) {
             BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
             currentWeather = pendingWeatherType;
             SetFogDistance(pendingWeatherType);
             pendingWeather = false;
-        //}
+        }
     }
 
     private WeatherManager wm;
