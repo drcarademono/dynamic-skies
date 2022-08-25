@@ -9,6 +9,7 @@
         [KeywordEnum(None, Simple, High Quality)] _SunDisk ("Sun", Int) = 2
         _SunSize ("Sun Size", Range(0,1)) = 0.04
         _SunSizeConvergence("Sun Size Convergence", Range(1,10)) = 5
+        _AtmosphereLerpDuration ("Atmosphere Lerp in hours", Range(0.1, 2.0)) = 0.5
         _AtmosphereNormalThickness ("Atmosphere Thickness", Range(0,5)) = 1.0
         _AtmosphereDawnDuskThickness ("Atmosphere Dawn / Dusk Thickness", Range(0,5)) = 1.0
         _AtmosphereLerp ("Atmosphere Lerp Control", Range(0,1)) = 0.0
@@ -134,6 +135,7 @@
             uniform half _SunSize;
             uniform half _SunSizeConvergence;
             uniform half3 _SkyTint;
+            uniform half _AtmosphereLerpDuration;
             uniform half _AtmosphereNormalThickness;
             uniform half _AtmosphereLerp = 0;
             uniform half _AtmosphereDawnDuskThickness;

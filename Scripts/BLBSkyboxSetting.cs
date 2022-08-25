@@ -5,6 +5,7 @@ public struct BLBSkyboxSetting
 {
     public float SunSize;
     public int SunSizeConvergence;
+    public float AtmosphereLerpDuration;
     public float AtmosphereNormalThickness;
     public float AtmosphereDawnDuskThickness;
     public string SkyTint;

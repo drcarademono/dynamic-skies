@@ -311,7 +311,7 @@ public class BLBSkybox : MonoBehaviour
                 return;
         }
         atmosphereLerpRunning = 1;
-        atmosphereLerpDuration = calculateScaledLerpDuration(0.5f);
+        atmosphereLerpDuration = calculateScaledLerpDuration(SkyboxSettings[currentWeather][0].AtmosphereLerpDuration);
         //Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
         //Debug.Log("BLB: Stopping any running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
@@ -891,6 +891,7 @@ public class BLBSkybox : MonoBehaviour
 
         skyboxMat.SetFloat("_SunSize", skyboxSetting.SunSize);
         skyboxMat.SetInt("_SunSizeConvergence", skyboxSetting.SunSizeConvergence);
+        skyboxMat.SetFloat("_AtmosphereLerpDuration", skyboxSetting.AtmosphereLerpDuration);
         skyboxMat.SetFloat("_AtmosphereNormalThickness", skyboxSetting.AtmosphereNormalThickness);
         skyboxMat.SetFloat("_AtmosphereDawnDuskThickness", skyboxSetting.AtmosphereDawnDuskThickness);
 
@@ -1151,6 +1152,7 @@ public class BLBSkybox : MonoBehaviour
 
         skyboxSetting.SunSize = skyboxMat.GetFloat("_SunSize");
         skyboxSetting.SunSizeConvergence = skyboxMat.GetInt("_SunSizeConvergence");
+        skyboxSetting.AtmosphereLerpDuration = skyboxMat.GetFloat("_AtmosphereLerpDuration");
         skyboxSetting.AtmosphereNormalThickness = skyboxMat.GetFloat("_AtmosphereNormalThickness");
         skyboxSetting.AtmosphereDawnDuskThickness = skyboxMat.GetFloat("_AtmosphereDawnDuskThickness");
         skyboxSetting.SkyTint = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_SkyTint"));
