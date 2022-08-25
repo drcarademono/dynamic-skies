@@ -27,7 +27,7 @@ Material:
     - _CloudDiffuse:
         m_Texture: {fileID: 2800000, guid: 717d1d8604aab59469653cc11e89225f, type: 3}
         m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0.5, y: 0}
+        m_Offset: {x: 0.5, y: 0.5}
     - _CloudNormal:
         m_Texture: {fileID: 2800000, guid: 60dfb1a104aa5d74ea32b0cf9903e20a, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -99,38 +99,39 @@ Material:
     m_Floats:
     - _AtmosphereDawnDuskThickness: 0.95
     - _AtmosphereLerp: 1
+    - _AtmosphereLerpDuration: 0.5
     - _AtmosphereNormalThickness: 0.65
     - _AtmosphereThickness: 0.65
     - _BumpScale: 1
-    - _CloudAlphaCutoff: 0
-    - _CloudAlphaMax: 0.25
-    - _CloudBending: 0.25
+    - _CloudAlphaCutoff: 0.09
+    - _CloudAlphaMax: 0.5
+    - _CloudBending: 0.3
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
-    - _CloudColorBoost: 0.2
+    - _CloudColorBoost: 0.5
     - _CloudDirection: 217
     - _CloudFadeHeight: 0.2
     - _CloudNormalEffect: 0.5
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 1
     - _CloudSpeed: 0.02
-    - _CloudSunLerpScale: 0.7
+    - _CloudSunLerpScale: 1
     - _CloudSunScale: 0.5
     - _CloudTopAlphaCutoff: 0
-    - _CloudTopAlphaMax: 0.25
-    - _CloudTopBending: 0.2
+    - _CloudTopAlphaMax: 0.8
+    - _CloudTopBending: 0.10000001
     - _CloudTopColorBoost: 0
     - _CloudTopNormalEffect: 0.5
-    - _CloudTopOpacity: 0.4
-    - _CloudTopSunLerpScale: 0.7
+    - _CloudTopOpacity: 0.5
+    - _CloudTopSunLerpScale: 1
     - _CloudTopSunScale: 0.5
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exposure: 1.75
-    - _FogDistance: 1500
+    - _Exposure: 2
+    - _FogDistance: 2048
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -174,13 +175,13 @@ Material:
     m_Colors:
     - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
     - _CloudNightColor: {r: 0.10980392, g: 0.11372549, b: 0.20784314, a: 1}
-    - _CloudSunColor: {r: 1, g: 0.92156863, b: 0, a: 1}
+    - _CloudSunColor: {r: 1, g: 0.88235295, b: 0, a: 1}
     - _CloudTopColor: {r: 1, g: 1, b: 1, a: 1}
     - _CloudTopNightColor: {r: 0.10980392, g: 0.11372549, b: 0.20784314, a: 1}
-    - _CloudTopSunColor: {r: 1, g: 0.18039216, b: 0, a: 1}
+    - _CloudTopSunColor: {r: 1, g: 0, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FogDayColor: {r: 0.5058824, g: 0.5058824, b: 0.5058824, a: 1}
+    - _FogDayColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
     - _FogNightColor: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _MoonColor: {r: 1, g: 1, b: 1, a: 1}

@@ -263,6 +263,8 @@ public class BLBSkybox : MonoBehaviour
     }
 
     private void updateSpeeds() {
+        float newLerpDuration = (SkyboxSettings[currentWeather][0].AtmosphereLerpDuration / 12f) * currentTimeScale;
+        atmosphereLerpDuration = calculateScaledLerpDuration(newLerpDuration);
         //Updates speeds when TimeScale has been changed by multiplying the realtime speed with the currentTimeScale
         skyboxMat.SetFloat("_CloudSpeed", cloudSpeed * currentTimeScale);
         skyboxMat.SetFloat("_MoonOrbitSpeed", moonOrbitSpeed * currentTimeScale);
