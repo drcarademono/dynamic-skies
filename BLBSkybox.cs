@@ -85,6 +85,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.playerAmbientLight = GameObject.FindGameObjectWithTag("Player").GetComponent("PlayerAmbientLight") as PlayerAmbientLight;
         Instance.wm = GameManager.Instance.WeatherManager;
 
+        Instance.SetLightCurve();
         //Set wind direction on material
         
         Instance.skyboxMat.SetFloat("_AtmosphereNormalThickness", Instance.atmosphere);
@@ -1119,6 +1120,21 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.Secunda.MoonTexture = SecundaTexture;
 
         return skyboxSetting;
+    }
+
+    private void SetLightCurve() {
+        string data = presetMod.GetAsset<TextAsset>("LightCurve.json", false).text;
+        BLBLightCurve lightCurve = JsonUtility.FromJson<BLBLightCurve>(data);
+        Keyframe[] frames = new Keyframe[lightCurve.times.Length];
+        for(int i = 0; i < frames.Length; i++) {
+            frames[i] = new Keyframe(lightCurve.times[i], lightCurve.values[i]);
+        }
+        AnimationCurve curve = new AnimationCurve(frames);
+        curve.postWrapMode = WrapMode.ClampForever;
+        curve.preWrapMode = WrapMode.ClampForever;
+        SunlightManager sunlightManager = GameManager.Instance.SunlightManager;
+        sunlightManager.LightCurve = curve;
+        Debug.Log("BLB: Changed Light Curve");
     }
 
     #if UNITY_EDITOR

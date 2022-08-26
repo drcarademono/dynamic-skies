@@ -45,6 +45,8 @@
         "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
         "Assets/Game/Mods/blb-skybox-shader/Textures/PixelSnow.png",
         "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSnowMaterial.mat",
-        "Assets/Game/Mods/blb-skybox-shader/modsettings.json"
+        "Assets/Game/Mods/blb-skybox-shader/modsettings.json",
+        "Assets/Game/Mods/blb-skybox-shader/LightCurveSettings/LightCurve.json",
+        "Assets/Game/Mods/blb-skybox-shader/Scripts/BLBLightCurve.cs"
     ]
 }
