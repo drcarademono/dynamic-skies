@@ -2,36 +2,35 @@
     "Version": "1",
     "Sections": [
         {
-            "Name": "SnowSize",
-            "Description": "Set the minimum and max snow flake particle size",
+            "Name": "SnowSizeAndNumberOfParticles",
+            "Description": "Options for the pixel snow particle replacement",
             "IsAdvanced": false,
             "Keys": [
                 {
-                    "Min": 200,
+                    "Value": false,
+                    "Name": "ActivatePixelSnow",
+                    "Description": "Turn the pixel snow replacment on or off",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Min": 100,
                     "Max": 800,
-                    "Value": 300,
-                    "Name": "minParticleSize",
+                    "Value": 100,
+                    "Name": "MinParticleSize",
                     "Description": "Minimum snow particle size",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 },
                 {
-                    "Min": 200,
+                    "Min": 100,
                     "Max": 800,
-                    "Value": 400,
-                    "Name": "maxParticleSize",
+                    "Value": 300,
+                    "Name": "MaxParticleSize",
                     "Description": "Maximum snow particle size",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
-                }
-            ],
-            "$version": "v1"
-        },
-        {
-            "Name": "MaxParticles",
-            "Description": "Maximum number of snow flake particles",
-            "IsAdvanced": false,
-            "Keys": [
+                },
                 {
                     "Min": 15,
                     "Max": 20,

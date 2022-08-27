@@ -11,6 +11,7 @@ using System.IO;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility.ModSupport;   //required for modding features
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game.Weather;
@@ -26,7 +27,7 @@ public class BLBSkybox : MonoBehaviour
     public static bool firstInit = true;
 
     #region General properties
-    private static string skyboxMaterialName = "BLBSkyboxMaterial";
+    private static string skyboxMaterialName = "BLBSkybox";
     private Mod presetMod = null;
     private Material skyboxMat; //Reference to the skybox material so we can change properties
     private Camera playerCam;   //Reference to player cam to manage clear settings
@@ -58,6 +59,8 @@ public class BLBSkybox : MonoBehaviour
 
     #endregion
 
+    private ModSettings modSettings;
+
     [Invoke(StateManager.StateTypes.Start, 0)]
     public static void Init(InitParams initParams)
     {
@@ -65,11 +68,21 @@ public class BLBSkybox : MonoBehaviour
         Instance = new GameObject("BLBSkybox").AddComponent<BLBSkybox>(); // Add script to the scene.
 
         Instance.presetMod = Mod;
+        Instance.modSettings = Mod.GetSettings();
+
         Debug.Log("BLB Skybox - set mod instance as default preset, looking for preset mods");
         Instance.FindPresetMod();
 
+        //int sunDiskQuality = Instance.modSettings.GetInt("SkyboxSettings", "SunDiskQuality");
+        string materialSuffix = "";
+        //if(sunDiskQuality == 0) {
+            //materialSuffix = "NoSun";
+        //} else if(sunDiskQuality == 1) {
+            //materialSuffix = "Simple";
+        //}
+        materialSuffix += "Material";
         //Load the skybox material
-        Instance.skyboxMat = Mod.GetAsset<Material>("Materials/" + skyboxMaterialName) as Material;
+        Instance.skyboxMat = Mod.GetAsset<Material>("Materials/" + skyboxMaterialName + materialSuffix) as Material;
 
         //Store a reference to the SkyRig game object
         Instance.dfSky = GameManager.Instance.SkyRig.gameObject;
@@ -85,9 +98,8 @@ public class BLBSkybox : MonoBehaviour
         Instance.playerAmbientLight = GameObject.FindGameObjectWithTag("Player").GetComponent("PlayerAmbientLight") as PlayerAmbientLight;
         Instance.wm = GameManager.Instance.WeatherManager;
 
-        Instance.SetLightCurve();
-        //Set wind direction on material
-        
+        Instance.SetLightCurve(); //Override default light curve for prolonged sunset / sunrise
+
         Instance.skyboxMat.SetFloat("_AtmosphereNormalThickness", Instance.atmosphere);
         Instance.skyboxMat.SetFloat("_AtmosphereDawnDuskThickness", Instance.atmosphere);
         Instance.skyboxMat.SetFloat("_AtmosphereLerp", 0.0f);        
@@ -788,11 +800,14 @@ public class BLBSkybox : MonoBehaviour
 
     #region Snow
     private void InitSnow() {
-        var settings = Mod.GetSettings();
+        bool activateSnow = modSettings.GetBool("SnowSizeAndNumberOfParticles", "ActivatePixelSnow");
+        if(activateSnow == false) {
+            return;
+        }
 
-        int minPS = settings.GetValue<int>("SnowSize","minParticleSize");
-        int maxPS = settings.GetValue<int>("SnowSize","maxParticleSize");
-        int maxP = settings.GetValue<int>("MaxParticles", "MaxParticles");
+        int minPS = modSettings.GetInt("SnowSizeAndNumberOfParticles","MinParticleSize");
+        int maxPS = modSettings.GetInt("SnowSizeAndNumberOfParticles","MaxParticleSize");
+        int maxP = modSettings.GetInt("SnowSizeAndNumberOfParticles", "MaxParticles");
         
         minParticleSize = (minPS / 100000f);
         maxParticleSize = (maxPS / 100000f);
