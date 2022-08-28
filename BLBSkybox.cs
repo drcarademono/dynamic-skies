@@ -172,24 +172,29 @@ public class BLBSkybox : MonoBehaviour
         //Get the current time of day
         int hour = worldTime.Now.Hour;
         int minutes = worldTime.Now.Minute;
+        forceWeatherUpdate = true;
         //Determine part of the day
         //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
         //currentDayPart is set to prevent the lerp from firing again
         if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn && atmosphereLerpRunning == 0) {
             //04:00 - 06:00
+            OnWeatherChange(currentWeather);
             setFogColor(false);
             currentDayPart = DayParts.Dawn;
             OnDawn();
         } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd && atmosphereLerpRunning == 0) {
             currentDayPart = DayParts.DawnEnd;
+            OnWeatherChange(currentWeather);
             OnDawnEnd();
         } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk && atmosphereLerpRunning == 0) {
             //16:00 - 18:00
             currentDayPart = DayParts.Dusk;
+            OnWeatherChange(currentWeather);
             setFogColor(true);
             OnDusk();
         } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd && atmosphereLerpRunning == 0) {
             currentDayPart = DayParts.DuskEnd;
+            OnWeatherChange(currentWeather);
             OnDuskEnd();
         } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
             //0:00 - 05:00
@@ -880,24 +885,6 @@ public class BLBSkybox : MonoBehaviour
     }
     #endregion
 
-    /*
-    private bool skyboxLerpRunning = false;
-    IEnumerator SkyboxLerp()
-    {
-        //Animated the sun color
-        float timeElapsed = 0;
-        while (timeElapsed < sunFogLerpDuration)
-        {
-            //dfSunlight.color = Color.Lerp(sunStartColor, sunEndColor, timeElapsed / sunFogLerpDuration);
-            UnityEngine.RenderSettings.fogColor = Color.Lerp(fogStartColor, fogEndColor, timeElapsed / sunFogLerpDuration);
-            timeElapsed += Time.unscaledDeltaTime;
-            yield return null;
-        }
-        UnityEngine.RenderSettings.fogColor = fogEndColor;
-        //dfSunlight.color = sunEndColor;
-        skyboxLerpRunning = false;
-    }
-    */
     #region Settings management
 
     private static bool ApplySkyboxSettings(BLBSkyboxSetting skyboxSetting, bool refreshTextures = true, bool updateMoons = true) {

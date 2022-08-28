@@ -551,7 +551,13 @@
 
                 //then lerp to the stars color masking out the horizon
                 //col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - max(cloudsTop, clouds))), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
-                col.rgb = lerp(col.rgb, stars, night * horizonValue);
+                
+                //if(moonBlocking > 0.0) {
+                    
+                //} else {
+                    col.rgb = lerp(col.rgb, stars, night * horizonValue);
+                //}
+
 
                 //End of Stars
 
@@ -627,7 +633,7 @@
 
                 //if our sphere tracing returned a positive value we have a moon fragment
                 float3 SecundaMoonTex;
-                float3 tmpCol = (0.00625, 0.00625, 0.00625);
+                float3 tmpCol = (0.0, 0.0, 0.0);
                 float NDotScale = 1;
 
                 //Stops the moons from being rendered underneath the horizon
@@ -635,12 +641,14 @@
                     if(SecundaSphere >= 0.0) {
                         SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
                         //SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
-                        SecundaMoonTex = lerp(col.rgb - tmpCol, SecundaMoonTex, max(0, saturate(SecundaNDotL * NDotScale) - 0));
+                        tmpCol = (col.rgb - tmpCol) * smoothstep(0, 0.5, sunPos.y);
+                        SecundaMoonTex = lerp(tmpCol, SecundaMoonTex, max(0, saturate(SecundaNDotL * NDotScale) - 0));
                         col.rgb = SecundaMoonTex;
                     } else if(sphere >= 0.0) {
                         float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
+                        tmpCol = (col.rgb - tmpCol) * smoothstep(0, 0.5, sunPos.y);
                         //moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
-                        moonTex = lerp(col.rgb - tmpCol, moonTex, max(0, saturate(NDotL * NDotScale) - 0));
+                        moonTex = lerp(tmpCol, moonTex, max(0, saturate(NDotL * NDotScale) - 0));
                         col.rgb = moonTex;
                     }
                 }
