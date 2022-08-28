@@ -47,6 +47,15 @@
         "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSnowMaterial.mat",
         "Assets/Game/Mods/blb-skybox-shader/modsettings.json",
         "Assets/Game/Mods/blb-skybox-shader/LightCurveSettings/LightCurve.json",
-        "Assets/Game/Mods/blb-skybox-shader/Scripts/BLBLightCurve.cs"
+        "Assets/Game/Mods/blb-skybox-shader/Scripts/BLBLightCurve.cs",
+        "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSkyboxSimpleMaterial.mat",
+        "Assets/Game/Mods/blb-skybox-shader/Materials/BLBSkyboxNoSunMaterial.mat",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxCloudyNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxOvercastNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxSunnyNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxSnowNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxFogNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxThunderNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxRainNight.json"
     ]
 }
