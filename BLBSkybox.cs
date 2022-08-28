@@ -14,6 +14,7 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;   //required for modding featu
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop;
+using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Weather;
 
 public class BLBSkybox : MonoBehaviour
@@ -56,7 +57,8 @@ public class BLBSkybox : MonoBehaviour
     public static float minParticleSize = 0.002f;
     public static float maxParticleSize = 0.0025f;
     public static int maxParticles = 17500;
-
+    
+    private PlayerEntity player;
     #endregion
 
     private ModSettings modSettings;
@@ -70,7 +72,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.presetMod = Mod;
         Instance.modSettings = Mod.GetSettings();
 
-        Debug.Log("BLB Skybox - set mod instance as default preset, looking for preset mods");
+        Debug.Log("Dynamic Skies - set mod instance as default preset, looking for preset mods");
         Instance.FindPresetMod();
 
         //int sunDiskQuality = Instance.modSettings.GetInt("SkyboxSettings", "SunDiskQuality");
@@ -93,6 +95,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.currentTimeScale = Instance.originalTimeScale;
         //Store a reference to the SunRig's main light
         Instance.dfSunlight = GameObject.Find("SunLight").GetComponent("Light") as Light;
+        Instance.player = GameManager.Instance.PlayerEntity;
         //Store a reference to the player camera
         Instance.playerCam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent("Camera") as Camera;
         Instance.playerAmbientLight = GameObject.FindGameObjectWithTag("Player").GetComponent("PlayerAmbientLight") as PlayerAmbientLight;
@@ -145,16 +148,18 @@ public class BLBSkybox : MonoBehaviour
 
         //Instance.SetPalettizationMaterial();
 
-        Debug.Log("BLB Skybox has been set up");
+        Debug.Log("Dynamic Skies has been set up");
     }
 
     void Awake ()
     {
         Mod.IsReady = true;
-        Debug.Log("blb-skybox awakened");
+        Debug.Log("Dynamic Skies awakened");
     }
 
     private float deltaTime = 0.0f; //Counter to limit Update() calls to once per 5 seconds
+    public int hour;
+    public int minutes;
     public void Update()
     {
         //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
@@ -163,6 +168,9 @@ public class BLBSkybox : MonoBehaviour
             currentTimeScale = worldTime.TimeScale;
             updateSpeeds();
         }
+        if(player.IsResting || player.IsLoitering) {
+            AbortAtmosphereLerp();
+        }
         deltaTime += Time.unscaledDeltaTime;
         if(deltaTime < 5.0f) {
             return;
@@ -170,8 +178,9 @@ public class BLBSkybox : MonoBehaviour
         //Reset deltaTime when 5 seconds have elapsed
         deltaTime -= 5.0f;
         //Get the current time of day
-        int hour = worldTime.Now.Hour;
-        int minutes = worldTime.Now.Minute;
+        hour = worldTime.Now.Hour;
+        minutes = worldTime.Now.Minute;
+
         forceWeatherUpdate = true;
         //Determine part of the day
         //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
@@ -332,10 +341,7 @@ public class BLBSkybox : MonoBehaviour
         }
         atmosphereLerpRunning = 1;
         atmosphereLerpDuration = calculateScaledLerpDuration(SkyboxSettings[currentWeather][0].AtmosphereLerpDuration);
-        //Debug.Log("BLB: Calculated atmosphereLerpDuration = " + atmosphereLerpDuration.ToString());
-        //Debug.Log("BLB: Stopping any running atmosphereLerp");
         StopCoroutine("AtmosphereLerp");
-        //Debug.Log("BLB: Starting atmosphere lerp with " + atmosphereValue1.ToString() + " to " + atmosphereValue2.ToString());
         StartCoroutine("AtmosphereLerp");
     }
 
@@ -393,21 +399,27 @@ public class BLBSkybox : MonoBehaviour
     float atmosphereValue1 = 0.0f;
     float atmosphereValue2 = 0.0f;
     float reverseLerp = 0.0f;
+    public void AbortAtmosphereLerp() {
+        if(atmosphereLerpRunning == 0) {
+            return;
+        }
+        StopCoroutine("AtmosphereLerp");
+        atmosphereLerpRunning = 0;        
+        skyboxMat.SetFloat("_AtmosphereLerp", 0);
+    }
     IEnumerator AtmosphereLerp()
     {
         float timeElapsed = 0;
         float endLerpValue = 0;
         //Debug.Log("BLB: Atmosphere lerp starting. Duration: " + atmosphereLerpDuration.ToString());
         while(timeElapsed < atmosphereLerpDuration) {
-            //skyboxMat.SetFloat("_AtmosphereThickness", )
-            //skyboxMat.SetFloat("_AtmosphereThickness", Mathf.Lerp(atmosphereValue1, atmosphereValue2, timeElapsed / atmosphereLerpDuration));
             endLerpValue = Mathf.Abs(reverseLerp - (timeElapsed / atmosphereLerpDuration));
             skyboxMat.SetFloat("_AtmosphereLerp", endLerpValue);
             timeElapsed += Time.unscaledDeltaTime;
             yield return null;
         }
         //Debug.Log("BLB: Atmosphere lerp finished.");
-        skyboxMat.SetFloat("_AtmosphereLerp", endLerpValue);
+        skyboxMat.SetFloat("_AtmosphereLerp", Mathf.Abs(1 - reverseLerp));
         atmosphereLerpRunning = 0;
     }
     IEnumerator SunFogLerp()
@@ -541,7 +553,7 @@ public class BLBSkybox : MonoBehaviour
             {
                 if(names.Count >= presetNames.Length) {
                     presetMod = mod;
-                    Debug.Log("BLB Skybox - Found preset mod: " + presetMod.Title);
+                    Debug.Log("Dynamic Skies - Found preset mod: " + presetMod.Title);
                 }
                 break;
             }

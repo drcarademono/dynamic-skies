@@ -1,7 +1,7 @@
 {
-    "ModTitle": "blb-skybox",
-    "ModVersion": "0.0000001",
-    "ModAuthor": "BadLuckBurt",
+    "ModTitle": "Dynamic Skies",
+    "ModVersion": "0.9",
+    "ModAuthor": "BadLuckBurt and Carademono",
     "ContactInfo": "x",
     "DFUnity_Version": "0.13.4",
     "ModDescription": "Procedural skybox shader for DFU",
