@@ -8,6 +8,7 @@ public struct BLBSkyboxSetting
     public float AtmosphereLerpDuration;
     public float AtmosphereNormalThickness;
     public float AtmosphereDawnDuskThickness;
+    public float AtmosphereLerp;
     public string SkyTint;
     public string GroundColor;
     public string AmbientColor;

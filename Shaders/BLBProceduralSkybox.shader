@@ -12,7 +12,7 @@
         _AtmosphereLerpDuration ("Atmosphere Lerp in hours", Range(0.1, 2.0)) = 0.5
         _AtmosphereNormalThickness ("Atmosphere Thickness", Range(0,5)) = 1.0
         _AtmosphereDawnDuskThickness ("Atmosphere Dawn / Dusk Thickness", Range(0,5)) = 1.0
-        _AtmosphereLerp ("Atmosphere Lerp Control", Range(0,1)) = 0.0
+        _AtmosphereLerp ("Atmosphere Lerp Control", Range(0.25,1)) = 0.25
         _SkyTint ("Sky Tint", Color) = (.5, .5, .5, 1)
         _GroundColor ("Ground", Color) = (.369, .349, .341, 1)
         _Exposure("Exposure", Range(0, 8)) = 1.3
@@ -137,9 +137,9 @@
             uniform half3 _SkyTint;
             uniform half _AtmosphereLerpDuration;
             uniform half _AtmosphereNormalThickness;
-            uniform half _AtmosphereLerp = 0;
+            uniform half _AtmosphereLerp;
             uniform half _AtmosphereDawnDuskThickness;
-            uniform half _AtmosphereThickness = 0;
+            uniform half _AtmosphereThickness;
             uniform half _NightStartHeight, _NightEndHeight;
             uniform half _SkyFadeStart, _SkyFadeEnd;
             uniform float3 _FogDayColor;
@@ -234,7 +234,7 @@
                 //Amazed this works but it does, sunrise / sunset lerp time :joy:
                 float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
                 //float lerpScale = min(0.333, abs(normalSunPos.y));
-                float lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -abs(normalSunPos.y)) * 4);
+                float lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -abs(normalSunPos.y)) / _AtmosphereLerp);
                 _AtmosphereThickness = lerp(_AtmosphereNormalThickness, _AtmosphereDawnDuskThickness, lerpScale);
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
