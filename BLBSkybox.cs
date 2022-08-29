@@ -168,9 +168,9 @@ public class BLBSkybox : MonoBehaviour
             currentTimeScale = worldTime.TimeScale;
             updateSpeeds();
         }
-        if(player.IsResting || player.IsLoitering) {
-            AbortAtmosphereLerp();
-        }
+        //if(player.IsResting || player.IsLoitering) {
+            //AbortAtmosphereLerp();
+        //}
         deltaTime += Time.unscaledDeltaTime;
         if(deltaTime < 5.0f) {
             return;
@@ -323,6 +323,7 @@ public class BLBSkybox : MonoBehaviour
 
     //Handles starting the lerp for the sun and skybox
     private void HandleDawnDusk(DayParts dayPart) {
+        return;
         switch(dayPart) {
             case DayParts.Dawn:
             case DayParts.Dusk:

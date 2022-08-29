@@ -223,11 +223,19 @@
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
+            float Remap(float In, float2 InMinMax, float2 OutMinMax)
+            {
+                return OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+            }
+
             v2f vert (appdata v)
             {
                 v2f OUT;
                 //Amazed this works but it does, sunrise / sunset lerp time :joy:
-                _AtmosphereThickness = lerp(_AtmosphereNormalThickness, _AtmosphereDawnDuskThickness, _AtmosphereLerp);
+                float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
+                //float lerpScale = min(0.333, abs(normalSunPos.y));
+                float lerpScale = saturate(smoothstep(-_AtmosphereLerp, 0, -abs(normalSunPos.y)) * 4);
+                _AtmosphereThickness = lerp(_AtmosphereNormalThickness, _AtmosphereDawnDuskThickness, lerpScale);
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
                 OUT.pos = UnityObjectToClipPos(v.vertex);
@@ -390,11 +398,6 @@
                 return OUT;
             }
 
-            float Remap(float In, float2 InMinMax, float2 OutMinMax)
-            {
-                return OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
-            }
-
             sampler3D _Lut;
 
             fixed4 frag (v2f IN) : SV_Target
@@ -413,6 +416,13 @@
                 //grab the sun position
                 float3 sunPos = _WorldSpaceLightPos0.xyz;
                 float3 normSunWorldPos = normalize(sunPos);
+                float lerpScale;
+
+                if(normSunWorldPos.y >= -0.333) {
+                    if(normSunWorldPos.y <= 0.333) {
+                        col.rgb = lerp(col.rgb, (0.2, 0.2, 0.2), 0.5);
+                    }
+                }
                 //and then do a similar method as the horizon to figure out when things should transistion to the night colors
                 float sunDotUp = dot(sunPos, float3(0, 1, 0));
                 float night = saturate(Remap(sunDotUp, float2(_NightStartHeight, _NightEndHeight), float2(0, 1)));
@@ -760,16 +770,18 @@
                 #if SKYBOX_SUNDISK != SKYBOX_SUNDISK_NONE
                     if(normWorldPos.y > _SkyFadeEnd) {
                     //if(y < 0.125) {
-                        //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
-                        cloudThickness = clouds * (1 - night);
-                        pos = saturate(1 - normSunWorldPos.y);
-                        cloudLerpValue = cloudThickness * pos;
-                        //Unity's calculated sun color
-                        cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
-                        //Unity's defined sun color in Lighting Settings
-                        //cloudTopColor = lerp(cloudTopColor, _LightColor0 * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
-                        //Sun color from material settings
-                        //cloudTopColor = lerp(cloudTopColor, _CloudTopSunColor * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                        if(clouds > 0.0) {
+                            //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
+                            cloudThickness = clouds * (1 - night);
+                            pos = saturate(1 - normSunWorldPos.y);
+                            cloudLerpValue = cloudThickness * pos;
+                            //Unity's calculated sun color
+                            cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
+                            //Unity's defined sun color in Lighting Settings
+                            //cloudTopColor = lerp(cloudTopColor, _LightColor0 * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                            //Sun color from material settings
+                            //cloudTopColor = lerp(cloudTopColor, _CloudTopSunColor * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
+                        }
                     }
                 #endif
 
