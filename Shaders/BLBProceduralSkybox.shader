@@ -234,7 +234,7 @@
                 //Amazed this works but it does, sunrise / sunset lerp time :joy:
                 float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
                 //float lerpScale = min(0.333, abs(normalSunPos.y));
-                float lerpScale = saturate(smoothstep(-_AtmosphereLerp, 0, -abs(normalSunPos.y)) * 4);
+                float lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -abs(normalSunPos.y)) * 4);
                 _AtmosphereThickness = lerp(_AtmosphereNormalThickness, _AtmosphereDawnDuskThickness, lerpScale);
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
