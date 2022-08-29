@@ -1,7 +1,7 @@
 {
     "SunSize": 0.07999999821186066,
     "SunSizeConvergence": 8,
-    "AtmosphereLerpDuration": 0.1665,
+    "AtmosphereLerpDuration": 0.333,
     "AtmosphereLerp": 0.5,
     "AtmosphereNormalThickness": 0.550000011920929,
     "AtmosphereDawnDuskThickness": 1.0,
