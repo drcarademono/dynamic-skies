@@ -554,7 +554,7 @@ public class BLBSkybox : MonoBehaviour
             if(!mod.Enabled || mod.GUID == Mod.GUID) {
                 continue;
             }
-            if (mod.FindAssetNames(ref names, "SkyboxPresets", ".json") != 0)
+            if (mod.FindAssetNames(ref names, "SkyboxSettings", ".json") != 0)
             {
                 if(names.Count >= presetNames.Length) {
                     presetMod = mod;
