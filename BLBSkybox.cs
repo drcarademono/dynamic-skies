@@ -160,6 +160,7 @@ public class BLBSkybox : MonoBehaviour
     private float deltaTime = 0.0f; //Counter to limit Update() calls to once per 5 seconds
     public int hour;
     public int minutes;
+    public bool dayTime = false;
     public void Update()
     {
         //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
@@ -185,30 +186,32 @@ public class BLBSkybox : MonoBehaviour
         //Determine part of the day
         //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
         //currentDayPart is set to prevent the lerp from firing again
-        if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn && atmosphereLerpRunning == 0) {
+        if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
             //04:00 - 06:00
+            dayTime = false;
             OnWeatherChange(currentWeather);
-            setFogColor(false);
             currentDayPart = DayParts.Dawn;
             OnDawn();
-        } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd && atmosphereLerpRunning == 0) {
+        } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd) {
             currentDayPart = DayParts.DawnEnd;
+            dayTime = true;
             OnWeatherChange(currentWeather);
             OnDawnEnd();
-        } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk && atmosphereLerpRunning == 0) {
+        } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
             //16:00 - 18:00
+            dayTime = true;
             currentDayPart = DayParts.Dusk;
             OnWeatherChange(currentWeather);
-            setFogColor(true);
             OnDusk();
-        } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd && atmosphereLerpRunning == 0) {
+        } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd) {
             currentDayPart = DayParts.DuskEnd;
+            dayTime = false;
             OnWeatherChange(currentWeather);
             OnDuskEnd();
         } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
             //0:00 - 05:00
             currentDayPart = DayParts.Night;
-            setFogColor(false);
+            dayTime = false;
             OnWeatherChange(currentWeather);
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
@@ -216,7 +219,7 @@ public class BLBSkybox : MonoBehaviour
         } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
             //07:00 - 12:00
             currentDayPart = DayParts.Morning;
-            setFogColor(true);
+            dayTime = true;
             if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
             }
@@ -224,12 +227,12 @@ public class BLBSkybox : MonoBehaviour
         } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
             //12:00 - 17:00
             currentDayPart = DayParts.Midday;
-            setFogColor(true);
+            dayTime = true;
             OnWeatherChange(currentWeather);
         } else if (isHourDayPart(hour, DayParts.Evening) && currentDayPart != DayParts.Evening) {
             //20:00 - 0:00
             currentDayPart = DayParts.Evening;
-            setFogColor(false);
+            dayTime = false;
             OnWeatherChange(currentWeather);
         }
         ApplyPendingWeatherSettings();
@@ -471,7 +474,7 @@ public class BLBSkybox : MonoBehaviour
             pendingWindDirection = getWindDirection(); //Get new random wind direction
             Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
-            
+
             pendingWeather = true;
         }
     }
@@ -480,6 +483,7 @@ public class BLBSkybox : MonoBehaviour
         if(pendingWeather == true) {
             BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
             currentWeather = pendingWeatherType;
+            setFogColor(dayTime);
             SetFogDistance(pendingWeatherType);
             pendingWeather = false;
         }
