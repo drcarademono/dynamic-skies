@@ -464,6 +464,9 @@ public class BLBSkybox : MonoBehaviour
 
     private WeatherType currentWeather = WeatherType.Sunny; //Keeps track of the current weather to detect a change
     private void OnWeatherChange(WeatherType weather) {
+        if(pendingWeather == true) {
+            return;
+        }
         //Only change weather if it's not the same weather as the current weather
         if(weather != currentWeather || forceWeatherUpdate == true) {
             forceWeatherUpdate = false;
