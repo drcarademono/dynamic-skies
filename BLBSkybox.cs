@@ -169,6 +169,10 @@ public class BLBSkybox : MonoBehaviour
             currentTimeScale = worldTime.TimeScale;
             updateSpeeds();
         }
+        if(playerInside) {
+            deltaTime = 0.0f;
+            return;
+        }
         //if(player.IsResting || player.IsLoitering) {
             //AbortAtmosphereLerp();
         //}
@@ -883,7 +887,7 @@ public class BLBSkybox : MonoBehaviour
         PlayerEnterExit.OnTransitionExterior += ExteriorTransitionEvent; //exterior transition
         PlayerEnterExit.OnTransitionDungeonExterior += ExteriorTransitionEvent; //dungeon exterior transition
     }
-
+    private bool playerInside = false;
     /// <summary>
     /// Get InteriorTransition & InteriorDungeonTransition events from PlayerEnterExit
     /// </summary>
@@ -891,6 +895,7 @@ public class BLBSkybox : MonoBehaviour
     public void InteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)      //player went indoors (or dungeon), disable sky objects
     {
         Debug.Log("Deactivating skybox");
+        playerInside = true;
         ToggleSkybox(false);
     }
 
@@ -901,6 +906,7 @@ public class BLBSkybox : MonoBehaviour
     public void ExteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)   //player transitioned to exterior from indoors or dungeon
     {
         Debug.Log("Activating skybox");
+        playerInside = false;
         ToggleSkybox(true);
     }
     #endregion
