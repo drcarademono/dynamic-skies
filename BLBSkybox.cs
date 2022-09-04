@@ -74,6 +74,7 @@ public class BLBSkybox : MonoBehaviour
 
         Debug.Log("Dynamic Skies - set mod instance as default preset, looking for preset mods");
         Instance.FindPresetMod();
+        Instance.IsTransparentWindowsEnabled();
 
         //int sunDiskQuality = Instance.modSettings.GetInt("SkyboxSettings", "SunDiskQuality");
         string materialSuffix = "";
@@ -266,6 +267,13 @@ public class BLBSkybox : MonoBehaviour
     //Force skybox flag to prevent Distant Terrain from overriding it again in it's Update function
     void LateUpdate() {
         if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
+            if(playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox && stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            } else if(stackedCam != null) {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
+        } else if(TransparentWindowsEnabled && !GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeon) {
+            Debug.Log("Dynamic Skies: Forcing skybox clear flags on cameras for interior");
             if(playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox && stackedCam == null) {
                 playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
             } else if(stackedCam != null) {
@@ -542,6 +550,17 @@ public class BLBSkybox : MonoBehaviour
         return color;
     }
     #endregion
+
+    private bool TransparentWindowsEnabled = false;
+    private bool IsTransparentWindowsEnabled() {
+        string modGUID = "0dc0cb46-44bc-4efa-8f80-0c73fda8ae8d";
+        Mod transparentWindows = ModManager.Instance.GetModFromGUID(modGUID);
+        TransparentWindowsEnabled = (transparentWindows != null);
+        if(TransparentWindowsEnabled) {
+            Debug.Log("Dynamic Skies: Detected Transparent Windows mod. Enabling compatibility");
+        }
+        return TransparentWindowsEnabled;
+    }
 
     private void FindPresetMod()
     {
@@ -894,8 +913,13 @@ public class BLBSkybox : MonoBehaviour
     /// <param name="args"></param>
     public void InteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)      //player went indoors (or dungeon), disable sky objects
     {
-        Debug.Log("Deactivating skybox");
         playerInside = true;
+        if(TransparentWindowsEnabled == true) {
+            Debug.Log("Dynamic Skies: Forcing skybox for interior");
+            ToggleSkybox(true);
+            return;
+        }
+        Debug.Log("Dynamic Skies: Deactivating skybox");
         ToggleSkybox(false);
     }
 
