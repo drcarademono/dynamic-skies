@@ -47,6 +47,8 @@
         "Assets/Game/Mods/blb-skybox-shader/Textures/DefaultStars.png",
         "Assets/Game/Mods/blb-skybox-shader/modsettings.json",
         "Assets/Game/Mods/blb-skybox-shader/BLBSkybox.cs",
-        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json"
+        "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxCloudyNight.json",
+        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxSunnyNight.json"
     ]
 }
