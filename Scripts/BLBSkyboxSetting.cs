@@ -18,6 +18,7 @@ public struct BLBSkyboxSetting
     public float NightEndHeight;
     public float SkyFadeStart;
     public float SkyEndStart;
+    public float stepSize;
     public string FogDayColor;
     public string FogNightColor;
     public float FogDistance;

@@ -20,6 +20,7 @@
         _NightEndHeight("Night End Height", Range(-1, 1)) = -.2
         _SkyFadeStart("Sky Fade Start", Range(-1, 1)) = .05
         _SkyFadeEnd("Sky End Start", Range(-1, 1)) = -.01
+        _stepSize("Reduce Color Step Size", Range(0, 1)) = .01
 
         _FogDayColor ("Fog Day Color", Color) = (.5, .5, .5, 1)
         _FogNightColor ("Fog Night Color", Color) = (.1, .1, .1, 1)
@@ -142,6 +143,7 @@
             uniform half _AtmosphereThickness;
             uniform half _NightStartHeight, _NightEndHeight;
             uniform half _SkyFadeStart, _SkyFadeEnd;
+            uniform half _stepSize;
             uniform float3 _FogDayColor;
             uniform float3 _FogNightColor;
             uniform float _FogDistance;
@@ -792,13 +794,12 @@
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
 
 #ifdef REDUCE_COLOR
-                float stepSize = 0.03125;
-                //col.r = floor(((col.r * 256) * 63) / 256) * stepSize;
-                //col.g = floor(((col.r * 256) * 63) / 256) * stepSize;
-                //col.b = floor(((col.r * 256) * 63) / 256) * stepSize;
-                col.r = (ceil(col.r / stepSize) * stepSize);
-                col.g = (ceil(col.g / stepSize) * stepSize);
-                col.b = (ceil(col.b / stepSize) * stepSize);
+                //col.r = floor(((col.r * 256) * 63) / 256) * _stepSize;
+                //col.g = floor(((col.r * 256) * 63) / 256) * _stepSize;
+                //col.b = floor(((col.r * 256) * 63) / 256) * _stepSize;
+                col.r = (ceil(col.r / _stepSize) * _stepSize);
+                col.g = (ceil(col.g / _stepSize) * _stepSize);
+                col.b = (ceil(col.b / _stepSize) * _stepSize);
 #endif
                 //col = fixed4(GammaToLinearSpace(tex3D(_Lut, LinearToGammaSpace(col.rgb)).rgb), col.a);
 

@@ -51,6 +51,7 @@ public class BLBSkybox : MonoBehaviour
     private float nightEndHeight = -0.01f;
     private float skyFadeStart = -0.01f;
     private float skyFadeEnd = -0.04f;
+    private float stepSize = 0.03f;
     private Camera stackedCam;
     //Snow settings
     public static Material SnowMaterial;
@@ -970,6 +971,7 @@ public class BLBSkybox : MonoBehaviour
         skyboxMat.SetFloat("_NightEndHeight", skyboxSetting.NightEndHeight);
         skyboxMat.SetFloat("_SkyFadeStart", skyboxSetting.SkyFadeStart);
         skyboxMat.SetFloat("_SkyFadeEnd", skyboxSetting.SkyEndStart);
+        skyboxMat.SetFloat("_stepSize", skyboxSetting.stepSize);
 
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.FogDayColor, out tmpColor)) {
             skyboxMat.SetColor("_FogDayColor", tmpColor);
@@ -1236,6 +1238,7 @@ public class BLBSkybox : MonoBehaviour
         skyboxSetting.NightEndHeight = skyboxMat.GetFloat("_NightEndHeight");
         skyboxSetting.SkyFadeStart = skyboxMat.GetFloat("_SkyFadeStart");
         skyboxSetting.SkyEndStart = skyboxMat.GetFloat("_SkyFadeEnd");
+        skyboxSetting.stepSize = skyboxMat.GetFloat("_stepSize");
         skyboxSetting.FogDayColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_FogDayColor"));
         skyboxSetting.FogNightColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_FogNightColor"));
         skyboxSetting.FogDistance = skyboxMat.GetFloat("_FogDistance");
