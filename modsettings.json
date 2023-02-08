@@ -2,6 +2,23 @@
     "Version": "1",
     "Sections": [
         {
+            "Name": "FogDensity",
+            "Description": "Set Fog Density",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Min": 1,
+                    "Max": 10,
+                    "Value": 5,
+                    "Name": "densityMulti",
+                    "Description": "Makes fog thicker",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                }
+            ],
+            "$version": "v1"
+        },
+        {
             "Name": "SnowSizeAndNumberOfParticles",
             "Description": "Options for the pixel snow particle replacement",
             "IsAdvanced": false,
@@ -9,7 +26,7 @@
                 {
                     "Value": false,
                     "Name": "ActivatePixelSnow",
-                    "Description": "Turn the pixel snow replacment on or off",
+                    "Description": "Turn the pixel snow replacement on or off",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },

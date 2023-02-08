@@ -100,7 +100,7 @@ Material:
     - _AtmosphereDawnDuskThickness: 0.9
     - _AtmosphereLerp: 1
     - _AtmosphereLerpDuration: 0.333
-    - _AtmosphereNormalThickness: 0.1
+    - _AtmosphereNormalThickness: 0.5
     - _AtmosphereThickness: 0.65
     - _BumpScale: 1
     - _CloudAlphaCutoff: 0.178
@@ -154,7 +154,7 @@ Material:
     - _SecundaMaxSize: 0.07
     - _SecundaMinSize: 0.07
     - _SecundaOrbitOffset: 30
-    - _SecundaOrbitSpeed: 0
+    - _SecundaOrbitSpeed: 0.002
     - _SecundaPhaseOption: 1
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
@@ -173,7 +173,7 @@ Material:
     - _TwinkleSpeed: 0.2
     - _UVSec: 0
     - _ZWrite: 1
-    - _stepSize: 0.001
+    - _stepSize: 0.02
     m_Colors:
     - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
     - _CloudNightColor: {r: 0.13725491, g: 0.13725491, b: 0.16078432, a: 1}

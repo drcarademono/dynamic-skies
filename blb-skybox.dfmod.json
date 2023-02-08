@@ -1,6 +1,6 @@
 {
     "ModTitle": "Dynamic Skies",
-    "ModVersion": "1.1",
+    "ModVersion": "1.2",
     "ModAuthor": "BadLuckBurt and carademono",
     "ContactInfo": "x",
     "DFUnity_Version": "0.13.4",
@@ -46,16 +46,9 @@
         "Assets/Game/Mods/blb-skybox-shader/modsettings.json",
         "Assets/Game/Mods/blb-skybox-shader/BLBSkybox.cs",
         "Assets/Game/Mods/blb-skybox-shader/blb-skybox.dfmod.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxCloudyNight.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxSunnyNight.json",
         "Assets/Game/Mods/blb-skybox-shader/Textures/PixelEnceladus.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/PixelMars.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds.png",
-        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds2.png",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxThunderNight.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxRainNight.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxOvercastNight.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxFogNight.json",
-        "Assets/Game/Mods/blb-skybox-shader/SkyboxSettings/SkyboxSnowNight.json"
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds2.png"
     ]
 }

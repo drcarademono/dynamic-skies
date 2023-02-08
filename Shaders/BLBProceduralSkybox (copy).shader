@@ -797,24 +797,9 @@
                 //col.r = floor(((col.r * 256) * 63) / 256) * _stepSize;
                 //col.g = floor(((col.r * 256) * 63) / 256) * _stepSize;
                 //col.b = floor(((col.r * 256) * 63) / 256) * _stepSize;
-            if(night > 0.0) {
-                if(night < 1.0) {
-                col.r = (ceil(col.r / (_stepSize - (night * _stepSize) + 0.002)) * (_stepSize - (night * _stepSize) + 0.002));
-                col.g = (ceil(col.g / (_stepSize - (night * _stepSize) + 0.002)) * (_stepSize - (night * _stepSize) + 0.002));
-                col.b = (ceil(col.b / (_stepSize - (night * _stepSize) + 0.002)) * (_stepSize - (night * _stepSize) + 0.002));
-                }
-                if(night = 1.0) {
-                col.r = (ceil(col.r / 0.002) * 0.002);
-                col.g = (ceil(col.g / 0.002) * 0.002);
-                col.b = (ceil(col.b / 0.002) * 0.002);
-                }
-            }
-            if(night <= 0.0) {
                 col.r = (ceil(col.r / _stepSize) * _stepSize);
                 col.g = (ceil(col.g / _stepSize) * _stepSize);
                 col.b = (ceil(col.b / _stepSize) * _stepSize);
-            }
-
 #endif
                 //col = fixed4(GammaToLinearSpace(tex3D(_Lut, LinearToGammaSpace(col.rgb)).rgb), col.a);
 

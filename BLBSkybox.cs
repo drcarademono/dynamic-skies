@@ -781,7 +781,7 @@ public class BLBSkybox : MonoBehaviour
         WeatherManager.FogSettings newSettings = new WeatherManager.FogSettings();
         BLBFogSetting fogSetting = JsonUtility.FromJson<BLBFogSetting>(data);
         newSettings.fogMode = (FogMode) fogSetting.FogModeInt;
-        newSettings.density = fogSetting.Density;
+        newSettings.density = fogSetting.Density / (11 - densityMulti);
         newSettings.startDistance = fogSetting.StartDistance;
         newSettings.endDistance = fogSetting.EndDistance;
         newSettings.excludeSkybox = fogSetting.ExcludeSkybox;
