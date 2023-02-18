@@ -3,14 +3,14 @@
     "Sections": [
         {
             "Name": "FogDensity",
-            "Description": "Set Fog Density",
+            "Description": "Set Fog Thickness",
             "IsAdvanced": false,
             "Keys": [
                 {
                     "Min": 1,
                     "Max": 10,
-                    "Value": 5,
-                    "Name": "densityMulti",
+                    "Value": 1,
+                    "Name": "densitySetting",
                     "Description": "Makes fog thicker",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
