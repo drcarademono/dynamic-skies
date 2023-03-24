@@ -322,7 +322,7 @@
                 else
                 {
                     // Ground
-                    far = (-kCameraHeight) / (min(-0.001, eyeRay.y));
+                    far = (-kCameraHeight) / (min(-0.001, eyeRay.y)); //carademono: added 100 *
 
                     float3 pos = cameraPos + far * eyeRay;
 
@@ -337,12 +337,12 @@
 
                     // Initialize the scattering loop variables
                     float sampleLength = far / kSamples;
-                    float scaledLength = sampleLength * kScale;
-                    float3 sampleRay = eyeRay * sampleLength;
+                    float scaledLength = .9 * sampleLength * kScale; //carademono: added 0.9 *
+                    float3 sampleRay = 1.5 * eyeRay * sampleLength; // carademono: added 1.5 *
                     float3 samplePoint = cameraPos + sampleRay * 0.5;
 
                     // Now loop through the sample rays
-                    float3 frontColor = float3(0.0, 0.0, 0.0);
+                    float3 frontColor = float3(1.3, 1.3, 1.3); //default 0,0,0
                     float3 attenuate;
     //              for(int i=0; i<int(kSamples); i++) // Loop removed because we kept hitting SM2.0 temp variable limits. Doesn't affect the image too much.
                     {
