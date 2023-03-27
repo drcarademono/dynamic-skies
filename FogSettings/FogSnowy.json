@@ -3,5 +3,5 @@
     "Density": 0.003000000026077032,
     "StartDistance": 0.0,
     "EndDistance": 0.0,
-    "ExcludeSkybox": false
+    "ExcludeSkybox": true
 }
