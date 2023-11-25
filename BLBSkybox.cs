@@ -497,7 +497,7 @@ public class BLBSkybox : MonoBehaviour
 
     private void ApplyPendingWeatherSettings() {
         if(pendingWeather == true) {
-            BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, false);
+            BLBSkybox.ApplySkyboxSettings(pendingSkyboxSettings, currentWeather == pendingWeatherType, true);
             currentWeather = pendingWeatherType;
             setFogColor(dayTime);
             SetFogDistance(pendingWeatherType);
@@ -1020,7 +1020,7 @@ public class BLBSkybox : MonoBehaviour
         }
 
         if(refreshTextures || firstInit) {
-            firstInit = false;
+            firstInit = true;
             skyboxMat.SetTexture("_CloudTopDiffuse", skyboxSetting.TopClouds.CloudsTexture);
             skyboxMat.SetTexture("_CloudTopNormal", skyboxSetting.TopClouds.CloudsNormalTexture);
             skyboxMat.SetTextureScale("_CloudTopDiffuse", new Vector2(skyboxSetting.TopClouds.TilingX, skyboxSetting.TopClouds.TilingY));
