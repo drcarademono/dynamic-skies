@@ -268,7 +268,7 @@
                 {
                     // Sky
                     // Calculate the length of the "atmosphere"
-                    far = sqrt(kOuterRadius2 + kInnerRadius2 * eyeRay.y * eyeRay.y - kInnerRadius2) - kInnerRadius * eyeRay.y;
+                    far = 0.5 * (sqrt(kOuterRadius2 + kInnerRadius2 * eyeRay.y * eyeRay.y - kInnerRadius2) - kInnerRadius * eyeRay.y); // carademono: change sun size during sunrise/sunset
 
                     float3 pos = cameraPos + far * eyeRay;
 
@@ -716,10 +716,15 @@
                     if(normWorldPos.y > _SkyFadeEnd) {
                         if(cloudsTop > 0.0) {
                     //if(y < 0.125) {
+                        //Amazed this works but it does, sunrise / sunset lerp time :joy:
+                        float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
+                        //float lerpScale = min(0.333, abs(normalSunPos.y));
+
+                        float lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -normalSunPos.y) / _AtmosphereLerp);
                         //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
-                            cloudThickness = cloudsTop * (1 - night);
-                            pos = saturate(1 - normSunWorldPos.y);
-                            cloudLerpValue = cloudThickness * pos;
+                            cloudThickness = cloudsTop * (1 - night); 
+                            pos = saturate(1 + normSunWorldPos.y);
+                            cloudLerpValue = lerpScale * pos; // carademono: key line for sun color
                             //Unity's calculated sun color
                             cloudTopColor = lerp(cloudTopColor, (IN.sunColor + _CloudTopSunColor) * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Unity's defined sun color in Lighting Settings
@@ -774,10 +779,15 @@
                     if(normWorldPos.y > _SkyFadeEnd) {
                     //if(y < 0.125) {
                         if(clouds > 0.0) {
+                        //Amazed this works but it does, sunrise / sunset lerp time :joy:
+                        float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
+                        //float lerpScale = min(0.333, abs(normalSunPos.y));
+
+                        float lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -normalSunPos.y) / _AtmosphereLerp);
                             //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
                             cloudThickness = clouds * (1 - night);
                             pos = saturate(1 - normSunWorldPos.y);
-                            cloudLerpValue = cloudThickness * pos;
+                            cloudLerpValue = lerpScale * pos; // carademono: fix for sunset clouds
                             //Unity's calculated sun color
                             cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
                             //Unity's defined sun color in Lighting Settings
