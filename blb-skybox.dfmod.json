@@ -50,6 +50,7 @@
         "Assets/Game/Mods/blb-skybox-shader/Textures/PixelMars.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds2.png",
-        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMOvercast.png"
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMOvercast.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMThunder.png"
     ]
 }
