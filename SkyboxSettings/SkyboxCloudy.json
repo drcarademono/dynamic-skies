@@ -18,7 +18,7 @@
     "FogDayColor": "818181FF",
     "FogNightColor": "141414FF",
     "FogDistance": 1500.0,
-    "CloudFadeHeight": 0.20000000298023225,
+    "CloudFadeHeight": 0.014999999664723874,
     "TopCloudsFlat": "{\"CloudsTextureFile\":\"CdMCloudy\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.20000000298023225,\"TilingY\":0.20000000298023225,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"FFFFFFFF\",\"NightColor\":\"303030FF\",\"AlphaTreshold\":0.09000000357627869,\"AlphaMax\":0.25,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.20000000298023225,\"SunColorScale\":1.0,\"SunColorLerpScale\":1.0,\"SunColor\":\"303030FF\"}",
     "BottomCloudsFlat": "{\"CloudsTextureFile\":\"CdMCloudy\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.17499999701976777,\"TilingY\":0.17499999701976777,\"OffsetX\":0.5,\"OffsetY\":0.0,\"DayColor\":\"FFFFFFFF\",\"NightColor\":\"232329FF\",\"AlphaTreshold\":0.02500000037252903,\"AlphaMax\":0.30000001192092898,\"ColorBoost\":1.0,\"NormalEffect\":0.10000000149011612,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.25,\"SunColorScale\":1.0,\"SunColorLerpScale\":1.0,\"SunColor\":\"191919FF\"}",
     "StarsFlat": "{\"StarsTextureFile\":\"NLStarsThief\",\"StarsTilingX\":1.0,\"StarsTilingY\":1.0,\"StarsOffsetX\":0.0,\"StarsOffsetY\":0.0,\"StarBending\":1.0,\"StarsTwinkleTextureFile\":\"NLStarsThiefTwinkleMask\",\"TwinkleTextureFile\":\"NLstarsHighlight\",\"TwinkleTilingX\":1.0,\"TwinkleTilingY\":1.0,\"TwinkleOffsetX\":0.0,\"TwinkleOffsetY\":0.0,\"TwinkleBoost\":0.25,\"TwinkleSpeed\":0.20000000298023225}",
