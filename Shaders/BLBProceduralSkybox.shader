@@ -724,7 +724,7 @@
                         //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
                             cloudThickness = cloudsTop * (1 - night); 
                             pos = saturate(1 + normSunWorldPos.y);
-                            cloudLerpValue = lerpScale * pos; // carademono: key line for sun color
+                            cloudLerpValue = sqrt(lerpScale) * pos; // carademono: key line for sun color
                             //Unity's calculated sun color
                             cloudTopColor = lerp(cloudTopColor, (IN.sunColor + _CloudTopSunColor) * (_CloudTopSunScale * NdotUpTop), cloudLerpValue * _CloudTopSunLerpScale);
                         //Unity's defined sun color in Lighting Settings
@@ -787,7 +787,7 @@
                             //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
                             cloudThickness = clouds * (1 - night);
                             pos = saturate(1 - normSunWorldPos.y);
-                            cloudLerpValue = lerpScale * pos; // carademono: fix for sunset clouds
+                            cloudLerpValue = sqrt(lerpScale) * pos; // carademono: fix for sunset clouds
                             //Unity's calculated sun color
                             cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
                             //Unity's defined sun color in Lighting Settings
