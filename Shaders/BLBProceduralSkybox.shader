@@ -654,12 +654,18 @@ col.rgb = lerp(col.rgb, stars, night * horizonValue);
                     if(SecundaSphere >= 0.0) {
                         SecundaMoonTex = tex2D(_SecundaTex, SecundaMoonUV).rgb * _SecundaColor.rgb;
                         //SecundaMoonTex = lerp(SecundaMoonTex * saturate(SecundaNDotL), SecundaMoonTex, saturate(SecundaNDotL * NDotScale));
-                        tmpCol = (col.rgb - tmpCol) * smoothstep(0, 0.5, sunPos.y);
+        // Set the minimum color threshold (carademono: this is to blend moon into blue nighttime sky)
+        float3 minColor = float3(0, 0, 5) / 255.0;
+                        tmpCol = IN.skyColor.rgb;
+        tmpCol = max(tmpCol, minColor);  // Clamp to the minimum color
                         SecundaMoonTex = lerp(tmpCol, SecundaMoonTex, max(0, saturate(SecundaNDotL * NDotScale) - 0));
                         col.rgb = SecundaMoonTex;
                     } else if(sphere >= 0.0) {
                         float3 moonTex = tex2D(_MoonTex, moonUV).rgb * _MoonColor.rgb;
-                        tmpCol = (col.rgb - tmpCol) * smoothstep(0, 0.5, sunPos.y);
+        // Set the minimum color threshold (carademono: this is to blend moon into blue nighttime sky)
+        float3 minColor = float3(0, 0, 5) / 255.0;
+                        tmpCol = IN.skyColor.rgb;
+        tmpCol = max(tmpCol, minColor);  // Clamp to the minimum color
                         //moonTex = lerp(moonTex * saturate(NDotL), moonTex, saturate(NDotL * NDotScale));
                         moonTex = lerp(tmpCol, moonTex, max(0, saturate(NDotL * NDotScale) - 0));
                         col.rgb = moonTex;
