@@ -540,30 +540,30 @@
     //End of Unity Code
 
     //Stars
-                float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
-                //float stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).r;
-                float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
-                float starsAlpha = round(tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw).r);
-                //invert the voronoi
-                //stars = 1 - stars;
-                //and then raise the value to a power to adjust the brightness falloff of the stars
-                //stars = pow(stars, _StarBrightness);
-                //starsAlpha = round(0.5);
-                //we also sample a basic noise texture, this allows us to modulate the star brightness, this creates a twinkle effect
-                float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
-                twinkle = twinkle * starsAlpha;
-                //twinkle = max(0, twinkle * starsAlpha);
-                //twinkle *= round(1 - starsAlpha);
+float2 starsUV = normWorldPos.xz / (normWorldPos.y + _StarBending);
+float3 stars = tex2D(_StarTex, starsUV * _StarTex_ST.xy + _StarTex_ST.zw).rgb;
+float starsAlpha = tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _StarTwinkleTex_ST.zw).r;
 
-                //modulate the twinkle value
-                twinkle *= _TwinkleBoost;
-                
-                //then adjust the final color
-                stars -= twinkle;
-                stars = saturate(stars);
+// Invert the voronoi
+// stars = 1 - stars;
+// Raise the value to a power to adjust the brightness falloff of the stars
+// stars = pow(stars, _StarBrightness);
 
-                //then lerp to the stars color masking out the horizon
-                //col.rgb = lerp(col.rgb, col.rgb + (stars * (1 - max(cloudsTop, clouds))), night * horizonValue * (1 - step(0, max(sphere, SecundaSphere))));
+// Sample a basic noise texture for twinkle effect
+float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
+
+// Multiply the twinkle values with the stars' brightness
+twinkle *= starsAlpha;
+
+// Modulate the twinkle value
+twinkle *= _TwinkleBoost;
+
+// Adjust the final color by subtracting twinkle from stars
+stars.rgb -= twinkle;
+stars = saturate(stars);
+
+// Lerp to the stars color masking out the horizon
+col.rgb = lerp(col.rgb, stars, night * horizonValue);
                 
                 //if(moonBlocking > 0.0) {
                     
