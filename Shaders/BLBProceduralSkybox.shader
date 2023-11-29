@@ -144,6 +144,7 @@
             uniform half _NightStartHeight, _NightEndHeight;
             uniform half _SkyFadeStart, _SkyFadeEnd;
             uniform half _stepSize;
+
             uniform float3 _FogDayColor;
             uniform float3 _FogNightColor;
             uniform float _FogDistance;
@@ -372,7 +373,7 @@
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
                 OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
-                OUT.fogColor = _Exposure * (cIn + COLOR_2_LINEAR(_FogDayColor) * cOut);
+                OUT.fogColor = lerp(_FogDayColor, _FogNightColor, lerpScale);
                 //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
@@ -793,7 +794,7 @@ col.rgb = lerp(col.rgb, stars, night * horizonValue);
                             //float cloudThickness = abs(1 - abs(cloudsTop / 2)) * (1 - night);
                             cloudThickness = clouds * (1 - night);
                             pos = saturate(1 - normSunWorldPos.y);
-                            cloudLerpValue = sqrt(lerpScale) * pos; // carademono: fix for sunset clouds
+                            cloudLerpValue = sqrt(sqrt(sqrt(lerpScale))) * pos; // carademono: fix for sunset clouds
                             //Unity's calculated sun color
                             cloudColor = lerp(cloudColor, (IN.sunColor + _CloudSunColor) * (_CloudSunScale * NdotUp), cloudLerpValue * _CloudSunLerpScale);
                             //Unity's defined sun color in Lighting Settings
