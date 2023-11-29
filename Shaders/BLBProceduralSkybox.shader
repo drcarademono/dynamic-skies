@@ -347,7 +347,7 @@
                     float3 samplePoint = cameraPos + sampleRay * 0.5;
 
                     // Now loop through the sample rays
-                    float3 frontColor = float3(1.3, 1.3, 1.3); //default 0,0,0
+                    float3 frontColor = float3(0,0,0); //default 0,0,0
                     float3 attenuate;
     //              for(int i=0; i<int(kSamples); i++) // Loop removed because we kept hitting SM2.0 temp variable limits. Doesn't affect the image too much.
                     {
@@ -375,7 +375,7 @@
                 // 1. in case of linear: multiply by _Exposure in here (even in case of lerp it will be common multiplier, so we can skip mul in fshader)
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
-                OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
+                OUT.groundColor = _FogColor; //_Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
                 OUT.fogColor = _FogColor;
                 //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
@@ -433,6 +433,7 @@
                 //and then do a similar method as the horizon to figure out when things should transistion to the night colors
                 float sunDotUp = dot(sunPos, float3(0, 1, 0));
                 float night = saturate(Remap(sunDotUp, float2(_NightStartHeight, _NightEndHeight), float2(0, 1)));
+                float night_clamp = clamp(night, 0.0, 0.5); //carademono: will use this for the reduce colors lerp
 
                 //Get the moon positions
                 //Moon
@@ -818,11 +819,12 @@ col.rgb = lerp(col.rgb, stars, night * horizonValue);
                 //col.r = floor(((col.r * 256) * 63) / 256) * _stepSize;
                 //col.g = floor(((col.r * 256) * 63) / 256) * _stepSize;
                 //col.b = floor(((col.r * 256) * 63) / 256) * _stepSize;
+
             if(night > 0.0) {
                 if(night < 1.0) {
-                col.r = (ceil(col.r / (_stepSize - (night * _stepSize) + 0.001)) * (_stepSize - (night * _stepSize) + 0.001));
-                col.g = (ceil(col.g / (_stepSize - (night * _stepSize) + 0.001)) * (_stepSize - (night * _stepSize) + 0.001));
-                col.b = (ceil(col.b / (_stepSize - (night * _stepSize) + 0.001)) * (_stepSize - (night * _stepSize) + 0.001));
+                col.r = (ceil(col.r / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
+                col.g = (ceil(col.g / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
+                col.b = (ceil(col.b / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
                 }
                 if(night = 1.0) {
                 col.r = (ceil(col.r / 0.001) * 0.001);
