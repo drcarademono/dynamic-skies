@@ -22,6 +22,8 @@
         _SkyFadeEnd("Sky End Start", Range(-1, 1)) = -.01
         _stepSize("Reduce Color Step Size", Range(0, 1)) = .01
 
+        _FogColor("Fog Color", Color) = (1,1,1,1)  // Define the property
+
         _FogDayColor ("Fog Day Color", Color) = (.5, .5, .5, 1)
         _FogNightColor ("Fog Night Color", Color) = (.1, .1, .1, 1)
         _FogDistance("Fog distance", float) = 2048.0
@@ -145,6 +147,7 @@
             uniform half _SkyFadeStart, _SkyFadeEnd;
             uniform half _stepSize;
 
+            uniform float3 _FogColor;
             uniform float3 _FogDayColor;
             uniform float3 _FogNightColor;
             uniform float _FogDistance;
@@ -373,7 +376,7 @@
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
                 OUT.groundColor = _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
-                OUT.fogColor = lerp(_FogDayColor, _FogNightColor, lerpScale);
+                OUT.fogColor = _FogColor;
                 //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 

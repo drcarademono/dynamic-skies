@@ -58,6 +58,8 @@ public class BLBSkybox : MonoBehaviour
     public static float minParticleSize = 0.002f;
     public static float maxParticleSize = 0.0025f;
     public static int maxParticles = 17500;
+    //Fog settings
+    public Color fogColor;
     
     private PlayerEntity player;
     #endregion
@@ -165,6 +167,8 @@ public class BLBSkybox : MonoBehaviour
     public bool dayTime = false;
     public void Update()
     {
+        fogColor = UnityEngine.RenderSettings.fogColor;
+        skyboxMat.SetColor("_FogColor", fogColor);
         //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
         //Would really like an OnTimeScaleChange event for this but it works
         if(worldTime.TimeScale != currentTimeScale) {

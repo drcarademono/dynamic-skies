@@ -1,7 +1,7 @@
 {
-    "FogModeInt": 2,
-    "Density": 0.003000000026077032,
+    "FogModeInt": 3,
+    "Density": 0.0075000000237487257,
     "StartDistance": 0.0,
-    "EndDistance": 0.0,
+    "EndDistance": 500000.0,
     "ExcludeSkybox": true
 }
