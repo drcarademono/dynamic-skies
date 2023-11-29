@@ -151,6 +151,12 @@
             uniform float3 _FogDayColor;
             uniform float3 _FogNightColor;
             uniform float _FogDistance;
+            
+            float night;
+            float night_clamp;
+            float day;
+            float day_clamp;
+            float lerpScale;
 
             uniform float _CloudFadeHeight;
 
@@ -201,6 +207,8 @@
             {
                 float4 vertex : POSITION;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
+                float night : TEXCOORD0; // Assuming night is calculated in the fragment shader
+
             };
 
             struct v2f
@@ -247,14 +255,18 @@
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
                 OUT.pos = UnityObjectToClipPos(v.vertex);
                 OUT.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                
 
                 //UNITY_TRANSFER_FOG(v,OUT.pos);
+                // Interpolate between _SkyTint and white based on the night value
+                float3 tintedSky = lerp(_SkyTint, float3(1.0, 1.0, 1.0), saturate(sqrt(lerpScale)));
+                float3 kSkyTintInGammaSpace = COLOR_2_GAMMA(tintedSky); // convert tint from Linear back to Gamma
 
-                float3 kSkyTintInGammaSpace = COLOR_2_GAMMA(_SkyTint); // convert tint from Linear back to Gamma
+
                 float3 kScatteringWavelength = lerp (
                     kDefaultScatteringWavelength-kVariableRangeForScatteringWavelength,
                     kDefaultScatteringWavelength+kVariableRangeForScatteringWavelength,
-                    half3(1,1,1) - kSkyTintInGammaSpace); // using Tint in sRGB gamma allows for more visually linear interpolation and to keep (.5) at (128, gray in sRGB) point
+                    half3(1,1,1) - tintedSky); // using Tint in sRGB gamma allows for more visually linear interpolation and to keep (.5) at (128, gray in sRGB) point
                 float3 kInvWavelength = 1.0 / pow(kScatteringWavelength, 4);
 
                 float kKrESun = kRAYLEIGH * kSUN_BRIGHTNESS;
@@ -434,6 +446,8 @@
                 float sunDotUp = dot(sunPos, float3(0, 1, 0));
                 float night = saturate(Remap(sunDotUp, float2(_NightStartHeight, _NightEndHeight), float2(0, 1)));
                 float night_clamp = clamp(night, 0.0, 0.5); //carademono: will use this for the reduce colors lerp
+                float day = saturate(Remap(sunDotUp, float2(_NightEndHeight, _NightStartHeight), float2(0, 1)));
+                float day_clamp = clamp(day, 0.0, 0.6);
 
                 //Get the moon positions
                 //Moon
@@ -816,27 +830,13 @@ col.rgb = lerp(col.rgb, stars, night * horizonValue);
                 col.rgb = lerp(col.rgb, cloudColor, clouds * _CloudOpacity);
 
 #ifdef REDUCE_COLOR
-                //col.r = floor(((col.r * 256) * 63) / 256) * _stepSize;
-                //col.g = floor(((col.r * 256) * 63) / 256) * _stepSize;
-                //col.b = floor(((col.r * 256) * 63) / 256) * _stepSize;
+    float3 normalSunPos = normalize(_WorldSpaceLightPos0.xyz);
+    lerpScale = saturate(smoothstep(-_AtmosphereLerpDuration, 0, -normalSunPos.y) / _AtmosphereLerp);
+    float lerpScale_pow = pow(lerpScale, 5.0);
 
-            if(night > 0.0) {
-                if(night < 1.0) {
-                col.r = (ceil(col.r / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
-                col.g = (ceil(col.g / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
-                col.b = (ceil(col.b / (_stepSize - (night_clamp * 2 * _stepSize) + 0.001)) * (_stepSize - (night_clamp * 2 * _stepSize) + 0.001));
-                }
-                if(night = 1.0) {
-                col.r = (ceil(col.r / 0.001) * 0.001);
-                col.g = (ceil(col.g / 0.001) * 0.001);
-                col.b = (ceil(col.b / 0.001) * 0.001);
-                }
-            }
-            if(night <= 0.0) {
-                col.r = (ceil(col.r / _stepSize) * _stepSize);
-                col.g = (ceil(col.g / _stepSize) * _stepSize);
-                col.b = (ceil(col.b / _stepSize) * _stepSize);
-            }
+        col.r = (ceil(col.r / (_stepSize - (lerpScale_pow * _stepSize) + 0.001)) * (_stepSize - (lerpScale_pow * _stepSize) + 0.001));
+        col.g = (ceil(col.g / (_stepSize - (lerpScale_pow * _stepSize) + 0.001)) * (_stepSize - (lerpScale_pow * _stepSize) + 0.001));
+        col.b = (ceil(col.b / (_stepSize - (lerpScale_pow * _stepSize) + 0.001)) * (_stepSize - (lerpScale_pow * _stepSize) + 0.001));
 
 #endif
                 //col = fixed4(GammaToLinearSpace(tex3D(_Lut, LinearToGammaSpace(col.rgb)).rgb), col.a);
