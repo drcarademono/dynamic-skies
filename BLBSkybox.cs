@@ -165,8 +165,16 @@ public class BLBSkybox : MonoBehaviour
     public int hour;
     public int minutes;
     public bool dayTime = false;
-    public void Update()
+private float lastUpdateTime = 0f;
+private const float UpdateInterval = 1.0f; // Update fog color every 1.0 seconds
+
+public void Update()
+{
+    if (Time.time - lastUpdateTime >= UpdateInterval)
     {
+        setFogColor(dayTime);
+        lastUpdateTime = Time.time; // Update the last update time
+    }
         fogColor = UnityEngine.RenderSettings.fogColor;
         skyboxMat.SetColor("_FogColor", fogColor);
         //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
@@ -724,21 +732,39 @@ public class BLBSkybox : MonoBehaviour
         BLBSkyboxSetting[] skyboxSetting;
         if(SkyboxSettings.TryGetValue(currentWeather, out skyboxSetting)) {
             int weatherIndex = getWeatherIndex();
-            Debug.Log("BLB: Getting fog color for weather " + currentWeather.ToString() + " with index " + weatherIndex.ToString());
+            //Debug.Log("BLB: Getting fog color for weather " + currentWeather.ToString() + " with index " + weatherIndex.ToString());
             string fogDayColor = skyboxSetting[weatherIndex].FogDayColor;
             string fogNightColor = skyboxSetting[weatherIndex].FogNightColor;
+            float AtmosphereLerpDuration = skyboxMat.GetFloat("_AtmosphereLerpDuration");
+            float AtmosphereLerp = skyboxMat.GetFloat("_AtmosphereLerp");
 
             Color tmpColor;
             if(ColorUtility.TryParseHtmlString("#" + fogDayColor, out tmpColor)) {
                 skyboxMat.SetColor("_FogDayColor", tmpColor);
                 if(day) {
-                    UnityEngine.RenderSettings.fogColor = tmpColor;
+                    // Assuming the main directional light is named "SunLight"
+                    Light sunLight = GameObject.Find("SunLight").GetComponent<Light>();
+
+                    // Get the normalized direction to the sun
+                    Vector3 normalSunPos = sunLight.transform.forward.normalized;
+
+                    // Rest of the code remains the same
+                    float lerpScale = Mathf.SmoothStep(AtmosphereLerpDuration, 0, -normalSunPos.y);
+
+                    // Set tmpColorNight to black
+                    Color tmpColorNight = Color.black;
+
+                    // Apply lerp to fog color
+                    Color lerpedColor = Color.Lerp(tmpColor, tmpColorNight, lerpScale);
+                    UnityEngine.RenderSettings.fogColor = lerpedColor;
+                    //Debug.Log("BLB: lerpScale:" + lerpScale.ToString() + ", tmpColor: " + tmpColor.ToString() + ", tmpColorNight: " + tmpColorNight.ToString() + ", lerpedColor:" + lerpedColor.ToString());
                 }
             }
             if(ColorUtility.TryParseHtmlString("#" + fogNightColor, out tmpColor)) {
                 skyboxMat.SetColor("_FogNightColor", tmpColor);
                 if(!day) {
                     UnityEngine.RenderSettings.fogColor = tmpColor;
+                    Debug.Log("BLB: Applied night color");
                 }
             }
         } else {
