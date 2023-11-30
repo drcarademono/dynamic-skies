@@ -3,7 +3,7 @@
     "SunSizeConvergence": 10,
     "AtmosphereLerpDuration": 0.6600000262260437,
     "AtmosphereNormalThickness": 0.75,
-    "AtmosphereDawnDuskThickness": 2.0,
+    "AtmosphereDawnDuskThickness": 1.5,
     "AtmosphereLerp": 1.0,
     "SkyTint": "6176DCFF",
     "GroundColor": "4C4C4CFF",
