@@ -278,7 +278,7 @@ public class BLBSkybox : MonoBehaviour
                 stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
             }
         } else if(TransparentWindowsEnabled && !GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeon) {
-            Debug.Log("Dynamic Skies: Forcing skybox clear flags on cameras for interior");
+            //Debug.Log("Dynamic Skies: Forcing skybox clear flags on cameras for interior");
             if(playerCam.clearFlags != UnityEngine.CameraClearFlags.Skybox && stackedCam == null) {
                 playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
             } else if(stackedCam != null) {
