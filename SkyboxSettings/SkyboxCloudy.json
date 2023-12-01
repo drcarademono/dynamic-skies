@@ -16,7 +16,7 @@
     "SkyEndStart": -0.03999999910593033,
     "stepSize": 0.029999999329447748,
     "FogDayColor": "808080FF",
-    "FogNightColor": "141414FF",
+    "FogNightColor": "000000FF",
     "FogDistance": 1500.0,
     "CloudFadeHeight": 0.014999999664723874,
     "TopCloudsFlat": "{\"CloudsTextureFile\":\"CdMCloudy\",\"CloudsNormalTextureFile\":\"CdMCloudsNormal\",\"TilingX\":0.20000000298023225,\"TilingY\":0.20000000298023225,\"OffsetX\":0.0,\"OffsetY\":0.0,\"DayColor\":\"FFFFFFFF\",\"NightColor\":\"303030FF\",\"AlphaTreshold\":0.0,\"AlphaMax\":0.18400000035762788,\"ColorBoost\":0.0,\"NormalEffect\":0.5,\"NormalSpeed\":0.0,\"Opacity\":1.0,\"Bending\":0.20000000298023225,\"SunColorScale\":1.0,\"SunColorLerpScale\":1.0,\"SunColor\":\"303030FF\"}",

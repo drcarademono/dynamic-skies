@@ -175,8 +175,6 @@ public void Update()
         setFogColor(dayTime);
         lastUpdateTime = Time.time; // Update the last update time
     }
-        fogColor = UnityEngine.RenderSettings.fogColor;
-        skyboxMat.SetColor("_FogColor", fogColor);
         //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
         //Would really like an OnTimeScaleChange event for this but it works
         if(worldTime.TimeScale != currentTimeScale) {
@@ -741,7 +739,6 @@ public void Update()
             Color tmpColor;
             if(ColorUtility.TryParseHtmlString("#" + fogDayColor, out tmpColor)) {
                 skyboxMat.SetColor("_FogDayColor", tmpColor);
-                if(day) {
                     // Assuming the main directional light is named "SunLight"
                     Light sunLight = GameObject.Find("SunLight").GetComponent<Light>();
 
@@ -750,24 +747,21 @@ public void Update()
 
                     // Rest of the code remains the same
                     float lerpScale = Mathf.SmoothStep(AtmosphereLerpDuration, 0, -normalSunPos.y);
+                    lerpScale = Mathf.Lerp(0f, 1f, lerpScale / 0.66f); //carademono: rescale lerp so it ranges from 0 to 1
 
                     // Set tmpColorNight to black
                     Color tmpColorNight = Color.black;
 
                     // Apply lerp to fog color
-                    Color lerpedColor = Color.Lerp(tmpColor, tmpColorNight, lerpScale);
+                    Color lerpedColor = Color.Lerp(tmpColor, tmpColorNight, lerpScale * lerpScale);
                     UnityEngine.RenderSettings.fogColor = lerpedColor;
-                    //Debug.Log("BLB: lerpScale:" + lerpScale.ToString() + ", tmpColor: " + tmpColor.ToString() + ", tmpColorNight: " + tmpColorNight.ToString() + ", lerpedColor:" + lerpedColor.ToString());
-                }
+                    //Debug.Log("BLB: lerpScale:" + lerpScale.ToString() + ", day: " + day.ToString() + ", lerpedColor:" + lerpedColor.ToString());
             }
-            if(ColorUtility.TryParseHtmlString("#" + fogNightColor, out tmpColor)) {
-                skyboxMat.SetColor("_FogNightColor", tmpColor);
-                if(!day) {
-                    UnityEngine.RenderSettings.fogColor = tmpColor;
-                    Debug.Log("BLB: Applied night color");
-                }
-            }
-        } else {
+        fogColor = UnityEngine.RenderSettings.fogColor;
+        skyboxMat.SetColor("_FogColor", fogColor); // carademono: Pass the fog color to the shader so it can color the distant ground
+        skyboxMat.SetPass(0); // Assuming 0 is the pass index you want to use
+        } 
+        else {
             Debug.Log("BLB: Could not find Fog Color for weather " + currentWeather.ToString());
         }
     }
