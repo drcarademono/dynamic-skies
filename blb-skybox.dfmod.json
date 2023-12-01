@@ -51,6 +51,13 @@
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMPixelClouds2.png",
         "Assets/Game/Mods/blb-skybox-shader/Textures/CdMOvercast.png",
-        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMThunder.png"
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMThunder.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/DefaultEnceladus.jpg",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMSunny2.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMOvercast2.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMSunny.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMCloudy.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/CdMRain.png",
+        "Assets/Game/Mods/blb-skybox-shader/Textures/DefaultMars.png"
     ]
 }
