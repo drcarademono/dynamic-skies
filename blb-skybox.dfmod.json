@@ -1,9 +1,9 @@
 {
     "ModTitle": "Dynamic Skies",
-    "ModVersion": "2.0",
+    "ModVersion": "2.0.1",
     "ModAuthor": "BadLuckBurt and carademono",
     "ContactInfo": "Lysandus' Tomb Discord server",
-    "DFUnity_Version": "0.16",
+    "DFUnity_Version": "1.0.0",
     "ModDescription": "Procedural skybox shader for DFU",
     "GUID": "53a9b8f5-6271-4f74-9b8b-9220dd105a04",
     "Files": [

@@ -111,7 +111,7 @@ Material:
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
     - _CloudColorBoost: 0.665
-    - _CloudDirection: 220.96388
+    - _CloudDirection: 216.10109
     - _CloudFadeHeight: 0.2
     - _CloudNormalEffect: 0.665
     - _CloudNormalSpeed: 0
@@ -173,7 +173,7 @@ Material:
     - _TwinkleSpeed: 0.1
     - _UVSec: 0
     - _ZWrite: 1
-    - _stepSize: 0.03
+    - _stepSize: 0.015
     m_Colors:
     - _CloudColor: {r: 0.78039217, g: 0.78039217, b: 0.78039217, a: 1}
     - _CloudNightColor: {r: 0.13725491, g: 0.13725491, b: 0.16078432, a: 1}
@@ -183,7 +183,7 @@ Material:
     - _CloudTopSunColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FogColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    - _FogColor: {r: 0.5019308, g: 0.5019308, b: 0.5019308, a: 1}
     - _FogDayColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
     - _FogNightColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}

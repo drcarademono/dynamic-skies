@@ -170,88 +170,91 @@ private const float UpdateInterval = 1.0f; // Update fog color every 1.0 seconds
 
 public void Update()
 {
-    if (Time.time - lastUpdateTime >= UpdateInterval)
+    if (GameManager.Instance.IsPlayingGame() && !playerInside)
     {
-        setFogColor(dayTime);
-        lastUpdateTime = Time.time; // Update the last update time
-    }
-        //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
-        //Would really like an OnTimeScaleChange event for this but it works
-        if(worldTime.TimeScale != currentTimeScale) {
-            currentTimeScale = worldTime.TimeScale;
-            updateSpeeds();
+        if (Time.time - lastUpdateTime >= UpdateInterval)
+        {
+            setFogColor(dayTime);
+            lastUpdateTime = Time.time; // Update the last update time
         }
-        if(playerInside) {
-            deltaTime = 0.0f;
-            return;
-        }
-        //if(player.IsResting || player.IsLoitering) {
-            //AbortAtmosphereLerp();
-        //}
-        deltaTime += Time.unscaledDeltaTime;
-        if(deltaTime < 5.0f) {
-            return;
-        }
-        //Reset deltaTime when 5 seconds have elapsed
-        deltaTime -= 5.0f;
-        //Get the current time of day
-        hour = worldTime.Now.Hour;
-        minutes = worldTime.Now.Minute;
+            //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
+            //Would really like an OnTimeScaleChange event for this but it works
+            if(worldTime.TimeScale != currentTimeScale) {
+                currentTimeScale = worldTime.TimeScale;
+                updateSpeeds();
+            }
+            if(playerInside) {
+                deltaTime = 0.0f;
+                return;
+            }
+            //if(player.IsResting || player.IsLoitering) {
+                //AbortAtmosphereLerp();
+            //}
+            deltaTime += Time.unscaledDeltaTime;
+            if(deltaTime < 5.0f) {
+                return;
+            }
+            //Reset deltaTime when 5 seconds have elapsed
+            deltaTime -= 5.0f;
+            //Get the current time of day
+            hour = worldTime.Now.Hour;
+            minutes = worldTime.Now.Minute;
 
-        forceWeatherUpdate = true;
-        //Determine part of the day
-        //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
-        //currentDayPart is set to prevent the lerp from firing again
-        if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
-            //04:00 - 06:00
-            dayTime = false;
-            OnWeatherChange(currentWeather);
-            currentDayPart = DayParts.Dawn;
-            OnDawn();
-        } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd) {
-            currentDayPart = DayParts.DawnEnd;
-            dayTime = true;
-            OnWeatherChange(currentWeather);
-            OnDawnEnd();
-        } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
-            //16:00 - 18:00
-            dayTime = true;
-            currentDayPart = DayParts.Dusk;
-            OnWeatherChange(currentWeather);
-            OnDusk();
-        } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd) {
-            currentDayPart = DayParts.DuskEnd;
-            dayTime = false;
-            OnWeatherChange(currentWeather);
-            OnDuskEnd();
-        } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
-            //0:00 - 05:00
-            currentDayPart = DayParts.Night;
-            dayTime = false;
-            OnWeatherChange(currentWeather);
-            if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
-                ChangeLunarPhases();
+            forceWeatherUpdate = true;
+            //Determine part of the day
+            //The skyboxLerpDuration calculation in each day part is partial, minutes are substracted after these if statements
+            //currentDayPart is set to prevent the lerp from firing again
+            if (isHourDayPart(hour, DayParts.Dawn) && currentDayPart != DayParts.Dawn) {
+                //04:00 - 06:00
+                dayTime = false;
+                OnWeatherChange(currentWeather);
+                currentDayPart = DayParts.Dawn;
+                OnDawn();
+            } else if (isHourDayPart(hour, DayParts.DawnEnd) && currentDayPart != DayParts.DawnEnd) {
+                currentDayPart = DayParts.DawnEnd;
+                dayTime = true;
+                OnWeatherChange(currentWeather);
+                OnDawnEnd();
+            } else if (isHourDayPart(hour, DayParts.Dusk) && currentDayPart != DayParts.Dusk) {
+                //16:00 - 18:00
+                dayTime = true;
+                currentDayPart = DayParts.Dusk;
+                OnWeatherChange(currentWeather);
+                OnDusk();
+            } else if (isHourDayPart(hour, DayParts.DuskEnd) && currentDayPart != DayParts.DuskEnd) {
+                currentDayPart = DayParts.DuskEnd;
+                dayTime = false;
+                OnWeatherChange(currentWeather);
+                OnDuskEnd();
+            } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
+                //0:00 - 05:00
+                currentDayPart = DayParts.Night;
+                dayTime = false;
+                OnWeatherChange(currentWeather);
+                if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
+                    ChangeLunarPhases();
+                }
+            } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
+                //07:00 - 12:00
+                currentDayPart = DayParts.Morning;
+                dayTime = true;
+                if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
+                    ChangeLunarPhases();
+                }
+                OnWeatherChange(currentWeather);
+            } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
+                //12:00 - 17:00
+                currentDayPart = DayParts.Midday;
+                dayTime = true;
+                OnWeatherChange(currentWeather);
+            } else if (isHourDayPart(hour, DayParts.Evening) && currentDayPart != DayParts.Evening) {
+                //20:00 - 0:00
+                currentDayPart = DayParts.Evening;
+                dayTime = false;
+                OnWeatherChange(currentWeather);
             }
-        } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
-            //07:00 - 12:00
-            currentDayPart = DayParts.Morning;
-            dayTime = true;
-            if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
-                ChangeLunarPhases();
-            }
-            OnWeatherChange(currentWeather);
-        } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
-            //12:00 - 17:00
-            currentDayPart = DayParts.Midday;
-            dayTime = true;
-            OnWeatherChange(currentWeather);
-        } else if (isHourDayPart(hour, DayParts.Evening) && currentDayPart != DayParts.Evening) {
-            //20:00 - 0:00
-            currentDayPart = DayParts.Evening;
-            dayTime = false;
-            OnWeatherChange(currentWeather);
+            ApplyPendingWeatherSettings();
         }
-        ApplyPendingWeatherSettings();
     }
 
     void onEnable()
@@ -1123,15 +1126,15 @@ public void Update()
     private static BLBSkyboxSetting ProcessSkyboxSetting(string data) {
         BLBSkyboxSetting skyboxSetting = JsonUtility.FromJson<BLBSkyboxSetting>(data);
         skyboxSetting.TopClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.TopCloudsFlat);
-        Debug.Log("Tried to read top clouds settings");
+        //Debug.Log("Tried to read top clouds settings");
         skyboxSetting.BottomClouds = JsonUtility.FromJson<BLBCloudsSetting>(skyboxSetting.BottomCloudsFlat);
-        Debug.Log("Tried to read bottom clouds settings");
+        //Debug.Log("Tried to read bottom clouds settings");
         skyboxSetting.Stars = JsonUtility.FromJson<BLBStarsSetting>(skyboxSetting.StarsFlat);
-        Debug.Log("Tried to read stars settings");
+        //Debug.Log("Tried to read stars settings");
         skyboxSetting.Masser = JsonUtility.FromJson<BLBMoonSetting>(skyboxSetting.MasserFlat);
-        Debug.Log("Tried to read masser settings");
+        //Debug.Log("Tried to read masser settings");
         skyboxSetting.Secunda = JsonUtility.FromJson<BLBMoonSetting>(skyboxSetting.SecundaFlat);
-        Debug.Log("Tried to read secunda settings");
+        //Debug.Log("Tried to read secunda settings");
 
         Texture2D TopCloudsTexture;
         Texture2D TopCloudsNormalTexture;
