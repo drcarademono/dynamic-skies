@@ -25,16 +25,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudDiffuse:
-        m_Texture: {fileID: 2800000, guid: f74079ff449ba5b06bd623274470e9e3, type: 3}
-        m_Scale: {x: 0.25, y: 0.25}
-        m_Offset: {x: 0.5, y: 0}
+        m_Texture: {fileID: 2800000, guid: e2c5079eab66719afac4d8b59f9f7358, type: 3}
+        m_Scale: {x: 0.3, y: 0.3}
+        m_Offset: {x: 0, y: 0}
     - _CloudNormal:
         m_Texture: {fileID: 2800000, guid: 428c9d08dba23f53da16192fccc577d7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CloudTopDiffuse:
-        m_Texture: {fileID: 2800000, guid: 339f6bfaa02a044ed846fbe22f4bfd7e, type: 3}
-        m_Scale: {x: 0.2, y: 0.2}
+        m_Texture: {fileID: 2800000, guid: e2c5079eab66719afac4d8b59f9f7358, type: 3}
+        m_Scale: {x: 0.3, y: 0.3}
         m_Offset: {x: 0, y: 0}
     - _CloudTopNormal:
         m_Texture: {fileID: 2800000, guid: 428c9d08dba23f53da16192fccc577d7, type: 3}
@@ -69,7 +69,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MoonTex:
-        m_Texture: {fileID: 2800000, guid: f57af817f354d03b1b635eff03b7623d, type: 3}
+        m_Texture: {fileID: 2800000, guid: a96b17b31db9978488cdf81eba672078, type: 3}
         m_Scale: {x: 0, y: 0}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -81,11 +81,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SecundaTex:
-        m_Texture: {fileID: 2800000, guid: d88fc5eae84b2ac8580e449812048a97, type: 3}
+        m_Texture: {fileID: 2800000, guid: 674050fbbea4f454e930b2c89bb766c5, type: 3}
         m_Scale: {x: 0, y: 0}
         m_Offset: {x: 0, y: 0}
     - _StarTex:
-        m_Texture: {fileID: 2800000, guid: 251ed385f161f596580dedc1742c63b6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 32cf818049d8ff67096d2246d7d33401, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _StarTwinkleTex:
@@ -99,40 +99,40 @@ Material:
     m_Floats:
     - _AtmosphereDawnDuskThickness: 1.5
     - _AtmosphereLerp: 1
-    - _AtmosphereLerpDuration: 0.66
-    - _AtmosphereNormalThickness: 0.75
+    - _AtmosphereLerpDuration: 0.666
+    - _AtmosphereNormalThickness: 1
     - _AtmosphereThickness: 0.65
     - _BumpScale: 1
-    - _CloudAlphaCutoff: 0.02
-    - _CloudAlphaMax: 0.757
-    - _CloudBending: 0.15
+    - _CloudAlphaCutoff: 0
+    - _CloudAlphaMax: 0.15
+    - _CloudBending: 0.25
     - _CloudBlendLB: 0
     - _CloudBlendScale: 0
     - _CloudBlendSpeed: 0.01
     - _CloudBlendUB: 0
-    - _CloudColorBoost: 0.665
-    - _CloudDirection: 216.10109
+    - _CloudColorBoost: 0.65
+    - _CloudDirection: 67.89255
     - _CloudFadeHeight: 0.2
-    - _CloudNormalEffect: 0.665
+    - _CloudNormalEffect: 0.6
     - _CloudNormalSpeed: 0
-    - _CloudOpacity: 0.557
+    - _CloudOpacity: 0.75
     - _CloudSpeed: 0.001
     - _CloudSunLerpScale: 1
     - _CloudSunScale: 1
-    - _CloudTopAlphaCutoff: 0.02
-    - _CloudTopAlphaMax: 0.757
-    - _CloudTopBending: 0
-    - _CloudTopColorBoost: 0.665
-    - _CloudTopNormalEffect: 0.329
-    - _CloudTopOpacity: 0.797
+    - _CloudTopAlphaCutoff: 0.006
+    - _CloudTopAlphaMax: 0.293
+    - _CloudTopBending: 0.2
+    - _CloudTopColorBoost: 0
+    - _CloudTopNormalEffect: 0.4
+    - _CloudTopOpacity: 1
     - _CloudTopSunLerpScale: 1
     - _CloudTopSunScale: 1
     - _ColorStep: 0.01
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exposure: 1.5
-    - _FogDistance: 1500
+    - _Exposure: 0.09
+    - _FogDistance: 384
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -141,26 +141,26 @@ Material:
     - _MoonMaxSize: 0.11
     - _MoonMinSize: 0.11
     - _MoonOrbitOffset: 0
-    - _MoonOrbitSpeed: 0.001
+    - _MoonOrbitSpeed: 0.00002
     - _MoonPhaseOption: 1
     - _MoonSemiMajAxis: 1
     - _MoonSemiMinAxis: 1
     - _MoonSpinOption: 0
-    - _NightEndHeight: -0.01
-    - _NightStartHeight: 0.01
+    - _NightEndHeight: -0.2
+    - _NightStartHeight: 0.15
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ReduceColor: 1
     - _SecundaMaxSize: 0.07
     - _SecundaMinSize: 0.07
     - _SecundaOrbitOffset: 30
-    - _SecundaOrbitSpeed: 0.002
+    - _SecundaOrbitSpeed: 0.00002
     - _SecundaPhaseOption: 1
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
     - _SecundaSpinOption: 0
-    - _SkyFadeEnd: -0.04
-    - _SkyFadeStart: -0.01
+    - _SkyFadeEnd: -1
+    - _SkyFadeStart: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -173,18 +173,18 @@ Material:
     - _TwinkleSpeed: 0.1
     - _UVSec: 0
     - _ZWrite: 1
-    - _stepSize: 0.015
+    - _stepSize: 1e-10
     m_Colors:
-    - _CloudColor: {r: 0.78039217, g: 0.78039217, b: 0.78039217, a: 1}
-    - _CloudNightColor: {r: 0.13725491, g: 0.13725491, b: 0.16078432, a: 1}
-    - _CloudSunColor: {r: 0.101960786, g: 0.101960786, b: 0.101960786, a: 1}
-    - _CloudTopColor: {r: 0.78039217, g: 0.78039217, b: 0.78039217, a: 1}
-    - _CloudTopNightColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
-    - _CloudTopSunColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
+    - _CloudColor: {r: 0.23137255, g: 0.23921569, b: 0.28235295, a: 1}
+    - _CloudNightColor: {r: 0.12941177, g: 0.12156863, b: 0.105882354, a: 1}
+    - _CloudSunColor: {r: 0, g: 0, b: 0, a: 1}
+    - _CloudTopColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudTopNightColor: {r: 0, g: 0, b: 0, a: 1}
+    - _CloudTopSunColor: {r: 0.29803923, g: 0.22352941, b: 0.07058824, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FogColor: {r: 0.5019308, g: 0.5019308, b: 0.5019308, a: 1}
-    - _FogDayColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+    - _FogColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
+    - _FogDayColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _FogNightColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _MoonColor: {r: 0.67058825, g: 0.67058825, b: 0.67058825, a: 1}
@@ -197,5 +197,5 @@ Material:
     - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaSpinSpeed: {r: 0.1, g: 0, b: 0, a: 0}
     - _SecundaTidalAngle: {r: 20, g: 0, b: 0, a: 0}
-    - _SkyTint: {r: 0.38039216, g: 0.4627451, b: 0.8627451, a: 1}
+    - _SkyTint: {r: 0.40392157, g: 0.40392157, b: 0.46666667, a: 1}
     - _fogColor: {r: 0.5058824, g: 0.5058824, b: 0.5058824, a: 1}
