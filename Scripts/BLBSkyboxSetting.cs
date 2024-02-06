@@ -22,6 +22,7 @@ public struct BLBSkyboxSetting
     public string FogDayColor;
     public string FogNightColor;
     public float FogDistance;
+    public string MoonNightColor;
     public float CloudFadeHeight;
 
     public string TopCloudsFlat;

@@ -14,7 +14,7 @@
     "NightEndHeight": -0.20000000298023225,
     "SkyFadeStart": 1.0,
     "SkyEndStart": -1.0,
-    "stepSize": 0.009999999776482582,
+    "stepSize": 0.005,
     "FogDayColor": "4C4C4CFF",
     "FogNightColor": "000000FF",
     "FogDistance": 384.0,
