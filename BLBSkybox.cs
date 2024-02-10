@@ -105,7 +105,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.playerAmbientLight = GameObject.FindGameObjectWithTag("Player").GetComponent("PlayerAmbientLight") as PlayerAmbientLight;
         Instance.wm = GameManager.Instance.WeatherManager;
 
-        //Instance.SetLightCurve(); //Override default light curve for prolonged sunset / sunrise
+        Instance.SetLightCurve(); //Override default light curve for prolonged sunset / sunrise
 
         Instance.skyboxMat.SetFloat("_AtmosphereNormalThickness", Instance.atmosphere);
         Instance.skyboxMat.SetFloat("_AtmosphereDawnDuskThickness", Instance.atmosphere);
@@ -1208,20 +1208,20 @@ public void Update()
         return skyboxSetting;
     }
 
-    //private void SetLightCurve() {
-    //    string data = presetMod.GetAsset<TextAsset>("LightCurve.json", false).text;
-    //    BLBLightCurve lightCurve = JsonUtility.FromJson<BLBLightCurve>(data);
-    //    Keyframe[] frames = new Keyframe[lightCurve.times.Length];
-    //    for(int i = 0; i < frames.Length; i++) {
-    //        frames[i] = new Keyframe(lightCurve.times[i], lightCurve.values[i]);
-    //    }
-    //    AnimationCurve curve = new AnimationCurve(frames);
-    //    curve.postWrapMode = WrapMode.ClampForever;
-    //    curve.preWrapMode = WrapMode.ClampForever;
-    //    SunlightManager sunlightManager = GameManager.Instance.SunlightManager;
-    //    sunlightManager.LightCurve = curve;
-    //    Debug.Log("BLB: Changed Light Curve");
-    //}
+    private void SetLightCurve() {
+        string data = presetMod.GetAsset<TextAsset>("LightCurve.json", false).text;
+        BLBLightCurve lightCurve = JsonUtility.FromJson<BLBLightCurve>(data);
+        Keyframe[] frames = new Keyframe[lightCurve.times.Length];
+        for(int i = 0; i < frames.Length; i++) {
+            frames[i] = new Keyframe(lightCurve.times[i], lightCurve.values[i]);
+        }
+        AnimationCurve curve = new AnimationCurve(frames);
+        curve.postWrapMode = WrapMode.ClampForever;
+        curve.preWrapMode = WrapMode.ClampForever;
+        SunlightManager sunlightManager = GameManager.Instance.SunlightManager;
+        sunlightManager.LightCurve = curve;
+        Debug.Log("BLB: Changed Light Curve");
+    }
 
     #if UNITY_EDITOR
     [MenuItem("BLB/Import skybox settings")]
