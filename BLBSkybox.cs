@@ -1042,7 +1042,13 @@ public void Update()
         skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.BottomClouds.ColorBoost);
         skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
+        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed);
+        skyboxMat.SetFloat("_CloudDirection", skyboxSetting.BottomClouds.Direction);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
+        skyboxMat.SetFloat("_CloudBlendSpeed", skyboxSetting.BottomClouds.BlendSpeed);
+        skyboxMat.SetFloat("_CloudBlendScale", skyboxSetting.BottomClouds.BlendScale);
+        skyboxMat.SetFloat("_CloudBlendLB", skyboxSetting.BottomClouds.BlendLB);
+        skyboxMat.SetFloat("_CloudBlendUB", skyboxSetting.BottomClouds.BlendUB);
         skyboxMat.SetFloat("_CloudSunScale", skyboxSetting.TopClouds.SunColorScale);
         skyboxMat.SetFloat("_CloudSunLerpScale", skyboxSetting.BottomClouds.SunColorLerpScale);
         if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.BottomClouds.SunColor, out tmpColor)) {
@@ -1310,7 +1316,13 @@ public void Update()
         BottomClouds.ColorBoost = skyboxMat.GetFloat("_CloudColorBoost");
         BottomClouds.NormalEffect = skyboxMat.GetFloat("_CloudNormalEffect");
         BottomClouds.Opacity = skyboxMat.GetFloat("_CloudOpacity");
+        BottomClouds.Speed = skyboxMat.GetFloat("_CloudSpeed");
+        BottomClouds.Direction = skyboxMat.GetFloat("_CloudDirection");
         BottomClouds.Bending = skyboxMat.GetFloat("_CloudBending");
+        BottomClouds.BlendSpeed = skyboxMat.GetFloat("_CloudBlendSpeed");
+        BottomClouds.BlendScale = skyboxMat.GetFloat("_CloudBlendScale");
+        BottomClouds.BlendLB = skyboxMat.GetFloat("_CloudBlendLB");
+        BottomClouds.BlendUB = skyboxMat.GetFloat("_CloudBlendUB");
         BottomClouds.SunColorScale = skyboxMat.GetFloat("_CloudSunScale");
         BottomClouds.SunColorLerpScale = skyboxMat.GetFloat("_CloudSunLerpScale");
         BottomClouds.SunColor = ColorUtility.ToHtmlStringRGBA(skyboxMat.GetColor("_CloudSunColor"));
