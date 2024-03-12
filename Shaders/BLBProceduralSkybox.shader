@@ -392,7 +392,7 @@
                 // 2. in case of gamma and SKYBOX_COLOR_IN_TARGET_COLOR_SPACE: do sqrt right away instead of doing that in fshader
 
                 OUT.groundColor = _FogColor; //_Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
-                OUT.fogColor = _FogColor;
+                OUT.fogColor = (cIn * .1) + _FogColor;
                 //OUT.groundColor = _GroundColor;
                 OUT.skyColor    = _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
@@ -589,10 +589,16 @@ stars = saturate(stars);
 //col.rgb = lerp(col.rgb, stars, night * horizonValue);
 
 // Calculate the final color of the stars
-float3 finalStarsColor = lerp(col.rgb, stars, night * horizonValue);
+float3 finalStarsColor;
 
-// Ensure that the stars' brightness does not go below _MoonNightColor
-finalStarsColor.rgb = max(finalStarsColor.rgb, _MoonNightColor.rgb);
+if (normWorldPos.y > 0.0) {
+    // Only enforce minimum brightness above the horizon
+    finalStarsColor = lerp(col.rgb, stars, night * horizonValue);
+    finalStarsColor.rgb = max(finalStarsColor.rgb, _MoonNightColor.rgb);
+} else {
+    // Below the horizon, just use the lerp result without enforcing minimum brightness
+    finalStarsColor = lerp(col.rgb, stars, night * horizonValue);
+}
 
 // Assign the final color back to col.rgb
 col.rgb = finalStarsColor;
@@ -715,7 +721,12 @@ col.rgb = finalStarsColor;
                 //by dividing the xz by the y we can project the coordinate onto a flat plane, the bending value transitions it from a plane to a sphere
                 float2 cloudTopUV = normWorldPos.xz / (normWorldPos.y + _CloudTopBending);
                 //float cloudFadeHeight = saturate(normWorldPos.y - _CloudFadeHeight);
-                float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(_CloudFadeHeight, 0), float2(0, 1)));
+
+                // Extend the fading effect below the horizon
+                float newFadeStart = _CloudFadeHeight; // Start fading at this height above the horizon
+                float newFadeEnd = -0.03; // Continue fading to this height below the horizon
+                float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(newFadeStart, newFadeEnd), float2(0, 1)));
+
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
                 //float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
                 //float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
