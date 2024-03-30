@@ -322,10 +322,10 @@ public void Update()
         //float newLerpDuration = (SkyboxSettings[currentWeather][0].AtmosphereLerpDuration / 12f) * currentTimeScale;
         //atmosphereLerpDuration = calculateScaledLerpDuration(newLerpDuration);
         //Updates speeds when TimeScale has been changed by multiplying the realtime speed with the currentTimeScale
-        skyboxMat.SetFloat("_CloudSpeed", cloudSpeed * currentTimeScale);
-        skyboxMat.SetFloat("_MoonOrbitSpeed", moonOrbitSpeed * currentTimeScale);
-        skyboxMat.SetFloat("_SecundaOrbitSpeed", moonOrbitSpeed * currentTimeScale);
-        skyboxMat.SetFloat("_TwinkleSpeed", starsTwinkleSpeed * currentTimeScale);
+        skyboxMat.SetFloat("_CloudSpeed", SkyboxSettings[currentWeather][0].BottomClouds.Speed * currentTimeScale);
+        skyboxMat.SetFloat("_MoonOrbitSpeed", SkyboxSettings[currentWeather][0].Masser.OrbitSpeed * currentTimeScale);
+        skyboxMat.SetFloat("_SecundaOrbitSpeed", SkyboxSettings[currentWeather][0].Secunda.OrbitSpeed * currentTimeScale);
+        skyboxMat.SetFloat("_TwinkleSpeed", SkyboxSettings[currentWeather][0].Stars.TwinkleSpeed * currentTimeScale);
     }
     #endregion
 
@@ -503,7 +503,8 @@ public void Update()
             pendingWindDirection = getWindDirection(); //Get new random wind direction
             Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
-
+            
+            updateSpeeds();
             pendingWeather = true;
         }
     }
@@ -1042,7 +1043,7 @@ public void Update()
         skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.BottomClouds.ColorBoost);
         skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
-        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed);
+        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed * Instance.currentTimeScale);
         skyboxMat.SetFloat("_CloudDirection", skyboxSetting.BottomClouds.Direction);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
         skyboxMat.SetFloat("_CloudBlendSpeed", skyboxSetting.BottomClouds.BlendSpeed);
@@ -1092,7 +1093,7 @@ public void Update()
 
         //skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
         skyboxMat.SetFloat("_TwinkleBoost", skyboxSetting.Stars.TwinkleBoost);
-        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed);
+        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed * Instance.currentTimeScale);
 
         if(updateMoons) {
             if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
@@ -1102,7 +1103,7 @@ public void Update()
             skyboxMat.SetFloat("_MoonMaxSize", skyboxSetting.Masser.MaxSize);
             skyboxMat.SetVector("_MoonOrbitAngle", skyboxSetting.Masser.OrbitAngle);
             skyboxMat.SetFloat("_MoonOrbitOffset", skyboxSetting.Masser.OrbitOffset);
-            skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
+            skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed * Instance.currentTimeScale);
             skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
             skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
             skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
@@ -1119,7 +1120,7 @@ public void Update()
             skyboxMat.SetFloat("_SecundaMaxSize", skyboxSetting.Secunda.MaxSize);
             skyboxMat.SetVector("_SecundaOrbitAngle", skyboxSetting.Secunda.OrbitAngle);
             skyboxMat.SetFloat("_SecundaOrbitOffset", skyboxSetting.Secunda.OrbitOffset);
-            skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
+            skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed * Instance.currentTimeScale);
             skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
             skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
             skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);

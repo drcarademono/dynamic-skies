@@ -724,7 +724,7 @@ col.rgb = finalStarsColor;
 
                 // Extend the fading effect below the horizon
                 float newFadeStart = _CloudFadeHeight; // Start fading at this height above the horizon
-                float newFadeEnd = -0.03; // Continue fading to this height below the horizon
+                float newFadeEnd = -0.01; // Continue fading to this height below the horizon
                 float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(newFadeStart, newFadeEnd), float2(0, 1)));
 
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
