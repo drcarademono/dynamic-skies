@@ -116,7 +116,7 @@ Material:
     - _CloudNormalEffect: 0.665
     - _CloudNormalSpeed: 0
     - _CloudOpacity: 0.557
-    - _CloudSpeed: 1.25
+    - _CloudSpeed: 0.00125
     - _CloudSunLerpScale: 1
     - _CloudSunScale: 1
     - _CloudTopAlphaCutoff: 0.02
@@ -140,8 +140,8 @@ Material:
     - _Mode: 0
     - _MoonMaxSize: 0.11
     - _MoonMinSize: 0.11
-    - _MoonOrbitOffset: -11.28006
-    - _MoonOrbitSpeed: 0.02
+    - _MoonOrbitOffset: -4.559069
+    - _MoonOrbitSpeed: 0.00073219946
     - _MoonPhaseOption: 1
     - _MoonSemiMajAxis: 1
     - _MoonSemiMinAxis: 1
@@ -153,8 +153,8 @@ Material:
     - _ReduceColor: 1
     - _SecundaMaxSize: 0.07
     - _SecundaMinSize: 0.07
-    - _SecundaOrbitOffset: -21.238045
-    - _SecundaOrbitSpeed: 0.02
+    - _SecundaOrbitOffset: -17.800549
+    - _SecundaOrbitSpeed: 0.00073219946
     - _SecundaPhaseOption: 1
     - _SecundaSemiMajAxis: 0.6
     - _SecundaSemiMinAxis: 0.9
@@ -170,8 +170,9 @@ Material:
     - _SunSize: 0.1
     - _SunSizeConvergence: 10
     - _TwinkleBoost: 1
-    - _TwinkleSpeed: 50
+    - _TwinkleSpeed: 0.05
     - _UVSec: 0
+    - _WorldTime: 2459223
     - _ZWrite: 1
     - _stepSize: 0.015
     m_Colors:
@@ -183,18 +184,18 @@ Material:
     - _CloudTopSunColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FogColor: {r: 0.46440062, g: 0.51123095, b: 0.71416235, a: 1}
+    - _FogColor: {r: 0.4666643, g: 0.5137229, b: 0.71764344, a: 1}
     - _FogDayColor: {r: 0.46666667, g: 0.5137255, b: 0.7176471, a: 1}
     - _FogNightColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
     - _MoonColor: {r: 0.67058825, g: 0.67058825, b: 0.67058825, a: 1}
     - _MoonNightColor: {r: 0, g: 0, b: 0.15294118, a: 1}
-    - _MoonOrbitAngle: {r: 0, g: 0, b: 422.82822, a: 0}
+    - _MoonOrbitAngle: {r: 248.60233, g: -11.397673, b: 8.161397, a: 0}
     - _MoonPhase: {r: 0, g: 0, b: 0, a: 0}
     - _MoonSpinSpeed: {r: 0.1, g: 0, b: 0, a: 0}
     - _MoonTidalAngle: {r: 0, g: 300, b: 0, a: 0}
     - _SecundaColor: {r: 0.67058825, g: 0.67058825, b: 0.67058825, a: 1}
-    - _SecundaOrbitAngle: {r: 0, g: 0, b: 437.82822, a: 0}
+    - _SecundaOrbitAngle: {r: 223.29918, g: -26.700825, b: 2.1994507, a: 0}
     - _SecundaPhase: {r: 0, g: 0, b: 0, a: 0}
     - _SecundaSpinSpeed: {r: 0.1, g: 0, b: 0, a: 0}
     - _SecundaTidalAngle: {r: 30, g: 160, b: -30, a: 0}

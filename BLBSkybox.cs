@@ -131,7 +131,6 @@ public class BLBSkybox : MonoBehaviour
         Instance.InitSnow();
 
         Instance.setLunarPhases();
-        Instance.updateSpeeds();
 
         Instance.currentWeather = WeatherType.None;
         Instance.forceWeatherUpdate = true;
@@ -179,10 +178,6 @@ public void Update()
         }
             //When the timescale is altered, adjust the cloud speeds accordingly or they would move in slow-mo
             //Would really like an OnTimeScaleChange event for this but it works
-            if(worldTime.TimeScale != currentTimeScale) {
-                currentTimeScale = worldTime.TimeScale;
-                updateSpeeds();
-            }
             //if(playerInside) {
             //    deltaTime = 0.0f;
             //    return;
@@ -333,16 +328,6 @@ public void Update()
 
         // Pass this value to the shader
         skyboxMat.SetFloat("_WorldTime", secondsThisMonth);
-    }
-
-    private void updateSpeeds() {
-        //float newLerpDuration = (SkyboxSettings[currentWeather][0].AtmosphereLerpDuration / 12f) * currentTimeScale;
-        //atmosphereLerpDuration = calculateScaledLerpDuration(newLerpDuration);
-        //Updates speeds when TimeScale has been changed by multiplying the realtime speed with the currentTimeScale
-        skyboxMat.SetFloat("_CloudSpeed", SkyboxSettings[currentWeather][0].BottomClouds.Speed);
-        skyboxMat.SetFloat("_MoonOrbitSpeed", SkyboxSettings[currentWeather][0].Masser.OrbitSpeed);
-        skyboxMat.SetFloat("_SecundaOrbitSpeed", SkyboxSettings[currentWeather][0].Secunda.OrbitSpeed);
-        skyboxMat.SetFloat("_TwinkleSpeed", SkyboxSettings[currentWeather][0].Stars.TwinkleSpeed);
     }
     #endregion
 
@@ -521,7 +506,6 @@ public void Update()
             //Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
             
-            updateSpeeds();
             pendingWeather = true;
         }
     }
@@ -709,7 +693,6 @@ public void Update()
     #endregion
 
     #region Moons
-    //private float moonOrbitSpeed = 0.00024f / 12; //Default moon orbit speed in realtime
     private void ChangeLunarPhases() {
         //currentLunarPhase = worldTime.Now.MassarLunarPhase;
         //Vector4 lunarPhase = new Vector4(LunarPhaseStates[currentLunarPhase].X, LunarPhaseStates[currentLunarPhase].Y, 0, 0);
@@ -747,7 +730,7 @@ public void Update()
         int dayOfYear = DaggerfallUnity.Instance.WorldTime.Now.DayOfYear;
         float yearProgress = dayOfYear / 365f;
 
-        float orbitSpeed = 0.00075f + (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
+        float orbitSpeed = 0.00008333f; //+ (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
 
         // Introduce X-axis angle variation
         float masserXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
@@ -1111,10 +1094,10 @@ public void Update()
         skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.BottomClouds.ColorBoost);
         skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
-        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed); // 0.1 multiplier added because game runs at timescale 12
+        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed * 0.0833f); // Because game runs at timescale 12
         skyboxMat.SetFloat("_CloudDirection", skyboxSetting.BottomClouds.Direction);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
-        skyboxMat.SetFloat("_CloudBlendSpeed", skyboxSetting.BottomClouds.BlendSpeed);
+        skyboxMat.SetFloat("_CloudBlendSpeed", skyboxSetting.BottomClouds.BlendSpeed * 0.0833f); // Because game runs at timescale 12
         skyboxMat.SetFloat("_CloudBlendScale", skyboxSetting.BottomClouds.BlendScale);
         skyboxMat.SetFloat("_CloudBlendLB", skyboxSetting.BottomClouds.BlendLB);
         skyboxMat.SetFloat("_CloudBlendUB", skyboxSetting.BottomClouds.BlendUB);
@@ -1161,7 +1144,7 @@ public void Update()
 
         //skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
         skyboxMat.SetFloat("_TwinkleBoost", skyboxSetting.Stars.TwinkleBoost);
-        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed);
+        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed * 0.0833f); // Because game runs at timescale 12
 
         if(updateMoons) {
             if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
@@ -1178,7 +1161,7 @@ public void Update()
             skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
             skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
             skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
-            skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed);
+            skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed * 0.0833f); // Because game runs at timescale 12
 
             if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Secunda.MoonColor, out tmpColor)) {
                 skyboxMat.SetColor("_SecundaColor", tmpColor);
