@@ -111,6 +111,8 @@
         [KeywordEnum(TIDAL_LOCK, LOCAL_ROTATE, WORLD_ROTATE)] _SecundaSpinOption ("Secunda Spin Option", float) = 0
         _SecundaTidalAngle("Secunda Tidal Lock Angle (XYZ)", vector) = (0, 0, 0, 0)
         _SecundaSpinSpeed("Secunda Spin Speed (XYZ)", vector) = (0, 0, 0, 0)
+
+        _WorldTime ("Time of Year", Float) = 0.0 // Default value, gets updated by script
     }
     SubShader
     {
@@ -155,7 +157,7 @@
             uniform float _FogDistance;
             uniform float4 _MoonNightColor;
 
-            
+            uniform float _WorldTime;
             float night;
             float night_clamp;
             float day;
@@ -455,8 +457,8 @@
 
                 //Get the moon positions
                 //Moon
-                float orbitAngle = _Time.y * _MoonOrbitSpeed;
-                float SecundaOrbitAngle = _Time.y * _SecundaOrbitSpeed;
+                float orbitAngle = _WorldTime * _MoonOrbitSpeed;
+                float SecundaOrbitAngle = _WorldTime * _SecundaOrbitSpeed;
             
                 //we also need to grab the half radius of the ellipse at the major and minor Axis
                 //these are used in the ellipse equation.
@@ -573,7 +575,7 @@ float starsAlpha = tex2D(_StarTwinkleTex, (starsUV * _StarTwinkleTex_ST.xy) + _S
 // stars = pow(stars, _StarBrightness);
 
 // Sample a basic noise texture for twinkle effect
-float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _Time.y * _TwinkleSpeed).r;
+float twinkle = tex2D(_TwinkleTex, (starsUV * _TwinkleTex_ST.xy) + _TwinkleTex_ST.zw + float2(1, 0) * _WorldTime * _TwinkleSpeed).r;
 
 // Multiply the twinkle values with the stars' brightness
 twinkle *= starsAlpha;
@@ -626,12 +628,12 @@ col.rgb = finalStarsColor;
     #ifdef _MOONSPINOPTION_LOCAL_ROTATE
                 //we use the local definiton of the normal
                 moonFragNormal = phaseNormal;
-                float3 spinAngle = _Time.y * _MoonSpinSpeed.xyz;
+                float3 spinAngle = _WorldTime * _MoonSpinSpeed.xyz;
                 moonFragNormal = RotateWorldPosition(moonFragNormal, float3(radians(spinAngle.x), radians(spinAngle.y), radians(spinAngle.z)));
                 moonFragNormal = mul(moonFragNormal, worldToObject);
     //or in world coords
     #else
-                float3 spinAngle = _Time.y * _MoonSpinSpeed.xyz;
+                float3 spinAngle = _WorldTime * _MoonSpinSpeed.xyz;
                 moonFragNormal = RotateWorldPosition(moonFragNormal, float3(radians(spinAngle.x), radians(spinAngle.y), radians(spinAngle.z)));
     #endif
 #endif
@@ -648,12 +650,12 @@ col.rgb = finalStarsColor;
     #ifdef _SECUNDASPINOPTION_LOCAL_ROTATE
                 //we use the local definiton of the normal
                 SecundaMoonFragNormal = SecundaPhaseNormal;
-                float3 SecundaSpinAngle = _Time.y * _SecundaSpinSpeed.xyz;
+                float3 SecundaSpinAngle = _WorldTime * _SecundaSpinSpeed.xyz;
                 SecundaMoonFragNormal = RotateWorldPosition(SecundaMoonFragNormal, float3(radians(SecundaSpinAngle.x), radians(SecundaSpinAngle.y), radians(SecundaSpinAngle.z)));
                 SecundaMoonFragNormal = mul(SecundaMoonFragNormal, SecundaWorldToObject);
     //or in world coords
     #else
-                float3 SecundaSpinAngle = _Time.y * _SecundaSpinSpeed.xyz;
+                float3 SecundaSpinAngle = _WorldTime * _SecundaSpinSpeed.xyz;
                 SecundaMoonFragNormal = RotateWorldPosition(SecundaMoonFragNormal, float3(radians(SecundaSpinAngle.x), radians(SecundaSpinAngle.y), radians(SecundaSpinAngle.z)));
     #endif
 #endif
@@ -728,10 +730,10 @@ col.rgb = finalStarsColor;
                 float cloudFadeHeight = 1 - saturate(Remap(dotWorldPos, float2(newFadeStart, newFadeEnd), float2(0, 1)));
 
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
-                //float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
-                //float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
-                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * cloudFadeHeight;
-                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
+                //float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _WorldTime * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * horizonValue;
+                //float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _WorldTime * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * horizonValue;
+                float cloudTop1 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _WorldTime * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir).x * cloudFadeHeight;
+                float cloudTop2 = tex2D(_CloudTopDiffuse, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _WorldTime * (_CloudBlendSpeed * cloudSpeedMultiplier) * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
 
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
                 cloudTop2 = Remap(cloudTop2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
@@ -741,8 +743,8 @@ col.rgb = finalStarsColor;
                 cloudsTop = smoothstep(_CloudTopAlphaCutoff, _CloudTopAlphaMax, cloudsTop);
 
                 //do the same thing except we slow the speed because it can look wierd if moving to fast
-                float3 cloudTopNormal1 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _Time.y * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir));
-                float3 cloudTopNormal2 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
+                float3 cloudTopNormal1 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy + _CloudTopDiffuse_ST.zw + _WorldTime * (_CloudSpeed * cloudSpeedMultiplier) * cloudDir));
+                float3 cloudTopNormal2 = UnpackNormal(tex2D(_CloudTopNormal, cloudTopUV * _CloudTopDiffuse_ST.xy * _CloudBlendScale + _CloudTopDiffuse_ST.zw - _WorldTime * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
 
                 //blend normals
                 float3 cloudTopNormal = BlendNormals(cloudTopNormal1, cloudTopNormal2);
@@ -794,10 +796,10 @@ col.rgb = finalStarsColor;
                 float2 cloudUV = normWorldPos.xz / (normWorldPos.y + _CloudBending);
 
                 //sample the cloud texture twice at different speeds, offsets and scale, the float2 here just makes so they dont ever line up exactly
-                //float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir).x * horizonValue;
-                //float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
-                float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir).x * cloudFadeHeight;
-                float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
+                //float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _WorldTime * _CloudSpeed * cloudDir).x * horizonValue;
+                //float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _WorldTime * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * horizonValue;
+                float cloud1 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _WorldTime * _CloudSpeed * cloudDir).x * cloudFadeHeight;
+                float cloud2 = tex2D(_CloudDiffuse, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _WorldTime * _CloudBlendSpeed * cloudDir + float2(.373, .47)).x * cloudFadeHeight;
         
                 //we remap the clouds to be between our two values. This allows us to have control over the blending
                 cloud2 = Remap(cloud2, float2(0, 1), float2(_CloudBlendLB, _CloudBlendUB));
@@ -809,8 +811,8 @@ col.rgb = finalStarsColor;
                 clouds = smoothstep(_CloudAlphaCutoff, _CloudAlphaMax, clouds);
 
                 //do the same thing except we slow the speed because it can look wierd if moving to fast
-                float3 cloudNormal1 = UnpackNormal(tex2D(_CloudNormal, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _Time.y * _CloudSpeed * cloudDir));
-                float3 cloudNormal2 = UnpackNormal(tex2D(_CloudNormal, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _Time.y * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
+                float3 cloudNormal1 = UnpackNormal(tex2D(_CloudNormal, cloudUV * _CloudDiffuse_ST.xy + _CloudDiffuse_ST.zw + _WorldTime * _CloudSpeed * cloudDir));
+                float3 cloudNormal2 = UnpackNormal(tex2D(_CloudNormal, cloudUV * _CloudDiffuse_ST.xy * _CloudBlendScale + _CloudDiffuse_ST.zw - _WorldTime * _CloudBlendSpeed * _CloudNormalSpeed * cloudDir + float2(.373, .47)));
 
                 //blend normals
                 float3 cloudNormal = BlendNormals(cloudNormal1, cloudNormal2);

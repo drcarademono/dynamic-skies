@@ -253,6 +253,7 @@ public void Update()
                 dayTime = false;
                 OnWeatherChange(currentWeather);
             }
+            UpdateWorldTime();
             ApplyPendingWeatherSettings();
             ApplyOrbitCalculations();
         }
@@ -319,14 +320,29 @@ public void Update()
         }
     }
 
+    void UpdateWorldTime() {
+        // Access the current in-game time from WorldTime
+        DaggerfallDateTime now = DaggerfallUnity.Instance.WorldTime.Now;
+
+        // Calculate days passed in the current month
+        int daysPassedThisMonth = now.Day - 1; // Day starts at 1 for the first day of the month
+
+        // Calculate total seconds passed this month
+        float secondsThisMonth = daysPassedThisMonth * 24 * 3600; // Convert days to seconds
+        secondsThisMonth += now.Hour * 3600 + now.Minute * 60 + now.Second; // Add today's seconds
+
+        // Pass this value to the shader
+        skyboxMat.SetFloat("_WorldTime", secondsThisMonth);
+    }
+
     private void updateSpeeds() {
         //float newLerpDuration = (SkyboxSettings[currentWeather][0].AtmosphereLerpDuration / 12f) * currentTimeScale;
         //atmosphereLerpDuration = calculateScaledLerpDuration(newLerpDuration);
         //Updates speeds when TimeScale has been changed by multiplying the realtime speed with the currentTimeScale
-        skyboxMat.SetFloat("_CloudSpeed", SkyboxSettings[currentWeather][0].BottomClouds.Speed * currentTimeScale * 0.1f);
-        skyboxMat.SetFloat("_MoonOrbitSpeed", SkyboxSettings[currentWeather][0].Masser.OrbitSpeed * currentTimeScale * 0.1f);
-        skyboxMat.SetFloat("_SecundaOrbitSpeed", SkyboxSettings[currentWeather][0].Secunda.OrbitSpeed * currentTimeScale * 0.1f);
-        skyboxMat.SetFloat("_TwinkleSpeed", SkyboxSettings[currentWeather][0].Stars.TwinkleSpeed * currentTimeScale * 0.1f);
+        skyboxMat.SetFloat("_CloudSpeed", SkyboxSettings[currentWeather][0].BottomClouds.Speed);
+        skyboxMat.SetFloat("_MoonOrbitSpeed", SkyboxSettings[currentWeather][0].Masser.OrbitSpeed);
+        skyboxMat.SetFloat("_SecundaOrbitSpeed", SkyboxSettings[currentWeather][0].Secunda.OrbitSpeed);
+        skyboxMat.SetFloat("_TwinkleSpeed", SkyboxSettings[currentWeather][0].Stars.TwinkleSpeed);
     }
     #endregion
 
@@ -734,16 +750,16 @@ public void Update()
         float orbitSpeed = 0.00075f + (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
 
         // Introduce X-axis angle variation
-        float masserXAngle = 270f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Varies slightly around 270 degrees
-        float secundaXAngle = 270f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
+        float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Y-axis angle variation
-        float masserYAngle = 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Varies slightly around 270 degrees
+        float masserYAngle = 25f * Mathf.Sin(2 * Mathf.PI * yearProgress);
         float secundaYAngle = 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Z-axis angle variation
-        float masserZAngle = 25f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaZAngle = 30f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserZAngle = 15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
+        float secundaZAngle = 20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
@@ -763,12 +779,12 @@ public void Update()
         if (skyboxMat != null) {
             // Masser orbit parameters
             skyboxMat.SetVector("_MoonOrbitAngle", new Vector3(masserOrbitAngleX, masserOrbitAngleY, masserOrbitAngleZ));
-            skyboxMat.SetFloat("_MoonOrbitSpeed", masserOrbitSpeed * Instance.currentTimeScale * 0.1f);
+            skyboxMat.SetFloat("_MoonOrbitSpeed", masserOrbitSpeed);
             skyboxMat.SetFloat("_MoonOrbitOffset", masserOrbitOffset); 
 
             // Secunda orbit parameters
             skyboxMat.SetVector("_SecundaOrbitAngle", new Vector3(secundaOrbitAngleX, secundaOrbitAngleY, secundaOrbitAngleZ));
-            skyboxMat.SetFloat("_SecundaOrbitSpeed", secundaOrbitSpeed * Instance.currentTimeScale * 0.1f);
+            skyboxMat.SetFloat("_SecundaOrbitSpeed", secundaOrbitSpeed);
             skyboxMat.SetFloat("_SecundaOrbitOffset", secundaOrbitOffset);
         } else {
             Debug.LogError("[BLBSkybox] skyboxMat is null. Cannot update shader parameters for moons.");
@@ -1095,7 +1111,7 @@ public void Update()
         skyboxMat.SetFloat("_CloudColorBoost", skyboxSetting.BottomClouds.ColorBoost);
         skyboxMat.SetFloat("_CloudNormalEffect", skyboxSetting.BottomClouds.NormalEffect);
         skyboxMat.SetFloat("_CloudOpacity", skyboxSetting.BottomClouds.Opacity);
-        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed * Instance.currentTimeScale * 0.1f); // 0.1 multiplier added because game runs at timescale 12
+        skyboxMat.SetFloat("_CloudSpeed", skyboxSetting.BottomClouds.Speed); // 0.1 multiplier added because game runs at timescale 12
         skyboxMat.SetFloat("_CloudDirection", skyboxSetting.BottomClouds.Direction);
         skyboxMat.SetFloat("_CloudBending", skyboxSetting.BottomClouds.Bending);
         skyboxMat.SetFloat("_CloudBlendSpeed", skyboxSetting.BottomClouds.BlendSpeed);
@@ -1145,7 +1161,7 @@ public void Update()
 
         //skyboxMat.SetFloat("_StarBrightness", skyboxSetting.Stars.StarBrightness);
         skyboxMat.SetFloat("_TwinkleBoost", skyboxSetting.Stars.TwinkleBoost);
-        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed * Instance.currentTimeScale * 0.1f);
+        skyboxMat.SetFloat("_TwinkleSpeed", skyboxSetting.Stars.TwinkleSpeed);
 
         if(updateMoons) {
             if(ColorUtility.TryParseHtmlString("#" + skyboxSetting.Masser.MoonColor, out tmpColor)) {
@@ -1155,7 +1171,7 @@ public void Update()
             skyboxMat.SetFloat("_MoonMaxSize", skyboxSetting.Masser.MaxSize);
             //skyboxMat.SetVector("_MoonOrbitAngle", skyboxSetting.Masser.OrbitAngle);
             //skyboxMat.SetFloat("_MoonOrbitOffset", skyboxSetting.Masser.OrbitOffset);
-            //skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed * Instance.currentTimeScale * 0.1f);
+            //skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
             skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
             skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
             skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
@@ -1172,7 +1188,7 @@ public void Update()
             skyboxMat.SetFloat("_SecundaMaxSize", skyboxSetting.Secunda.MaxSize);
             //skyboxMat.SetVector("_SecundaOrbitAngle", skyboxSetting.Secunda.OrbitAngle);
             //skyboxMat.SetFloat("_SecundaOrbitOffset", skyboxSetting.Secunda.OrbitOffset);
-            //skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed * Instance.currentTimeScale * 0.1f);
+            //skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
             skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
             skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
             skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
