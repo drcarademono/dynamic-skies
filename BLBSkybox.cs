@@ -571,6 +571,9 @@ public void Update()
     private bool IsTransparentWindowsEnabled() {
         string modGUID = "0dc0cb46-44bc-4efa-8f80-0c73fda8ae8d";
         Mod transparentWindows = ModManager.Instance.GetModFromGUID(modGUID);
+        if (transparentWindows == null) {        
+            transparentWindows = ModManager.Instance.GetModFromGUID("3ee77927-fdc5-4dbb-9723-bc0e3300cf9d");
+        }
         TransparentWindowsEnabled = (transparentWindows != null);
         if(TransparentWindowsEnabled) {
             Debug.Log("Dynamic Skies: Detected Transparent Windows mod. Enabling compatibility");
