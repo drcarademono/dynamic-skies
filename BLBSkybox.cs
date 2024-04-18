@@ -275,6 +275,22 @@ public void Update()
         }
     }
 
+    private void SaveLoadManager_OnLoad(SaveData_v1 saveData) {
+        if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
+            if(stackedCam == null) {
+                playerCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            } else {
+                stackedCam.clearFlags = UnityEngine.CameraClearFlags.Skybox;
+            }
+        }
+        forceWeatherUpdate = true;
+        pendingWeather = false;
+        WeatherType loadedWeather = saveData.playerData.playerPosition.weather;
+        Instance.OnWeatherChange(loadedWeather);
+        forceWeatherUpdate = false;
+        pendingWeather = true;
+    }
+
     //Force skybox flag to prevent Distant Terrain from overriding it again in it's Update function
     void LateUpdate() {
         if(!GameManager.Instance.PlayerEnterExit.IsPlayerInside) {
@@ -982,6 +998,7 @@ public void Update()
     private void SubscribeToEvents() {
         //Subscribe to DFU events
         WeatherManager.OnWeatherChange += OnWeatherChange; //Register event for weather changes
+        SaveLoadManager.OnLoad += SaveLoadManager_OnLoad;
         PlayerEnterExit.OnTransitionInterior += InteriorTransitionEvent; //interior transition
         PlayerEnterExit.OnTransitionDungeonInterior += InteriorTransitionEvent; //dungeon interior transition
         PlayerEnterExit.OnTransitionExterior += ExteriorTransitionEvent; //exterior transition
