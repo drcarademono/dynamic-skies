@@ -332,20 +332,16 @@ public void Update()
         }
     }
 
-    void UpdateWorldTime() {
-        // Access the current in-game time from WorldTime
-        DaggerfallDateTime now = DaggerfallUnity.Instance.WorldTime.Now;
+void UpdateWorldTime() {
+    // Access the current in-game time from WorldTime
+    DaggerfallDateTime now = DaggerfallUnity.Instance.WorldTime.Now;
 
-        // Calculate days passed in the current month
-        int daysPassedThisMonth = now.Day - 1; // Day starts at 1 for the first day of the month
+    // Calculate total seconds passed today
+    float secondsToday = now.Hour * 3600 + now.Minute * 60 + now.Second; // Convert hours, minutes, and seconds to total seconds
 
-        // Calculate total seconds passed this month
-        float secondsThisMonth = daysPassedThisMonth * 24 * 3600; // Convert days to seconds
-        secondsThisMonth += now.Hour * 3600 + now.Minute * 60 + now.Second; // Add today's seconds
-
-        // Pass this value to the shader
-        skyboxMat.SetFloat("_WorldTime", secondsThisMonth);
-    }
+    // Pass this value to the shader
+    skyboxMat.SetFloat("_WorldTime", secondsToday);
+}
     #endregion
 
     #region Day / Night transition
@@ -745,12 +741,13 @@ private void ChangeLunarPhases() {
     currentLunarPhase = worldTime.Now.MassarLunarPhase;
 
 
-    //Debug.Log($"ChangeLunarPhases called. Current phase: {currentLunarPhase}");
+    Debug.Log($"ChangeLunarPhases called. Current phase: {currentLunarPhase}");
 
     if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates lunarCoords)) {
         Vector4 lunarPhaseVector = new Vector4(lunarCoords.X, lunarCoords.Y, 0, 0);
         skyboxMat.SetVector("_MoonPhase", lunarPhaseVector);
         skyboxMat.SetVector("_SecundaPhase", lunarPhaseVector);
+        ApplyOrbitCalculations();
     } else {
         Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
@@ -758,37 +755,50 @@ private void ChangeLunarPhases() {
 #endregion
 
     #region Moon Orbits Seasonal Adjustments
-    void ApplyOrbitCalculations() {
-        int dayOfYear = DaggerfallUnity.Instance.WorldTime.Now.DayOfYear;
-        float yearProgress = dayOfYear / 365f;
+void ApplyOrbitCalculations() {
+    Debug.Log("ApplyOrbitCalculations called.");
 
-        float orbitSpeed = 0.00008333f; //+ (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
+    int dayOfYear = DaggerfallUnity.Instance.WorldTime.Now.DayOfYear;
+    float yearProgress = dayOfYear / 365f;
+
+    float orbitSpeed = 0.0000725f; //+ (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
+
+    currentLunarPhase = worldTime.Now.MassarLunarPhase;
+    Debug.Log($"Current Lunar Phase: {currentLunarPhase}");
+
+    if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates masserCoords)) {
+        Debug.Log("Lunar phase found in dictionary.");
 
         // Introduce X-axis angle variation
-        float masserXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
-        float secundaXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
+        float masserXAngle = 270f;//260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
+        float secundaXAngle = 270f;//260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
         //float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Y-axis angle variation
-        float masserYAngle = 25f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaYAngle = 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserYAngle = masserCoords.X - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
+        float secundaYAngle = masserCoords.X - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        Debug.Log($"Lunar YAngle: {masserYAngle}");
 
         // Introduce Z-axis angle variation
-        float masserZAngle = 15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
-        float secundaZAngle = 20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserZAngle = 0f;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
+        float secundaZAngle = 0f;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
         Vector3 secundaOrbitAngle = new Vector3(secundaXAngle, secundaYAngle, secundaZAngle);
 
         // Define orbit offsets for variety
-        float masserOrbitOffset = 10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaOrbitOffset = 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserOrbitOffset = 0f;//10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
+        float secundaOrbitOffset = 0f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Apply adjusted parameters to the shader
         UpdateShaderOrbitParameters(masserOrbitAngle.x, masserOrbitAngle.y, masserOrbitAngle.z, orbitSpeed, masserOrbitOffset,
                                     secundaOrbitAngle.x, secundaOrbitAngle.y, secundaOrbitAngle.z, orbitSpeed, secundaOrbitOffset);
+    } else {
+        Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
+}
+
 
     void UpdateShaderOrbitParameters(float masserOrbitAngleX, float masserOrbitAngleY, float masserOrbitAngleZ, float masserOrbitSpeed, float masserOrbitOffset,
                                       float secundaOrbitAngleX, float secundaOrbitAngleY, float secundaOrbitAngleZ, float secundaOrbitSpeed, float secundaOrbitOffset) {
