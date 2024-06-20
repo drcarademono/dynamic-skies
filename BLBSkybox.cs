@@ -131,6 +131,7 @@ public class BLBSkybox : MonoBehaviour
         Instance.InitSnow();
 
         Instance.setLunarPhases();
+        Instance.ChangeLunarPhases();
 
         Instance.currentWeather = WeatherType.None;
         Instance.forceWeatherUpdate = true;
@@ -222,20 +223,14 @@ public void Update()
                 OnWeatherChange(currentWeather);
                 OnDuskEnd();
             } else if (isHourDayPart(hour, DayParts.Night) && currentDayPart != DayParts.Night) {
-                //0:00 - 05:00
+                // 0:00 - 05:00
                 currentDayPart = DayParts.Night;
                 dayTime = false;
                 OnWeatherChange(currentWeather);
-                if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
-                    ChangeLunarPhases();
-                }
             } else if (isHourDayPart(hour, DayParts.Morning) && currentDayPart != DayParts.Morning) {
-                //07:00 - 12:00
+                // 07:00 - 12:00
                 currentDayPart = DayParts.Morning;
                 dayTime = true;
-                if(currentLunarPhase != worldTime.Now.MassarLunarPhase) {
-                    ChangeLunarPhases();
-                }
                 OnWeatherChange(currentWeather);
             } else if (isHourDayPart(hour, DayParts.Midday) && currentDayPart != DayParts.Midday) {
                 //12:00 - 17:00
@@ -248,6 +243,12 @@ public void Update()
                 dayTime = false;
                 OnWeatherChange(currentWeather);
             }
+
+            if (currentLunarPhase != worldTime.Now.MassarLunarPhase) {
+                ChangeLunarPhases();
+                //Debug.Log($"Debug: ChangeLunarPhases called.");
+            }
+
             UpdateWorldTime();
             ApplyPendingWeatherSettings();
             ApplyOrbitCalculations();
@@ -711,38 +712,50 @@ public void Update()
     }
     #endregion
 
-    #region Moons
-    private void ChangeLunarPhases() {
-        //currentLunarPhase = worldTime.Now.MassarLunarPhase;
-        //Vector4 lunarPhase = new Vector4(LunarPhaseStates[currentLunarPhase].X, LunarPhaseStates[currentLunarPhase].Y, 0, 0);
-        //skyboxMat.SetVector("_MoonPhase", lunarPhase);
-        //skyboxMat.SetVector("_SecundaPhase", lunarPhase);
-        return;
+#region Moons
+private LunarPhases currentLunarPhase = LunarPhases.None;
+private bool pendingLunarPhase = false;
+private LunarPhaseCoordinates pendingLunarPhaseCoordinates;
+
+struct LunarPhaseCoordinates {
+    public LunarPhaseCoordinates(int x, int y) {
+        X = x;
+        Y = y;
     }
-    private LunarPhases currentLunarPhase = LunarPhases.None; //Reference to the current lunar phase (both moons)
-    private bool pendingLunarPhase = false;
-    private LunarPhaseCoordinates pendingLunarPhaseCoordinates; //New phase coordinates
-    struct LunarPhaseCoordinates {
-        public LunarPhaseCoordinates(int x, int y) {
-            X = x;
-            Y = y;
-        }
-        public int X;
-        public int Y;
+    public int X;
+    public int Y;
+}
+
+private Dictionary<LunarPhases, LunarPhaseCoordinates> LunarPhaseStates;
+
+private void setLunarPhases() {
+    LunarPhaseStates = new Dictionary<LunarPhases, LunarPhaseCoordinates>() {
+        { LunarPhases.New, new LunarPhaseCoordinates(180, 0) },
+        { LunarPhases.OneWax, new LunarPhaseCoordinates(135, 0) },
+        { LunarPhases.HalfWax, new LunarPhaseCoordinates(90, 0) },
+        { LunarPhases.ThreeWax, new LunarPhaseCoordinates(45, 0) },
+        { LunarPhases.Full, new LunarPhaseCoordinates(0, 0) },
+        { LunarPhases.ThreeWane, new LunarPhaseCoordinates(-45, 0) },
+        { LunarPhases.HalfWane, new LunarPhaseCoordinates(-90, 0) },
+        { LunarPhases.OneWane, new LunarPhaseCoordinates(-135, 0) }
+    };
+}
+
+private void ChangeLunarPhases() {
+    currentLunarPhase = worldTime.Now.MassarLunarPhase;
+
+
+    //Debug.Log($"ChangeLunarPhases called. Current phase: {currentLunarPhase}");
+
+    if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates lunarCoords)) {
+        Vector4 lunarPhaseVector = new Vector4(lunarCoords.X, lunarCoords.Y, 0, 0);
+        skyboxMat.SetVector("_MoonPhase", lunarPhaseVector);
+        skyboxMat.SetVector("_SecundaPhase", lunarPhaseVector);
+    } else {
+        Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
-    private Dictionary<DaggerfallWorkshop.LunarPhases, LunarPhaseCoordinates> LunarPhaseStates;
-    private void setLunarPhases() {
-        LunarPhaseStates = new Dictionary<LunarPhases, LunarPhaseCoordinates>();
-        LunarPhaseStates.Add(LunarPhases.New, new LunarPhaseCoordinates(180, 0));
-        LunarPhaseStates.Add(LunarPhases.OneWax, new LunarPhaseCoordinates(135, 0));
-        LunarPhaseStates.Add(LunarPhases.HalfWax, new LunarPhaseCoordinates(90, 0));
-        LunarPhaseStates.Add(LunarPhases.ThreeWax, new LunarPhaseCoordinates(45, 0));
-        LunarPhaseStates.Add(LunarPhases.Full, new LunarPhaseCoordinates(0, 0));
-        LunarPhaseStates.Add(LunarPhases.ThreeWane, new LunarPhaseCoordinates(-45, -45));
-        LunarPhaseStates.Add(LunarPhases.HalfWane, new LunarPhaseCoordinates(-90, -45));
-        LunarPhaseStates.Add(LunarPhases.OneWane, new LunarPhaseCoordinates(-135, -45));
-    }
-    #endregion
+}
+#endregion
 
     #region Moon Orbits Seasonal Adjustments
     void ApplyOrbitCalculations() {
@@ -753,7 +766,8 @@ public void Update()
 
         // Introduce X-axis angle variation
         float masserXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
-        float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float secundaXAngle = 260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
+        //float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Y-axis angle variation
         float masserYAngle = 25f * Mathf.Sin(2 * Mathf.PI * yearProgress);
@@ -1177,8 +1191,8 @@ public void Update()
             //skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
             skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
             skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
-            skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
-            skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
+            //skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
+            //skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
             skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
             skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
             skyboxMat.SetVector("_MoonSpinSpeed", skyboxSetting.Masser.SpinSpeed * 0.0833f); // Because game runs at timescale 12
@@ -1194,8 +1208,8 @@ public void Update()
             //skyboxMat.SetFloat("_SecundaOrbitSpeed", skyboxSetting.Secunda.OrbitSpeed);
             skyboxMat.SetFloat("_SecundaSemiMinAxis", skyboxSetting.Secunda.SemiMinAxis);
             skyboxMat.SetFloat("_SecundaSemiMajAxis", skyboxSetting.Secunda.SemiMajAxis);
-            skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
-            skyboxMat.SetVector("_SecundaPhase", skyboxSetting.Secunda.Phase);
+            //skyboxMat.SetFloat("_SecundaPhaseOption", skyboxSetting.Secunda.AutoPhase);
+            //skyboxMat.SetVector("_SecundaPhase", skyboxSetting.Secunda.Phase);
             skyboxMat.SetFloat("_SecundaSpinOption", skyboxSetting.Secunda.Spin);
             skyboxMat.SetVector("_SecundaTidalAngle", skyboxSetting.Secunda.TidalAngle);
             skyboxMat.SetVector("_SecundaSpinSpeed", skyboxSetting.Secunda.SpinSpeed);
