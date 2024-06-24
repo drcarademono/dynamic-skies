@@ -737,6 +737,8 @@ private void setLunarPhases() {
     };
 }
 
+private float interpolatedMasserX;
+
 private void ChangeLunarPhases() {
     currentLunarPhase = worldTime.Now.MassarLunarPhase;
 
@@ -768,10 +770,11 @@ private void ChangeLunarPhases() {
         // Determine the next phase and interpolate
         LunarPhases nextLunarPhase = GetNextLunarPhase(currentLunarPhase);
         if (LunarPhaseStates.TryGetValue(nextLunarPhase, out LunarPhaseCoordinates nextLunarCoords)) {
-            float interpolatedX = Mathf.Lerp(lunarCoords.X, nextLunarCoords.X, phaseProgress);
-            Vector4 lunarPhaseVector = new Vector4(interpolatedX, lunarCoords.Y, 0, 0);
+            // Adjust angles for correct interpolation
+            interpolatedMasserX = InterpolateAngle(lunarCoords.X, nextLunarCoords.X, phaseProgress);
+            Vector4 lunarPhaseVector = new Vector4(interpolatedMasserX, lunarCoords.Y, 0, 0);
 
-            Debug.Log($"Applying interpolated lunar coordinates: Current X = {lunarCoords.X}, Next X = {nextLunarCoords.X}, Interpolated X = {interpolatedX}, Y = {lunarCoords.Y}");
+            Debug.Log($"Applying interpolated lunar coordinates: Current X = {lunarCoords.X}, Next X = {nextLunarCoords.X}, Interpolated X = {interpolatedMasserX}, Y = {lunarCoords.Y}");
 
             skyboxMat.SetVector("_MoonPhase", lunarPhaseVector);
             skyboxMat.SetVector("_SecundaPhase", lunarPhaseVector);
@@ -782,6 +785,19 @@ private void ChangeLunarPhases() {
     } else {
         Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
+}
+
+private float InterpolateAngle(float startAngle, float endAngle, float t) {
+    float delta = endAngle - startAngle;
+
+    // Adjust for the shortest path around the circle
+    if (delta > 180) {
+        delta -= 360;
+    } else if (delta < -180) {
+        delta += 360;
+    }
+
+    return startAngle + t * delta;
 }
 
 private int GetLunarPhaseLength(LunarPhases phase) {
@@ -854,8 +870,8 @@ void ApplyOrbitCalculations() {
         //float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Y-axis angle variation
-        float masserYAngle = masserCoords.X - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaYAngle = masserCoords.X - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserYAngle = interpolatedMasserX - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
+        float secundaYAngle = interpolatedMasserX - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
         Debug.Log($"Lunar YAngle: {masserYAngle}");
 
         // Introduce Z-axis angle variation
