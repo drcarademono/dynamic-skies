@@ -244,10 +244,10 @@ public void Update()
                 OnWeatherChange(currentWeather);
             }
 
-            if (currentLunarPhase != worldTime.Now.MassarLunarPhase) {
+            //if (currentLunarPhase != worldTime.Now.MassarLunarPhase) {
                 ChangeLunarPhases();
                 //Debug.Log($"Debug: ChangeLunarPhases called.");
-            }
+            //}
 
             UpdateWorldTime();
             ApplyPendingWeatherSettings();
@@ -740,18 +740,97 @@ private void setLunarPhases() {
 private void ChangeLunarPhases() {
     currentLunarPhase = worldTime.Now.MassarLunarPhase;
 
-
     Debug.Log($"ChangeLunarPhases called. Current phase: {currentLunarPhase}");
 
+    // Calculate the total seconds in a day
+    int totalSecondsInDay = 24 * 60 * 60;
+    int currentSecondOfDay = worldTime.Now.Hour * 3600 + worldTime.Now.Minute * 60 + (int)worldTime.Now.Second;
+
+    // Determine the length of the current phase in days
+    int currentPhaseLength = GetLunarPhaseLength(currentLunarPhase);
+
+    // Calculate the moon ratio
+    int moonRatio = (worldTime.Now.DayOfYear + worldTime.Now.Year * 12 * 30 + 3) % 32;
+    Debug.Log($"DS moonRatio: {moonRatio}");
+
+    // Calculate the phase day offset
+    int phaseDayOffset = GetPhaseDayOffset(moonRatio);
+    
+    // Calculate the total seconds in the current phase
+    int totalSecondsInCurrentPhase = currentPhaseLength * totalSecondsInDay;
+
+    // Calculate the phase offset in seconds
+    int phaseOffsetInSeconds = phaseDayOffset * totalSecondsInDay + currentSecondOfDay;
+    float phaseProgress = (float)phaseOffsetInSeconds / totalSecondsInCurrentPhase;
+    Debug.Log($"phaseOffset: {phaseOffsetInSeconds} / {totalSecondsInCurrentPhase}");
+
     if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates lunarCoords)) {
-        Vector4 lunarPhaseVector = new Vector4(lunarCoords.X, lunarCoords.Y, 0, 0);
-        skyboxMat.SetVector("_MoonPhase", lunarPhaseVector);
-        skyboxMat.SetVector("_SecundaPhase", lunarPhaseVector);
-        ApplyOrbitCalculations();
+        // Determine the next phase and interpolate
+        LunarPhases nextLunarPhase = GetNextLunarPhase(currentLunarPhase);
+        if (LunarPhaseStates.TryGetValue(nextLunarPhase, out LunarPhaseCoordinates nextLunarCoords)) {
+            float interpolatedX = Mathf.Lerp(lunarCoords.X, nextLunarCoords.X, phaseProgress);
+            Vector4 lunarPhaseVector = new Vector4(interpolatedX, lunarCoords.Y, 0, 0);
+
+            Debug.Log($"Applying interpolated lunar coordinates: Current X = {lunarCoords.X}, Next X = {nextLunarCoords.X}, Interpolated X = {interpolatedX}, Y = {lunarCoords.Y}");
+
+            skyboxMat.SetVector("_MoonPhase", lunarPhaseVector);
+            skyboxMat.SetVector("_SecundaPhase", lunarPhaseVector);
+            ApplyOrbitCalculations();
+        } else {
+            Debug.LogWarning($"Next lunar phase {nextLunarPhase} not found in dictionary.");
+        }
     } else {
         Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
 }
+
+private int GetLunarPhaseLength(LunarPhases phase) {
+    switch (phase) {
+        case LunarPhases.Full: return 1;
+        case LunarPhases.New: return 1;
+        case LunarPhases.ThreeWane: return 5;
+        case LunarPhases.HalfWane: return 5;
+        case LunarPhases.OneWane: return 5;
+        case LunarPhases.OneWax: return 6;
+        case LunarPhases.HalfWax: return 6;
+        case LunarPhases.ThreeWax: return 3;
+        default: return 1;
+    }
+}
+
+private int GetPhaseDayOffset(int moonRatio) {
+    if (moonRatio == 0 || moonRatio == 16)
+        return 0; // Full and New Moon are single day events
+    else if (moonRatio <= 5)
+        return moonRatio - 1; // ThreeWane (5 days long)
+    else if (moonRatio <= 10)
+        return moonRatio - 6; // HalfWane (5 days long)
+    else if (moonRatio <= 15)
+        return moonRatio - 11; // OneWane (5 days long)
+    else if (moonRatio <= 22)
+        return moonRatio - 17; // OneWax (6 days long)
+    else if (moonRatio <= 28)
+        return moonRatio - 23; // HalfWax (6 days long)
+    else if (moonRatio <= 31)
+        return moonRatio - 29; // ThreeWax (3 days long)
+    return 0;
+}
+
+private LunarPhases GetNextLunarPhase(LunarPhases currentPhase) {
+    switch (currentPhase) {
+        case LunarPhases.New: return LunarPhases.OneWax;
+        case LunarPhases.OneWax: return LunarPhases.HalfWax;
+        case LunarPhases.HalfWax: return LunarPhases.ThreeWax;
+        case LunarPhases.ThreeWax: return LunarPhases.Full;
+        case LunarPhases.Full: return LunarPhases.ThreeWane;
+        case LunarPhases.ThreeWane: return LunarPhases.HalfWane;
+        case LunarPhases.HalfWane: return LunarPhases.OneWane;
+        case LunarPhases.OneWane: return LunarPhases.New;
+        default: return LunarPhases.None;
+    }
+}
+
+
 #endregion
 
     #region Moon Orbits Seasonal Adjustments
