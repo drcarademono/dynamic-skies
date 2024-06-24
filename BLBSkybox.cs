@@ -870,21 +870,21 @@ void ApplyOrbitCalculations() {
         //float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
 
         // Introduce Y-axis angle variation
-        float masserYAngle = interpolatedMasserX - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaYAngle = interpolatedMasserX - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserYAngle = 90f;//interpolatedMasserX - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
+        float secundaYAngle = 90f;//interpolatedMasserX - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
         Debug.Log($"Lunar YAngle: {masserYAngle}");
 
         // Introduce Z-axis angle variation
-        float masserZAngle = 0f;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
-        float secundaZAngle = 0f;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserZAngle = -interpolatedMasserX/6;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
+        float secundaZAngle = -interpolatedMasserX/9;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
         Vector3 secundaOrbitAngle = new Vector3(secundaXAngle, secundaYAngle, secundaZAngle);
 
         // Define orbit offsets for variety
-        float masserOrbitOffset = 0f;//10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaOrbitOffset = 0f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserOrbitOffset = interpolatedMasserX + 180f;//10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
+        float secundaOrbitOffset = interpolatedMasserX + 180f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Apply adjusted parameters to the shader
         UpdateShaderOrbitParameters(masserOrbitAngle.x, masserOrbitAngle.y, masserOrbitAngle.z, orbitSpeed, masserOrbitOffset,
