@@ -772,7 +772,7 @@ private void ChangeLunarPhases() {
         if (LunarPhaseStates.TryGetValue(nextLunarPhase, out LunarPhaseCoordinates nextLunarCoords)) {
             // Adjust angles for correct interpolation
             interpolatedMasserX = InterpolateAngle(lunarCoords.X, nextLunarCoords.X, phaseProgress);
-            Vector4 lunarPhaseVector = new Vector4(interpolatedMasserX, lunarCoords.Y, 0, 0);
+            Vector4 lunarPhaseVector = new Vector4(interpolatedMasserX, 0, 0, 0);
 
             Debug.Log($"Applying interpolated lunar coordinates: Current X = {lunarCoords.X}, Next X = {nextLunarCoords.X}, Interpolated X = {interpolatedMasserX}, Y = {lunarCoords.Y}");
 
@@ -875,8 +875,8 @@ void ApplyOrbitCalculations() {
         Debug.Log($"Lunar YAngle: {masserYAngle}");
 
         // Introduce Z-axis angle variation
-        float masserZAngle = -interpolatedMasserX/6;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
-        float secundaZAngle = -interpolatedMasserX/9;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float masserZAngle = -(180 - interpolatedMasserX)/6;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
+        float secundaZAngle = -(180 - interpolatedMasserX)/9;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
@@ -1296,7 +1296,7 @@ void ApplyOrbitCalculations() {
             //skyboxMat.SetFloat("_MoonOrbitSpeed", skyboxSetting.Masser.OrbitSpeed);
             skyboxMat.SetFloat("_MoonSemiMinAxis", skyboxSetting.Masser.SemiMinAxis);
             skyboxMat.SetFloat("_MoonSemiMajAxis", skyboxSetting.Masser.SemiMajAxis);
-            //skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
+            skyboxMat.SetFloat("_MoonPhaseOption", skyboxSetting.Masser.AutoPhase);
             //skyboxMat.SetVector("_MoonPhase", skyboxSetting.Masser.Phase);
             skyboxMat.SetFloat("_MoonSpinOption", skyboxSetting.Masser.Spin);
             skyboxMat.SetVector("_MasserTidalAngle", skyboxSetting.Masser.TidalAngle);
