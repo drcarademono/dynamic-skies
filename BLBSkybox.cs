@@ -885,7 +885,7 @@ void ApplyOrbitCalculations() {
 
         // Define orbit offsets for variety
         float masserOrbitOffset = interpolatedMasserX + 180f;//10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaOrbitOffset = interpolatedMasserX + 180f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        float secundaOrbitOffset = interpolatedMasserX + 175f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Apply adjusted parameters to the shader
         UpdateShaderOrbitParameters(masserOrbitAngle.x, masserOrbitAngle.y, masserOrbitAngle.z, orbitSpeed, masserOrbitOffset,
