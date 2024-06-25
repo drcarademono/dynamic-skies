@@ -874,9 +874,10 @@ void ApplyOrbitCalculations() {
         float secundaYAngle = 90f;//interpolatedMasserX - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
         Debug.Log($"Lunar YAngle: {masserYAngle}");
 
-        // Introduce Z-axis angle variation
-        float masserZAngle = -(180 - interpolatedMasserX)/6;//15f + 15f * Mathf.Sin(2 * Mathf.PI * yearProgress); // Constants keep moons in southern hemisphere
-        float secundaZAngle = -(180 - interpolatedMasserX)/9;//20f + 20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
+        // Calculate Z-angle using the cosine function for desired variation
+        float masserZAngle = -15f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
+        float secundaZAngle = -20f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
+        Debug.Log($"Lunar ZAngle: {masserZAngle}");
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
