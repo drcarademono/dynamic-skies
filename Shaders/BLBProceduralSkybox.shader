@@ -511,21 +511,22 @@
                 float3 phaseNormal = mul(worldToObject, moonFragNormal);
                 float3 SecundaPhaseNormal = mul(SecundaWorldToObject, SecundaMoonFragNormal);
 
-#ifndef PHASE_LIGHT
+//#ifndef PHASE_LIGHT
                 //rotate the normal by the desired amount to change the phase of the moon
-                float3 moonPhase = RotateWorldPosition(float3(0, 0, 1), float3(radians(_MoonPhase.x), radians(_MoonPhase.y), radians(_MoonPhase.z)));
-                float3 SecundaMoonPhase = RotateWorldPosition(float3(0, 0, 1), float3(radians(_SecundaPhase.x), radians(_SecundaPhase.y), radians(_SecundaPhase.z)));
+                //float3 moonPhase = RotateWorldPosition(float3(0, 0, 1), float3(radians(_MoonPhase.x), radians(_MoonPhase.y), radians(_MoonPhase.z)));
+                //float3 SecundaMoonPhase = RotateWorldPosition(float3(0, 0, 1), float3(radians(_SecundaPhase.x), radians(_SecundaPhase.y), radians(_SecundaPhase.z)));
 
                 //basic lambert lighting
-                float NDotL = dot(moonPhase, phaseNormal);
-                float SecundaNDotL = dot(SecundaMoonPhase, SecundaPhaseNormal);
+                //float NDotL = dot(moonPhase, phaseNormal);
+                //float SecundaNDotL = dot(SecundaMoonPhase, SecundaPhaseNormal);
 
-#else
-                //basic lambert lighting
+//#else
+                //basic lambert lighting // Always calculate phase using sun's postion
                 float NDotL = dot(sunPos, moonFragNormal);
                 float SecundaNDotL = dot(sunPos, SecundaMoonFragNormal);
 
-#endif
+//#endif
+
 
                 float moonBlocking = max(sphere * saturate(NDotL), SecundaSphere * saturate(SecundaNDotL));
 
