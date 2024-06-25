@@ -739,6 +739,8 @@ private void setLunarPhases() {
 
 private float interpolatedMasserX;
 
+private float phaseProgress;
+
 private void ChangeLunarPhases() {
     currentLunarPhase = worldTime.Now.MassarLunarPhase;
 
@@ -763,7 +765,7 @@ private void ChangeLunarPhases() {
 
     // Calculate the phase offset in seconds
     int phaseOffsetInSeconds = phaseDayOffset * totalSecondsInDay + currentSecondOfDay;
-    float phaseProgress = (float)phaseOffsetInSeconds / totalSecondsInCurrentPhase;
+    phaseProgress = (float)phaseOffsetInSeconds / totalSecondsInCurrentPhase;
     Debug.Log($"phaseOffset: {phaseOffsetInSeconds} / {totalSecondsInCurrentPhase}");
 
     if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates lunarCoords)) {
@@ -853,8 +855,13 @@ private LunarPhases GetNextLunarPhase(LunarPhases currentPhase) {
 void ApplyOrbitCalculations() {
     Debug.Log("ApplyOrbitCalculations called.");
 
-    int dayOfYear = DaggerfallUnity.Instance.WorldTime.Now.DayOfYear;
-    float yearProgress = dayOfYear / 365f;
+    int dayOfYear = worldTime.Now.DayOfYear;
+    int daysInYear = 365; // No leap years
+    float yearProgress = (dayOfYear - 1) / (float)daysInYear; // 0 to 1 throughout the year
+
+    int dayOfMonth = worldTime.Now.Day;
+    int daysInMonth = 30; // Consistent 30 days per month
+    float monthProgress = (dayOfMonth - 1) / (float)daysInMonth; // 0 to 1 throughout the month
 
     float orbitSpeed = 0.0000725f; //+ (0.00002f * Mathf.Cos(yearProgress * 2 * Mathf.PI));
 
@@ -864,28 +871,35 @@ void ApplyOrbitCalculations() {
     if (LunarPhaseStates.TryGetValue(currentLunarPhase, out LunarPhaseCoordinates masserCoords)) {
         Debug.Log("Lunar phase found in dictionary.");
 
+        // Adjust offsets based on the lunar phase
+        float masserOrbitOffset = interpolatedMasserX + 180f;
+        float secundaOrbitOffset = interpolatedMasserX + 175f;
+
+        if (currentLunarPhase == LunarPhases.OneWane) { // Offset to avoid monthly eclipses
+            masserOrbitOffset += 25f * phaseProgress;
+            secundaOrbitOffset += 25f * phaseProgress;
+        } else if (currentLunarPhase == LunarPhases.New) {
+            masserOrbitOffset -= 5f;
+            secundaOrbitOffset -= 5f;
+        }
+
         // Introduce X-axis angle variation
-        float masserXAngle = 270f;//260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
-        float secundaXAngle = 270f;//260f + 25f * Mathf.Sin(2 * Mathf.PI * yearProgress); // 270 degrees is east to west path
-        //float secundaXAngle = 250f + 30f * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserXAngle = 270f; // 270 degrees is east to west path
+        float secundaXAngle = 270f; // 270 degrees is east to west path
 
         // Introduce Y-axis angle variation
-        float masserYAngle = 90f;//interpolatedMasserX - 90f;// * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaYAngle = 90f;//interpolatedMasserX - 90f;// * Mathf.Cos(2 * Mathf.PI * yearProgress); // Shifted phase relative to Masser
+        float masserYAngle = 90f; // Constant Y-angle
+        float secundaYAngle = 90f; // Constant Y-angle
         Debug.Log($"Lunar YAngle: {masserYAngle}");
 
-        // Calculate Z-angle using the cosine function for desired variation
-        float masserZAngle = -15f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
-        float secundaZAngle = -20f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
+        // Calculate Z-angle using the sine function for desired variation
+        float masserZAngle = -20f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
+        float secundaZAngle = -30f * Mathf.Sin(Mathf.Deg2Rad * interpolatedMasserX);
         Debug.Log($"Lunar ZAngle: {masserZAngle}");
 
         // Calculate orbit angles with the new X, Y, and Z component variations
         Vector3 masserOrbitAngle = new Vector3(masserXAngle, masserYAngle, masserZAngle);
         Vector3 secundaOrbitAngle = new Vector3(secundaXAngle, secundaYAngle, secundaZAngle);
-
-        // Define orbit offsets for variety
-        float masserOrbitOffset = interpolatedMasserX + 180f;//10f * Mathf.Sin(2 * Mathf.PI * yearProgress);
-        float secundaOrbitOffset = interpolatedMasserX + 175f;//20f * Mathf.Cos(2 * Mathf.PI * yearProgress);
 
         // Apply adjusted parameters to the shader
         UpdateShaderOrbitParameters(masserOrbitAngle.x, masserOrbitAngle.y, masserOrbitAngle.z, orbitSpeed, masserOrbitOffset,
@@ -894,6 +908,10 @@ void ApplyOrbitCalculations() {
         Debug.LogWarning($"Lunar phase {currentLunarPhase} not found in dictionary.");
     }
 }
+
+
+
+
 
 
     void UpdateShaderOrbitParameters(float masserOrbitAngleX, float masserOrbitAngleY, float masserOrbitAngleZ, float masserOrbitSpeed, float masserOrbitOffset,
