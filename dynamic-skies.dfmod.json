@@ -1,6 +1,6 @@
 {
     "ModTitle": "Dynamic Skies",
-    "ModVersion": "2.2.3",
+    "ModVersion": "2.3.0",
     "ModAuthor": "BadLuckBurt and carademono",
     "ContactInfo": "Lysandus' Tomb Discord server",
     "DFUnity_Version": "1.0.0",
@@ -61,6 +61,8 @@
         "Assets/Game/Mods/dynamic-skies/Textures/DefaultMars.png",
         "Assets/Game/Mods/dynamic-skies/Textures/CdMSnow.png",
         "Assets/Game/Mods/dynamic-skies/Textures/VanillaStars.png",
-        "Assets/Game/Mods/dynamic-skies/Textures/VanillaStarsTwinkleMask.png"
+        "Assets/Game/Mods/dynamic-skies/Textures/VanillaStarsTwinkleMask.png",
+        "Assets/Game/Mods/dynamic-skies/Scripts/LightningFlash.cs",
+        "Assets/Game/Mods/dynamic-skies/Scripts/LightingFlashListener.cs"
     ]
 }

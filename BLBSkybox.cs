@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -65,6 +66,10 @@ public class BLBSkybox : MonoBehaviour
     #endregion
 
     private ModSettings modSettings;
+
+    private LightningFlashListener lightningFlashListener;
+
+    private LightningFlash lightningFlash;
 
     [Invoke(StateManager.StateTypes.Start, 0)]
     public static void Init(InitParams initParams)
@@ -159,6 +164,49 @@ public class BLBSkybox : MonoBehaviour
     {
         Mod.IsReady = true;
         Debug.Log("Dynamic Skies awakened");
+    }
+
+    private void Start()
+    {
+        // Create LightningFlashListener GameObject and add LightningFlashListener component
+        GameObject lightningFlashListenerObject = new GameObject("LightningFlashListener");
+        lightningFlashListener = lightningFlashListenerObject.AddComponent<LightningFlashListener>();
+
+        // Create LightningEffect GameObject and add LightningFlash component
+        GameObject lightningEffect = new GameObject("LightningEffect");
+        lightningFlash = lightningEffect.AddComponent<LightningFlash>();
+
+        // Create Canvas for the flash effect
+        GameObject canvasGameObject = new GameObject("FlashCanvas");
+        Canvas canvas = canvasGameObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        // Create Image for the flash effect
+        GameObject imageGameObject = new GameObject("FlashImage");
+        Image flashImage = imageGameObject.AddComponent<Image>();
+        flashImage.color = new Color(1f, 1f, 1f, 0f); // Start transparent
+
+        // Set up hierarchy
+        imageGameObject.transform.SetParent(canvasGameObject.transform);
+        lightningEffect.transform.SetParent(canvasGameObject.transform);
+
+        // Stretch the Image to fill the screen
+        RectTransform rectTransform = flashImage.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+
+        // Assign flashImage to LightningFlash
+        lightningFlash.flashImage = flashImage;
+
+        // Optionally, adjust the flash duration
+        lightningFlash.flashDuration = 0.2f;
+
+        // Assign the LightningFlash to the LightningFlashListener
+        lightningFlashListener.SetLightningFlash(lightningFlash);
+
+        Debug.Log("BLB: LightningFlashListener setup complete.");
     }
 
     private float deltaTime = 0.0f; //Counter to limit Update() calls to once per 5 seconds
@@ -504,22 +552,47 @@ void UpdateWorldTime() {
     private BLBSkyboxSetting pendingSkyboxSettings; //The new settings for the skybox
 
     private WeatherType currentWeather = WeatherType.Sunny; //Keeps track of the current weather to detect a change
-    private void OnWeatherChange(WeatherType weather) {
-        if(pendingWeather == true) {
+
+    private Coroutine lightningCoroutine;
+
+    private void OnWeatherChange(WeatherType weather)
+    {
+        if (pendingWeather == true)
+        {
             return;
         }
-        //Only change weather if it's not the same weather as the current weather
-        if(weather != currentWeather || forceWeatherUpdate == true) {
+
+        // Only change weather if it's not the same weather as the current weather
+        if (weather != currentWeather || forceWeatherUpdate == true)
+        {
             forceWeatherUpdate = false;
             pendingWeatherType = weather;
 
-            int index = getWeatherIndex();//TODO: Get correct index based on time
+            int index = getWeatherIndex(); // TODO: Get correct index based on time
 
-            pendingWindDirection = getWindDirection(); //Get new random wind direction
-            //Debug.Log("BLB: Getting pending skybox settings for weather " + pendingWeatherType.ToString() + " at index " + index.ToString());
+            pendingWindDirection = getWindDirection(); // Get new random wind direction
             pendingSkyboxSettings = SkyboxSettings[pendingWeatherType][index];
-            
+
             pendingWeather = true;
+
+            // Start or stop the lightning flash listener based on the weather type
+            if (pendingWeatherType == WeatherType.Thunder)
+            {
+                if (lightningCoroutine == null)
+                {
+                    Debug.Log("BLB: Starting lightning effect.");
+                    LightningFlashListener.Instance.StartListening();
+                }
+            }
+            else
+            {
+                if (lightningCoroutine != null)
+                {
+                    Debug.Log("BLB: Stopping lightning effect.");
+                    LightningFlashListener.Instance.StopListening();
+                    lightningCoroutine = null;
+                }
+            }
         }
     }
 
