@@ -44,7 +44,7 @@ public class LightningFlashListener : MonoBehaviour
         }
 
         // Trigger the lightning flash for any ambient noise
-        Debug.Log("BLB: Triggering lightning flash.");
+        //Debug.Log("BLB: Triggering lightning flash.");
         lightningFlash.StartFlash();
     }
 }

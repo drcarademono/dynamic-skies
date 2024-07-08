@@ -206,7 +206,7 @@ public class BLBSkybox : MonoBehaviour
         // Assign the LightningFlash to the LightningFlashListener
         lightningFlashListener.SetLightningFlash(lightningFlash);
 
-        Debug.Log("BLB: LightningFlashListener setup complete.");
+        //Debug.Log("BLB: LightningFlashListener setup complete.");
     }
 
     private float deltaTime = 0.0f; //Counter to limit Update() calls to once per 5 seconds
