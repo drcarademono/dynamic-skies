@@ -166,48 +166,24 @@ public class BLBSkybox : MonoBehaviour
         Debug.Log("Dynamic Skies awakened");
     }
 
-    private void Start()
-    {
-        // Create LightningFlashListener GameObject and add LightningFlashListener component
-        GameObject lightningFlashListenerObject = new GameObject("LightningFlashListener");
-        lightningFlashListener = lightningFlashListenerObject.AddComponent<LightningFlashListener>();
+private void Start()
+{
+    // Create LightningFlashListener GameObject and add LightningFlashListener component
+    GameObject lightningFlashListenerObject = new GameObject("LightningFlashListener");
+    lightningFlashListener = lightningFlashListenerObject.AddComponent<LightningFlashListener>();
 
-        // Create LightningEffect GameObject and add LightningFlash component
-        GameObject lightningEffect = new GameObject("LightningEffect");
-        lightningFlash = lightningEffect.AddComponent<LightningFlash>();
+    // Create LightningEffect GameObject and add LightningFlash component
+    GameObject lightningEffect = new GameObject("LightningEffect");
+    lightningFlash = lightningEffect.AddComponent<LightningFlash>();
 
-        // Create Canvas for the flash effect
-        GameObject canvasGameObject = new GameObject("FlashCanvas");
-        Canvas canvas = canvasGameObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+    // Assign the LightningFlash to the LightningFlashListener
+    lightningFlashListener.SetLightningFlash(lightningFlash);
 
-        // Create Image for the flash effect
-        GameObject imageGameObject = new GameObject("FlashImage");
-        Image flashImage = imageGameObject.AddComponent<Image>();
-        flashImage.color = new Color(1f, 1f, 1f, 0f); // Start transparent
+    // Optionally, adjust the flash duration and other parameters
+    lightningFlash.flashDuration = 0.2f;
 
-        // Set up hierarchy
-        imageGameObject.transform.SetParent(canvasGameObject.transform);
-        lightningEffect.transform.SetParent(canvasGameObject.transform);
-
-        // Stretch the Image to fill the screen
-        RectTransform rectTransform = flashImage.GetComponent<RectTransform>();
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.one;
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
-
-        // Assign flashImage to LightningFlash
-        lightningFlash.flashImage = flashImage;
-
-        // Optionally, adjust the flash duration
-        lightningFlash.flashDuration = 0.2f;
-
-        // Assign the LightningFlash to the LightningFlashListener
-        lightningFlashListener.SetLightningFlash(lightningFlash);
-
-        //Debug.Log("BLB: LightningFlashListener setup complete.");
-    }
+    Debug.Log("BLB: Lightning effect setup complete.");
+}
 
     private float deltaTime = 0.0f; //Counter to limit Update() calls to once per 5 seconds
     public int hour;
@@ -580,20 +556,32 @@ void UpdateWorldTime() {
             {
                 if (lightningCoroutine == null)
                 {
-                    Debug.Log("BLB: Starting lightning effect.");
-                    LightningFlashListener.Instance.StartListening();
+                    //Debug.Log("BLB: Starting lightning effect.");
+                    lightningCoroutine = StartCoroutine(StartLightningEffect());
                 }
             }
             else
             {
                 if (lightningCoroutine != null)
                 {
-                    Debug.Log("BLB: Stopping lightning effect.");
+                    //Debug.Log("BLB: Stopping lightning effect.");
+                    StopCoroutine(lightningCoroutine);
                     LightningFlashListener.Instance.StopListening();
                     lightningCoroutine = null;
                 }
             }
         }
+    }
+
+    private IEnumerator StartLightningEffect()
+    {
+        LightningFlashListener.Instance.StartListening();
+        while (pendingWeatherType == WeatherType.Thunder)
+        {
+            // You can add any additional logic here if needed, or just leave it running
+            yield return null;
+        }
+        LightningFlashListener.Instance.StopListening();
     }
 
     private void ApplyPendingWeatherSettings() {

@@ -1,18 +1,47 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
 public class LightningFlash : MonoBehaviour
 {
-    public Image flashImage;
+    public Light lightningLight; // Light object to simulate the lightning flash
     public float flashDuration = 0.1f;
-    public float fadeDuration = 0.1f; // Duration to fade in and out
+
+    private Transform playerTransform;
+
+    private void Start()
+    {
+        // Find the PlayerAdvanced object
+        GameObject playerObject = GameObject.Find("PlayerAdvanced");
+        if (playerObject != null)
+        {
+            playerTransform = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogError("LightningFlash: PlayerAdvanced object not found.");
+        }
+
+        if (lightningLight == null)
+        {
+            // Create a new light object if one is not assigned
+            GameObject lightGameObject = new GameObject("LightningLight");
+            lightningLight = lightGameObject.AddComponent<Light>();
+            lightningLight.type = LightType.Point;
+            lightningLight.intensity = 0; // Start with the light off
+        }
+    }
 
     public void StartFlash()
     {
-        if (flashImage == null)
+        if (lightningLight == null)
         {
-            Debug.LogError("LightningFlash: Flash image is not assigned.");
+            Debug.LogError("LightningFlash: Lightning light is not assigned.");
+            return;
+        }
+
+        if (playerTransform == null)
+        {
+            Debug.LogError("LightningFlash: Player transform is not assigned.");
             return;
         }
 
@@ -44,7 +73,7 @@ public class LightningFlash : MonoBehaviour
     {
         float halfDuration = flashDuration / 2f;
         yield return FlashOnce(halfDuration);
-        yield return new WaitForSeconds(0.05f); // Short delay between flashes
+        yield return new WaitForSeconds(0.1f); // Short delay between flashes
         yield return FlashOnce(halfDuration);
     }
 
@@ -52,34 +81,25 @@ public class LightningFlash : MonoBehaviour
     {
         //Debug.Log("LightningFlash: Flash started.");
 
-        // Get a random opacity between 0.5 and 1.0
-        float targetOpacity = Random.Range(0.25f, 0.75f);
+        // Randomize light intensity and position above the player
+        lightningLight.intensity = Random.Range(0.5f, 1.5f);
+        lightningLight.range = Random.Range(500f, 1000f);
+        lightningLight.transform.position = playerTransform.position + new Vector3(
+            Random.Range(-10f, 10f),
+            Random.Range(20f, 40f),
+            Random.Range(-10f, 10f)
+        );
 
-        // Fade in
-        float elapsedTime = 0f;
-        while (elapsedTime < fadeDuration)
-        {
-            float alpha = Mathf.Lerp(0f, targetOpacity, elapsedTime / fadeDuration);
-            flashImage.color = new Color(1f, 1f, 1f, alpha);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        flashImage.color = new Color(1f, 1f, 1f, targetOpacity); // Ensure fully opaque with target opacity
+        // Turn on the light
+        lightningLight.enabled = true;
 
+        // Wait for the flash duration
         yield return new WaitForSeconds(duration);
 
-        // Fade out
-        elapsedTime = 0f;
-        while (elapsedTime < fadeDuration)
-        {
-            float alpha = Mathf.Lerp(targetOpacity, 0f, elapsedTime / fadeDuration);
-            flashImage.color = new Color(1f, 1f, 1f, alpha);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        flashImage.color = new Color(1f, 1f, 1f, 0f); // Ensure fully transparent
+        // Turn off the light
+        lightningLight.enabled = false;
 
-        //Debug.Log("LightningFlash: Flash ended. Current color: " + flashImage.color);
+        //Debug.Log("LightningFlash: Flash ended.");
     }
 }
 
