@@ -46,16 +46,16 @@ public class LightningFlash : MonoBehaviour
         }
 
         // 50% chance to start the flash
-        if (Random.value > 0.5f)
+        if (Random.value < (0.5f / Time.timeScale))
         {
             // 33% chance to have a double flash
-            if (Random.value < 0.33f)
+            if (Random.value < (0.33f / Time.timeScale))
             {
                 StartCoroutine(DoubleFlashRoutine());
             }
             else
             {
-                StartCoroutine(FlashRoutine(flashDuration));
+                StartCoroutine(FlashRoutine(flashDuration * Time.timeScale));
             }
         }
         else
@@ -71,9 +71,9 @@ public class LightningFlash : MonoBehaviour
 
     private IEnumerator DoubleFlashRoutine()
     {
-        float halfDuration = flashDuration / 2f;
+        float halfDuration = flashDuration * Time.timeScale / 2f;
         yield return FlashOnce(halfDuration);
-        yield return new WaitForSeconds(0.1f); // Short delay between flashes
+        yield return new WaitForSeconds(0.1f * Time.timeScale); // Short delay between flashes
         yield return FlashOnce(halfDuration);
     }
 

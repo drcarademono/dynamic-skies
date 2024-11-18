@@ -1254,6 +1254,10 @@ void UpdateWorldTime() {
         }
         Debug.Log("Dynamic Skies: Deactivating skybox");
         ToggleSkybox(false);
+        if (pendingWeatherType == WeatherType.Thunder)
+        {
+            LightningFlashListener.Instance.StopListening();
+        }
     }
 
     /// <summary>
@@ -1265,6 +1269,10 @@ void UpdateWorldTime() {
         Debug.Log("Activating skybox");
         playerInside = false;
         ToggleSkybox(true);
+        if (pendingWeatherType == WeatherType.Thunder)
+        {
+            LightningFlashListener.Instance.StartListening();
+        }
     }
     #endregion
 
