@@ -37,14 +37,17 @@ public class LightningFlashListener : MonoBehaviour
 
     private void HandleOnPlayEffect(AmbientEffectsPlayer.AmbientEffectsEventArgs args)
     {
+        var enterExit = GameManager.Instance.PlayerEnterExit;
+        // bail out if we're inside a building OR inside a dungeon
+        if (enterExit.IsPlayerInside || enterExit.IsPlayerInsideDungeon)
+            return;
+
         if (lightningFlash == null)
         {
             Debug.LogError("LightningFlashListener: LightningFlash is not assigned.");
             return;
         }
 
-        // Trigger the lightning flash for any ambient noise
-        //Debug.Log("BLB: Triggering lightning flash.");
         lightningFlash.StartFlash();
     }
 }

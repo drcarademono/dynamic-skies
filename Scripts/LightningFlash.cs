@@ -6,6 +6,8 @@ public class LightningFlash : MonoBehaviour
     public Light lightningLight; // Light object to simulate the lightning flash
     public float flashDuration = 0.1f;
 
+    private Color protectedColor;
+
     private Transform playerTransform;
 
     private void Start()
@@ -28,6 +30,7 @@ public class LightningFlash : MonoBehaviour
             lightningLight = lightGameObject.AddComponent<Light>();
             lightningLight.type = LightType.Point;
             lightningLight.intensity = 0; // Start with the light off
+            protectedColor = lightningLight.color;
         }
     }
 
@@ -82,6 +85,11 @@ public class LightningFlash : MonoBehaviour
         //Debug.Log("LightningFlash: Flash started.");
 
         // Randomize light intensity and position above the player
+        protectedColor = new Color(
+            Random.Range(0.8f, 1f),
+            Random.Range(0.8f, 1f),
+            Random.Range(0.8f, 1f));
+        lightningLight.color = protectedColor;
         lightningLight.intensity = Random.Range(0.5f, 1.5f);
         lightningLight.range = Random.Range(500f, 1000f);
         lightningLight.transform.position = playerTransform.position + new Vector3(
@@ -100,6 +108,13 @@ public class LightningFlash : MonoBehaviour
         lightningLight.enabled = false;
 
         //Debug.Log("LightningFlash: Flash ended.");
+    }
+
+    void LateUpdate()
+    {
+        // if our flash light is currently on, force its color back
+        if (lightningLight != null && lightningLight.enabled)
+            lightningLight.color = protectedColor;
     }
 }
 

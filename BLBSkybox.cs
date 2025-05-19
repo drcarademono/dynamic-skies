@@ -1244,19 +1244,42 @@ void UpdateWorldTime() {
     /// Get InteriorTransition & InteriorDungeonTransition events from PlayerEnterExit
     /// </summary>
     /// <param name="args"></param>
-    public void InteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)      //player went indoors (or dungeon), disable sky objects
+    public void InteriorTransitionEvent(PlayerEnterExit.TransitionEventArgs args)
     {
         playerInside = true;
-        if(TransparentWindowsEnabled == true) {
+
+        // If we have transparent windows, keep skybox on and bail
+        if (TransparentWindowsEnabled)
+        {
             Debug.Log("Dynamic Skies: Forcing skybox for interior");
             ToggleSkybox(true);
             return;
         }
+
+        // Otherwise disable skybox as before
         Debug.Log("Dynamic Skies: Deactivating skybox");
         ToggleSkybox(false);
+
+        // If we were in Thunder weather, tear down any lightning
         if (pendingWeatherType == WeatherType.Thunder)
         {
+            // Stop listening for new thunder events
             LightningFlashListener.Instance.StopListening();
+
+            // Stop the weather‐control coroutine, if it’s still running
+            if (lightningCoroutine != null)
+            {
+                StopCoroutine(lightningCoroutine);
+                lightningCoroutine = null;
+            }
+
+            // Kill any in‐flight flash routines and turn the light off
+            if (lightningFlash != null)
+            {
+                lightningFlash.StopAllCoroutines();
+                if (lightningFlash.lightningLight != null)
+                    lightningFlash.lightningLight.enabled = false;
+            }
         }
     }
 
